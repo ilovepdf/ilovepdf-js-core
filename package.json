@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "scripts": {
+    "wp": "webpack",
+    "serve": "http-server build"
+  },
+  "dependencies": {
+    "http-server": "^0.12.1",
+    "ts-loader": "^7.0.0",
+    "typescript": "^3.8.3",
+    "webpack-cli": "^3.3.11"
+  },
+  "devDependencies": {
+    "webpack": "^4.43.0",
+    "copy-webpack-plugin": "^5.1.1"
+  }
+}
