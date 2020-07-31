@@ -59,7 +59,7 @@ export default class XHRPromise {
         })
         .catch(error => {
             const { status, statusText } = error;
-            throw new ServerError(`${ status }-${ statusText }`);
+            throw new ServerError(`${ status } - ${ statusText }`);
         });
     }
 
