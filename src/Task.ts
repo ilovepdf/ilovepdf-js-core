@@ -328,7 +328,7 @@ type ConnectResponse = {
  * http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf (page 844)
  */
 // TO-DO: Fix that metas are not applied in the final document.
-interface ProcessParams {
+export interface ProcessParams {
     metas?: {
         Title?: string;
         Author?: string;
@@ -369,7 +369,7 @@ type File = {
 
 /**
  * True in case that there is an undefined value inside the array.
- * @param array Array with values.
+ * @param array - Array with values.
  */
 function thereIsUndefined(array: Array<any>): boolean {
     for (const element of array) {
