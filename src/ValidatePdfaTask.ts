@@ -20,7 +20,7 @@ export default class ValidatePdfaTask extends Task {
      * @override
      * @param params - ProcessParams object with extra attrs for this service.
      */
-    process(params: ValidatePdfaProcessParams) {
+    process(params?: ValidatePdfaProcessParams) {
         return super.process(params);
     }
 

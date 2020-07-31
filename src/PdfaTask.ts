@@ -20,7 +20,7 @@ export default class PdfaTask extends Task {
      * @override
      * @param params - ProcessParams object with extra attrs for this service.
      */
-    process(params: PdfaProcessParams) {
+    process(params?: PdfaProcessParams) {
         return super.process(params);
     }
 

@@ -20,7 +20,7 @@ export default class CompressTask extends Task {
      * @override
      * @param params - ProcessParams object with extra attrs for this service.
      */
-    process(params: CompressProcessParams) {
+    process(params?: CompressProcessParams) {
         return super.process(params);
     }
 

@@ -20,7 +20,7 @@ export default class PdfJpgTask extends Task {
      * @override
      * @param params - ProcessParams object with extra attrs for this service.
      */
-    process(params: PdfJpgProcessParams) {
+    process(params?: PdfJpgProcessParams) {
         return super.process(params);
     }
 

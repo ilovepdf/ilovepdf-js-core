@@ -23,7 +23,7 @@ export default class ImagePdfTask extends Task {
      * @override
      * @param params - ProcessParams object with extra attrs for this service.
      */
-    process(params: ImagePdfProcessParams) {
+    process(params?: ImagePdfProcessParams) {
         return super.process(params);
     }
 

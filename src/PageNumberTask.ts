@@ -32,7 +32,7 @@ export default class PageNumberTask extends Task {
      * @override
      * @param params - ProcessParams object with extra attrs for this service.
      */
-    process(params: PageNumberProcessParams) {
+    process(params?: PageNumberProcessParams) {
         return super.process(params);
     }
 

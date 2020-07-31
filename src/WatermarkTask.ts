@@ -35,7 +35,7 @@ export default class WatermarkTask extends Task {
      * @override
      * @param params - ProcessParams object with extra attrs for this service.
      */
-    process(params: WatermarkProcessParams) {
+    process(params?: WatermarkProcessParams) {
         return super.process(params);
     }
 
