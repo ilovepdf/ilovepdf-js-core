@@ -1,5 +1,5 @@
 import Task, { ProcessParams } from "./Task";
-import ILovePDFTool from "./types/ILovePDFTool";
+import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 
 interface WatermarkProcessParams extends ProcessParams {

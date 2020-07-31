@@ -1,7 +1,7 @@
-import ILovePDFTool from "./types/ILovePDFTool";
+import ILovePDFTool from "../types/ILovePDFTool";
 import Task, { TaskParams } from "./Task";
 import MergeTask from "./MergeTask";
-import TaskTypeNotExistsError from "./errors/TaskTypeNotExistsError";
+import TaskTypeNotExistsError from "../errors/TaskTypeNotExistsError";
 import SplitTask from "./SplitTask";
 import CompressTask from "./CompressTask";
 import WatermarkTask from "./WatermarkTask";
@@ -11,7 +11,7 @@ import PdfJpgTask from "./PdfJpgTask";
 import PdfaTask from "./PdfaTask";
 import PageNumberTask from "./PageNumberTask";
 import ImagePdfTask from "./ImagePdfTask";
-import RequiredParamError from "./errors/RequiredParamError";
+import RequiredParamError from "../errors/RequiredParamError";
 import UnlockTask from "./UnlockTask";
 import RotateTask from "./RotateTask";
 import RepairTask from "./RepairTask";

@@ -1,18 +1,18 @@
 import Task, { ProcessParams } from "./Task";
-import ILovePDFTool from "./types/ILovePDFTool";
+import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 
-interface PdfJpgProcessParams extends ProcessParams {
-    pdfjpg_mode?: 'pages' | 'extract';
+export interface ProtectProcessParams extends ProcessParams {
+    password: string;
 }
 
-export default class PdfJpgTask extends Task {
+export default class ProtectTask extends Task {
     public type: ILovePDFTool;
 
-    constructor(publicKey: string, secretKey: string, params: TaskParams = {}) {
+    constructor(publicKey: string, secretKey: string, params: TaskParams) {
         super(publicKey, secretKey, params);
 
-        this.type = 'pdfjpg';
+        this.type = 'protect';
     }
 
     /**
@@ -20,7 +20,7 @@ export default class PdfJpgTask extends Task {
      * @override
      * @param params - ProcessParams object with extra attrs for this service.
      */
-    process(params?: PdfJpgProcessParams) {
+    process(params: ProtectProcessParams) {
         return super.process(params);
     }
 

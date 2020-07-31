@@ -1,5 +1,5 @@
 import Task from "./Task";
-import ILovePDFTool from "./types/ILovePDFTool";
+import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 
 export default class MergeTask extends Task {
