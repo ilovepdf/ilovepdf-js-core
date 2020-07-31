@@ -21,7 +21,7 @@ export interface TaskI {
     /**
      * Process uploaded files.
      */
-    process: () => Promise<Task>;
+    process: (params?: ProcessParams) => Promise<Task>;
     /**
      * Downloads processed files.
      */
@@ -140,7 +140,7 @@ export default abstract class Task implements TaskI {
         });
     }
 
-    async process() {
+    async process(params: ProcessParams = {}) {
         const xhr = new XHRPromise();
 
         return xhr.post<ProcessPostResponse>(
@@ -148,7 +148,9 @@ export default abstract class Task implements TaskI {
             {
                 task: this.id,
                 tool: this.type,
-                files: this.files
+                files: this.files,
+                // Include optional params.
+                ...params
             },
             {
                 headers: [
@@ -319,6 +321,46 @@ type ConnectResponse = {
 };
 
 // -----
+
+/**
+ * Be careful: 'metas' property uses PascalCase due to PDF specification.
+ * To know more, visit the next link:
+ * http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf (page 844)
+ */
+// TO-DO: Fix that metas are not applied in the final document.
+interface ProcessParams {
+    metas?: {
+        Title?: string;
+        Author?: string;
+        Subject?: string;
+        Keywords?: string;
+        Creator?: string;
+        Producer?: string;
+        CreationDate?: string;
+        ModDate?: string;
+        Trapped?: string;
+    },
+    ignore_errors?: boolean;
+    ignore_password?: boolean;
+    // Inside the string, can be used the next helpers:
+    // {date} - current data.
+    // {n} - file number.
+    // {filename} - original filename.
+    // {tool} - the current processing action.
+    // Example: file_{n}_{date}
+    output_filename?: string;
+    // Inside the string, can be used the next helpers:
+    // {date} - current data.
+    // {n} - file number.
+    // {filename} - original filename.
+    // {app} - the current processing action.
+    packaged_filename?: string;
+    file_encryption_key?: string;
+    try_pdf_repair?: boolean;
+    custom_int?: number;
+    custom_string?: string;
+    webhook?: string;
+};
 
 type File = {
     filename: string;
