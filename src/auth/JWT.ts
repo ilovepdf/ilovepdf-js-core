@@ -1,14 +1,16 @@
-import XHRPromise from "../utils/XHRPromise";
 import globals from '../constants/globals.json';
 import AuthError from "../errors/AuthError";
 import Auth from "./Auth";
+import XHRInterface from "../utils/XHRInterface";
 
 export default class JWT implements Auth {
+    private xhr: XHRInterface;
     private publicKey: string;
     private secretKey?: string;
     private token?: string;
 
-    constructor(publicKey: string, secretKey?: string) {
+    constructor(xhr: XHRInterface, publicKey: string, secretKey?: string) {
+        this.xhr = xhr;
         this.publicKey = publicKey;
         this.secretKey = secretKey;
     }
@@ -27,9 +29,7 @@ export default class JWT implements Auth {
     private async getTokenFromServer() {
         if (!!this.token) return this.token;
 
-        const xhr = new XHRPromise();
-
-        return xhr.post<AuthResponse>(`${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/auth`,
+        return this.xhr.post<AuthResponse>(`${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/auth`,
         {
             public_key: this.publicKey
         },

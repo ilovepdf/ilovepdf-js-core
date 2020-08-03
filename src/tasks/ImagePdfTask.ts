@@ -2,6 +2,7 @@ import Task, { ProcessParams } from "./Task";
 import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
+import XHRInterface from "../utils/XHRInterface";
 
 interface ImagePdfProcessParams extends ProcessParams {
     orientation?: 'portrait' | 'landscape';
@@ -13,8 +14,8 @@ interface ImagePdfProcessParams extends ProcessParams {
 export default class ImagePdfTask extends Task {
     public type: ILovePDFTool;
 
-    constructor(auth: Auth, params: TaskParams = {}) {
-        super(auth, params);
+    constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {
+        super(auth, xhr, params);
 
         this.type = 'imagepdf';
     }

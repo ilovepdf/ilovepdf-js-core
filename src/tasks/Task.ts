@@ -1,4 +1,3 @@
-import XHRPromise from '../utils/XHRPromise';
 import StartError from '../errors/StartError';
 import globals from '../constants/globals.json';
 import DeleteError from '../errors/DeleteError';
@@ -9,6 +8,7 @@ import ConnectError from '../errors/ConnectError';
 import ILovePDFTool from '../types/ILovePDFTool';
 import TaskFactory from './TaskFactory';
 import Auth from '../auth/Auth';
+import XHRInterface from '../utils/XHRInterface';
 
 export interface TaskI {
     /**
@@ -51,6 +51,7 @@ export default abstract class Task implements TaskI {
     private server: string | undefined;
     private files: Array<File>;
     private auth: Auth;
+    private xhr: XHRInterface;
 
     /**
      *
@@ -58,8 +59,9 @@ export default abstract class Task implements TaskI {
      * @param secretKey - API private key.
      * @param makeStart - If true, start is called on instantiate a Task.
      */
-    constructor(auth: Auth, params: TaskParams = {}) {
+    constructor(auth: Auth, xhr: XHRInterface, params: TaskParams = {}) {
         this.auth = auth;
+        this.xhr = xhr;
 
         const { id, server, files } = params;
 
@@ -81,10 +83,9 @@ export default abstract class Task implements TaskI {
     }
 
     public async start() {
-        const xhr = new XHRPromise();
         const token = await this.auth.getToken();
 
-        return xhr.get<StartGetResponse>(`${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/start/${ this.type }`, {
+        return this.xhr.get<StartGetResponse>(`${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/start/${ this.type }`, {
             headers: [
                 [ 'Authorization', `Bearer ${ token }` ]
             ],
@@ -109,10 +110,9 @@ export default abstract class Task implements TaskI {
 
     // Be careful. Docs don't say what's a file.
     async upload(file: string) {
-        const xhr = new XHRPromise();
         const token = await this.auth.getToken();
 
-        return xhr.post<UploadPostResponse>(
+        return this.xhr.post<UploadPostResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload`,
             {
                 task: this.id,
@@ -139,10 +139,9 @@ export default abstract class Task implements TaskI {
     }
 
     async process(params: ProcessParams = {}) {
-        const xhr = new XHRPromise();
         const token = await this.auth.getToken();
 
-        return xhr.post<ProcessPostResponse>(
+        return this.xhr.post<ProcessPostResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/process`,
             {
                 task: this.id,
@@ -177,10 +176,9 @@ export default abstract class Task implements TaskI {
     }
 
     async download() {
-        const xhr = new XHRPromise();
         const token = await this.auth.getToken();
 
-        return xhr.get<DownloadResponse>(`${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/download/${ this.id }`, {
+        return this.xhr.get<DownloadResponse>(`${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/download/${ this.id }`, {
             headers: [
                 [ 'Authorization', `Bearer ${ token }` ]
             ]
@@ -198,10 +196,9 @@ export default abstract class Task implements TaskI {
     }
 
     async delete() {
-        const xhr = new XHRPromise();
         const token = await this.auth.getToken();
 
-        return xhr.delete<DeleteResponse>(`${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/task/${ this.id }`, {
+        return this.xhr.delete<DeleteResponse>(`${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/task/${ this.id }`, {
             headers: [
                 [ 'Authorization', `Bearer ${ token }` ]
             ],
@@ -229,10 +226,9 @@ export default abstract class Task implements TaskI {
     }
 
     async connect(nextTool: ILovePDFTool) {
-        const xhr = new XHRPromise();
         const token = await this.auth.getToken();
 
-        return xhr.post<ConnectResponse>(
+        return this.xhr.post<ConnectResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/task/next`,
             {
                 task: this.id,
@@ -262,7 +258,7 @@ export default abstract class Task implements TaskI {
             const taskFactory = new TaskFactory();
             // Create the next new task and populate its attrs with response data.
             // The server is the same than parent task.
-            const newTask = taskFactory.newTask(nextTool, this.auth, { id: task, server: this.server, files: newTaskFiles });
+            const newTask = taskFactory.newTask(nextTool, this.auth, this.xhr, { id: task, server: this.server, files: newTaskFiles });
             return newTask;
         })
         .catch(e => {

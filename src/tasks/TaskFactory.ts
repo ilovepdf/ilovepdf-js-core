@@ -19,9 +19,10 @@ import OfficePdfTask from "./OfficePdfTask";
 import HtmlPdfTask from "./HtmlPdfTask";
 import ExtractTask from "./ExtractTask";
 import Auth from "../auth/Auth";
+import XHRInterface from "../utils/XHRInterface";
 
 export interface TaskFactoryI {
-    newTask: (taskType: ILovePDFTool, auth: Auth, params?: TaskParams) => Task;
+    newTask: (taskType: ILovePDFTool, auth: Auth, xhr: XHRInterface, params?: TaskParams) => Task;
 }
 
 export default class TaskFactory implements TaskFactoryI {
@@ -31,58 +32,58 @@ export default class TaskFactory implements TaskFactoryI {
      * @param taskType - Task type that will use a specific ILovePDF tool.
      * @param params - Parameters to customize the process.
      */
-    newTask(taskType: ILovePDFTool, auth: Auth, params: TaskParams = {}): Task {
+    newTask(taskType: ILovePDFTool, auth: Auth, xhr: XHRInterface, params: TaskParams = {}): Task {
         if (taskType === 'merge') {
-            return new MergeTask(auth, params);
+            return new MergeTask(auth, xhr, params);
         }
         else if (taskType === 'split') {
-            return new SplitTask(auth, params);
+            return new SplitTask(auth, xhr, params);
         }
         else if (taskType === 'compress') {
-            return new CompressTask(auth, params);
+            return new CompressTask(auth, xhr, params);
         }
         else if (taskType === 'extract') {
-            return new ExtractTask(auth, params);
+            return new ExtractTask(auth, xhr, params);
         }
         else if (taskType === 'htmlpdf') {
-            return new HtmlPdfTask(auth, params);
+            return new HtmlPdfTask(auth, xhr, params);
         }
         else if (taskType === 'imagepdf') {
-            return new ImagePdfTask(auth, params);
+            return new ImagePdfTask(auth, xhr, params);
         }
         else if (taskType === 'officepdf') {
-            return new OfficePdfTask(auth, params);
+            return new OfficePdfTask(auth, xhr, params);
         }
         else if (taskType === 'pagenumber') {
-            return new PageNumberTask(auth, params);
+            return new PageNumberTask(auth, xhr, params);
         }
         else if (taskType === 'pdfa') {
-            return new PdfaTask(auth, params);
+            return new PdfaTask(auth, xhr, params);
         }
         else if (taskType === 'pdfjpg') {
-            return new PdfJpgTask(auth, params);
+            return new PdfJpgTask(auth, xhr, params);
         }
         else if (taskType === 'protect') {
             // For protect, para property 'password' is required.
             const { password } = params as ProtectProcessParams;
             if (!password) throw new RequiredParamError('\'password\' property is required');
 
-            return new ProtectTask(auth , params);
+            return new ProtectTask(auth , xhr, params);
         }
         else if (taskType === 'repair') {
-            return new RepairTask(auth, params);
+            return new RepairTask(auth, xhr, params);
         }
         else if (taskType === 'rotate') {
-            return new RotateTask(auth, params);
+            return new RotateTask(auth, xhr, params);
         }
         else if (taskType === 'unlock') {
-            return new UnlockTask(auth, params);
+            return new UnlockTask(auth, xhr, params);
         }
         else if (taskType === 'validatepdfa') {
-            return new ValidatePdfaTask(auth, params);
+            return new ValidatePdfaTask(auth, xhr, params);
         }
         else if (taskType === 'watermark') {
-            return new WatermarkTask(auth, params);
+            return new WatermarkTask(auth, xhr, params);
         }
 
         // Don't return and throw an error.

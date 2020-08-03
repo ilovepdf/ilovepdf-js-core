@@ -2,6 +2,7 @@ import Task, { ProcessParams } from "./Task";
 import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
+import XHRInterface from "../utils/XHRInterface";
 
 interface PageNumberProcessParams extends ProcessParams {
     facing_pages?: boolean;
@@ -22,8 +23,8 @@ interface PageNumberProcessParams extends ProcessParams {
 export default class PageNumberTask extends Task {
     public type: ILovePDFTool;
 
-    constructor(auth: Auth, params: TaskParams = {}) {
-        super(auth, params);
+    constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {
+        super(auth, xhr, params);
 
         this.type = 'pagenumber';
     }
