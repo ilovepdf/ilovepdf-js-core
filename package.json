@@ -1,6 +1,7 @@
 {
   "name": "@ilovepdf/ilovepdf-nodejs",
   "version": "0.1.0",
+  "main": "dist/index.js",
   "private": true,
   "scripts": {
     "build": "tsc",
