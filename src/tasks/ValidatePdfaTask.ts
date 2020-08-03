@@ -1,6 +1,7 @@
 import Task, { ProcessParams } from "./Task";
 import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
+import Auth from "../auth/Auth";
 
 interface ValidatePdfaProcessParams extends ProcessParams {
     conformance?: 'pdfa-1b' | 'pdfa-1a' | 'pdfa-2b' | 'pdfa-2u' | 'pdfa-2a' | 'pdfa-3b' | 'pdfa-3u' | 'pdfa-3a';
@@ -9,8 +10,8 @@ interface ValidatePdfaProcessParams extends ProcessParams {
 export default class ValidatePdfaTask extends Task {
     public type: ILovePDFTool;
 
-    constructor(publicKey: string, secretKey: string, params: TaskParams = {}) {
-        super(publicKey, secretKey, params);
+    constructor(auth: Auth, params: TaskParams = {}) {
+        super(auth, params);
 
         this.type = 'validatepdfa';
     }

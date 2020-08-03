@@ -1,6 +1,7 @@
 import Task, { ProcessParams } from "./Task";
 import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
+import Auth from "../auth/Auth";
 
 interface SplitProcessParams extends ProcessParams {
     split_mode?: 'ranges' | 'fixed_range' | 'remove_pages';
@@ -13,8 +14,8 @@ interface SplitProcessParams extends ProcessParams {
 export default class SplitTask extends Task {
     public type: ILovePDFTool;
 
-    constructor(publicKey: string, secretKey: string, params: TaskParams = {}) {
-        super(publicKey, secretKey, params);
+    constructor(auth: Auth, params: TaskParams = {}) {
+        super(auth, params);
 
         this.type = 'split';
     }

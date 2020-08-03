@@ -1,6 +1,7 @@
 import Task, { ProcessParams } from "./Task";
 import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
+import Auth from "../auth/Auth";
 
 interface PdfJpgProcessParams extends ProcessParams {
     pdfjpg_mode?: 'pages' | 'extract';
@@ -9,8 +10,8 @@ interface PdfJpgProcessParams extends ProcessParams {
 export default class PdfJpgTask extends Task {
     public type: ILovePDFTool;
 
-    constructor(publicKey: string, secretKey: string, params: TaskParams = {}) {
-        super(publicKey, secretKey, params);
+    constructor(auth: Auth, params: TaskParams = {}) {
+        super(auth, params);
 
         this.type = 'pdfjpg';
     }

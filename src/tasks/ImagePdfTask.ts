@@ -1,6 +1,7 @@
 import Task, { ProcessParams } from "./Task";
 import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
+import Auth from "../auth/Auth";
 
 interface ImagePdfProcessParams extends ProcessParams {
     orientation?: 'portrait' | 'landscape';
@@ -12,8 +13,8 @@ interface ImagePdfProcessParams extends ProcessParams {
 export default class ImagePdfTask extends Task {
     public type: ILovePDFTool;
 
-    constructor(publicKey: string, secretKey: string, params: TaskParams = {}) {
-        super(publicKey, secretKey, params);
+    constructor(auth: Auth, params: TaskParams = {}) {
+        super(auth, params);
 
         this.type = 'imagepdf';
     }

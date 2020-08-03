@@ -1,6 +1,9 @@
 {
+  "name": "@ilovepdf/ilovepdf-nodejs",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build": "tsc",
     "wp": "webpack",
     "serve": "http-server build"
   },

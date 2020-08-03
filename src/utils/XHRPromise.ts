@@ -1,5 +1,3 @@
-import ServerError from "../errors/ServerError";
-
 type Options = {
     headers?: Array< [ string, string ] >;
     transformResponse?: (response: any) => any;
@@ -58,8 +56,7 @@ export default class XHRPromise {
             xhr.send(data);
         })
         .catch(error => {
-            const { status, statusText } = error;
-            throw new ServerError(`${ status } - ${ statusText }`);
+            throw error;
         });
     }
 
