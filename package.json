@@ -7,18 +7,10 @@
   ],
   "private": true,
   "scripts": {
-    "build": "tsc",
-    "wp": "webpack",
-    "serve": "http-server build"
+    "build": "tsc"
   },
-  "dependencies": {
-    "http-server": "^0.12.1",
-    "ts-loader": "^7.0.0",
-    "typescript": "^3.8.3",
-    "webpack-cli": "^3.3.11"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "webpack": "^4.43.0",
-    "copy-webpack-plugin": "^5.1.1"
+    "typescript": "^3.8.3"
   }
 }
