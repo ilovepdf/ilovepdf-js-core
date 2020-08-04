@@ -14,15 +14,15 @@ export interface TaskI {
     /**
      * Starts task retrieving the assigned server and task id.
      */
-    start: () => Promise<Task>;
+    start: () => Promise<TaskI>;
     /**
      * Uploads a file to task.
      */
-    upload: (file: string) => Promise<Task>;
+    upload: (file: string) => Promise<TaskI>;
     /**
      * Process uploaded files.
      */
-    process: (params?: ProcessParams) => Promise<Task>;
+    process: (params?: ProcessParams) => Promise<TaskI>;
     /**
      * Downloads processed files.
      */
@@ -30,12 +30,12 @@ export interface TaskI {
     /**
      * Deletes this task.
      */
-    delete: () => Promise<Task>;
+    delete: () => Promise<TaskI>;
     /**
      * Connects a new task to execute it on the files resulting
      * from the previous tool.
      */
-    connect: (nextTool: ILovePDFTool) => Promise<Task>;
+    connect: (nextTool: ILovePDFTool) => Promise<TaskI>;
 }
 
 export type TaskParams = {
