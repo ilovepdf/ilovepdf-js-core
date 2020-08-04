@@ -5,6 +5,8 @@ import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
 
 interface PdfJpgProcessParams extends ProcessParams {
+    // If 'pages' is chosen, converts every PDF page to a JPG image.
+    // If 'extract' is chosen, extract all PDFs embedded images to separates JPG images.
     pdfjpg_mode?: 'pages' | 'extract';
 }
 

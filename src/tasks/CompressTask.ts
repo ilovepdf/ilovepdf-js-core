@@ -5,6 +5,7 @@ import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
 
 interface CompressProcessParams extends ProcessParams {
+    // Sets the compression level.
     compression_level?: 'low' | 'recommended' | 'extreme';
 }
 

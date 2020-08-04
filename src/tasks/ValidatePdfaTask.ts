@@ -5,6 +5,7 @@ import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
 
 interface ValidatePdfaProcessParams extends ProcessParams {
+    // Sets the PDF/A conformance level.
     conformance?: 'pdfa-1b' | 'pdfa-1a' | 'pdfa-2b' | 'pdfa-2u' | 'pdfa-2a' | 'pdfa-3b' | 'pdfa-3u' | 'pdfa-3a';
 }
 

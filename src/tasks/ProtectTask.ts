@@ -5,6 +5,7 @@ import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
 
 export interface ProtectProcessParams extends ProcessParams {
+    // Password to encrypt the PDF file.
     password: string;
 }
 

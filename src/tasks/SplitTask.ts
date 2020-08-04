@@ -5,10 +5,16 @@ import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
 
 interface SplitProcessParams extends ProcessParams {
+    // Sets how to split the document.
     split_mode?: 'ranges' | 'fixed_range' | 'remove_pages';
+    // Page ranges to split the files. Every range will be saved
+    // as different PDF files.
     ranges?: string;
+    // Split the PDF file in chunks by every defined number.
     fixed_range?: number;
+    // Pages to remove from PDF.
     remove_pages?: string;
+    // Merges all ranges after being split.
     merge_after?: boolean;
 }
 

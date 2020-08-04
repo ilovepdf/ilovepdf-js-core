@@ -8,6 +8,7 @@ interface ImagePdfProcessParams extends ProcessParams {
     orientation?: 'portrait' | 'landscape';
     margin?: number;
     pagesize?: 'fit' | 'A4' | 'letter';
+    // Serve or not all converted images in one PDF.
     merge_after?: boolean;
 }
 
