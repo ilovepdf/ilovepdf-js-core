@@ -13,27 +13,33 @@ import XHRInterface from '../utils/XHRInterface';
 export interface TaskI {
     /**
      * Starts task retrieving the assigned server and task id.
+     * @returns Itself.
      */
     start: () => Promise<TaskI>;
     /**
      * Uploads a file to task.
+     * @returns Itself.
      */
     upload: (file: string) => Promise<TaskI>;
     /**
      * Process uploaded files.
+     * @returns Itself.
      */
     process: (params?: ProcessParams) => Promise<TaskI>;
     /**
      * Downloads processed files.
+     * @returns Result of the process.
      */
     download: () => Promise<DownloadResponse>;
     /**
      * Deletes this task.
+     * @returns Itself.
      */
     delete: () => Promise<TaskI>;
     /**
      * Connects a new task to execute it on the files resulting
      * from the previous tool.
+     * @returns The new connected task.
      */
     connect: (nextTool: ILovePDFTool) => Promise<TaskI>;
 }
