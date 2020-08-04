@@ -1,22 +1,26 @@
-iLovePDF Api - NodeJS Library
+iLovePDF Api - Core Library
 --------------------------
-<!-- Build statuses -->
-<!-- [![Build Status](https://travis-ci.org/ilovepdf/ilovepdf-php.svg?branch=master)](https://travis-ci.org/ilovepdf/ilovepdf-php)
-[![Latest Stable Version](https://poser.pugx.org/ilovepdf/ilovepdf-php/version)](https://packagist.org/packages/ilovepdf/ilovepdf-php)
-[![Total Downloads](https://poser.pugx.org/ilovepdf/ilovepdf-php/downloads.svg)](https://packagist.org/packages/ilovepdf/ilovepdf-php)
-[![License](https://poser.pugx.org/ilovepdf/ilovepdf-php/license)](https://packagist.org/packages/ilovepdf/ilovepdf-php) -->
 
-NodeJS library for [iLovePDF Api](https://developer.ilovepdf.com)
-
-You can sign up for a iLovePDF account at https://developer.ilovepdf.com .
+Core library to serve a set of classes and functions in order to create new API libraries based in JavaScript or TypeScript. Some examples are @ilovepdf/ilovepdf-js and @ilovepdf/ilovepdf-nodejs.
 
 Develop and automate PDF processing tasks like Compress PDF, Merge PDF, Split PDF, convert Office to PDF, PDF to JPG, Images to PDF, add Page Numbers, Rotate PDF, Unlock PDF, stamp a Watermark and Repair PDF. Each one with several settings to get your desired results.
 
 ## Requirements
 
+Requirements to use this library are:
+
+1. NPM - Package built with version @6.14.5 .
+2. NodeJS - Package built with version @12.18.2 .
+
+You cand download them [here](https://nodejs.org/en).
+
 ## Install
 
-## Getting Started
+You can install the library via [NPM](https://www.npmjs.com). Run the following command:
+
+```bash
+npm install @ilovepdf/ilovepdf-corejs
+```
 
 ## Documentation
 
