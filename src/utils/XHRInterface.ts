@@ -1,4 +1,4 @@
-type Options = {
+export type Options = {
     headers?: Array< [ string, string ] >;
     transformResponse?: (response: any) => any;
 };
