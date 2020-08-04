@@ -2,7 +2,7 @@ import globals from '../constants/globals.json';
 import AuthError from "../errors/AuthError";
 import Auth from "./Auth";
 import XHRInterface from "../utils/XHRInterface";
-import JWTAlgorithms, { decode } from 'jsonwebtoken';
+import JWTAlgorithms from 'jsonwebtoken';
 
 export default class JWT implements Auth {
     private xhr: XHRInterface;
@@ -51,7 +51,8 @@ export default class JWT implements Auth {
             const decoded = JWTAlgorithms.decode(token) as { exp: string };
             const { exp } = decoded;
 
-            const timeNow = Date.now();
+            // Get epoch in seconds.
+            const timeNow = Date.now() / 1000;
 
             // If it is an expired token, reset token cache.
             const isExpired = timeNow > Number(exp);
@@ -60,7 +61,7 @@ export default class JWT implements Auth {
 
     }
 
-    private async getTokenFromServer() {
+    private async getTokenFromServer(): Promise<string> {
         return this.xhr.post<AuthResponse>(`${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/auth`,
         {
             public_key: this.publicKey
@@ -83,10 +84,10 @@ export default class JWT implements Auth {
         });
     }
 
-    private async getTokenLocally() {
+    private async getTokenLocally(): Promise<string> {
         const payload = {
             jti: this.publicKey,
-            iss: 'api.ilovepdf.com'
+            iss: globals.API_URL
         };
 
         // When execution comes here, this var always will have a value.
