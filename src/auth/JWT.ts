@@ -6,11 +6,12 @@ import JWTAlgorithms, { decode } from 'jsonwebtoken';
 
 export default class JWT implements Auth {
     private xhr: XHRInterface;
-    private publicKey: string;
-    private secretKey?: string;
     private token?: string;
 
-    constructor(xhr: XHRInterface, publicKey: string, secretKey?: string) {
+    public readonly publicKey: string;
+    public readonly secretKey: string;
+
+    constructor(xhr: XHRInterface, publicKey: string, secretKey: string = '') {
         this.xhr = xhr;
         this.publicKey = publicKey;
         this.secretKey = secretKey;
