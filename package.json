@@ -9,7 +9,10 @@
   "scripts": {
     "build": "tsc"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@types/jsonwebtoken": "^8.5.0",
+    "jsonwebtoken": "^8.5.1"
+  },
   "devDependencies": {
     "typescript": "^3.8.3"
   }
