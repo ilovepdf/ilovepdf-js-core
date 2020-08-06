@@ -12,9 +12,12 @@ export interface ProtectProcessParams extends ProcessParams {
 export default class ProtectTask extends Task {
     public type: ILovePDFTool;
 
-    constructor(auth: Auth, xhr: XHRInterface , params: TaskParams) {
+    private password: string;
+
+    constructor(auth: Auth, xhr: XHRInterface, password: string, params: TaskParams) {
         super(auth, xhr, params);
 
+        this.password = password
         this.type = 'protect';
     }
 
@@ -23,7 +26,9 @@ export default class ProtectTask extends Task {
      * @override
      * @param params - ProcessParams object with extra attrs for this service.
      */
-    process(params: ProtectProcessParams) {
+    process(params: ProcessParams = {}) {
+        // Inject password.
+        (params as ProtectProcessParams).password = this.password;
         return super.process(params);
     }
 

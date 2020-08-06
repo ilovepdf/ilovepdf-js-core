@@ -9,6 +9,9 @@ import ILovePDFTool from '../types/ILovePDFTool';
 import TaskFactory from './TaskFactory';
 import Auth from '../auth/Auth';
 import XHRInterface from '../utils/XHRInterface';
+import BaseFile from './BaseFile';
+import PathError from '../errors/PathError';
+import FileNotExistsError from '../errors/FileNotExistsError';
 
 export interface TaskI {
     /**
@@ -17,12 +20,22 @@ export interface TaskI {
      */
     start: () => Promise<TaskI>;
     /**
-     * Uploads a file to task.
+     * Adds a file to task.
      * @returns Itself.
      */
-    upload: (file: string) => Promise<TaskI>;
+    addFile: (file: BaseFile | string) => Promise<TaskI>;
+    /**
+     * Deletes a file previously created.
+     * @param file - File to remove.
+     */
+    deleteFile: (file: BaseFile) => Promise<TaskI>;
+    /**
+     * @returns An array with all the uploaded files.
+     */
+    getFiles: () => Array<BaseFile>;
     /**
      * Process uploaded files.
+     * @param params - Parameters for the process.
      * @returns Itself.
      */
     process: (params?: ProcessParams) => Promise<TaskI>;
@@ -47,7 +60,7 @@ export interface TaskI {
 export type TaskParams = {
     id?: string;
     server?: string;
-    files?: Array<File>
+    files?: Array<BaseFile>
 };
 
 export default abstract class Task implements TaskI {
@@ -55,7 +68,7 @@ export default abstract class Task implements TaskI {
 
     private id: string | undefined;
     private server: string | undefined;
-    private files: Array<File>;
+    private files: Array<BaseFile>;
     private auth: Auth;
     private xhr: XHRInterface;
 
@@ -93,6 +106,7 @@ export default abstract class Task implements TaskI {
 
         return this.xhr.get<StartGetResponse>(`${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/start/${ this.type }`, {
             headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
                 [ 'Authorization', `Bearer ${ token }` ]
             ],
             transformResponse: res => { return JSON.parse(res) }
@@ -114,16 +128,66 @@ export default abstract class Task implements TaskI {
         });
     }
 
-    // Be careful. Docs don't say what's a file.
-    async upload(file: string) {
+    public async addFile(file: BaseFile | string) {
+        if (file instanceof BaseFile) {
+            return this.uploadFromFile(file);
+        }
+
+        return this.uploadFromUrl(file as string);
+    }
+
+    private async uploadFromUrl(fileUrl: string) {
         const token = await this.auth.getToken();
 
         return this.xhr.post<UploadPostResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload`,
+            JSON.stringify(
+                {
+                    task: this.id,
+                    cloud_file: fileUrl
+                }
+            ),
             {
-                task: this.id,
-                cloud_file: file
-            },
+                headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                    [ 'Authorization', `Bearer ${ token }` ]
+                ],
+                transformResponse: res => { return JSON.parse(res) }
+            }
+        )
+        .then((data) => {
+            const { server_filename } = data;
+            if (thereIsUndefined([ server_filename ])) throw new UpdateError('File cannot be uploaded');
+
+            const file = new BaseFile(this.id!, server_filename, this.getBasename(fileUrl));
+            this.files.push(file);
+
+            return this;
+        })
+        .catch(e => {
+            throw e;
+        });
+    }
+
+    private getBasename(path: string): string {
+        const firstIndex = path.lastIndexOf('/') + 1;
+
+        if (firstIndex === -1) throw new PathError('Path is malformed');
+
+        const basename = path.substring(firstIndex);
+
+        return basename;
+    }
+
+    private async uploadFromFile(file: BaseFile) {
+        const token = await this.auth.getToken();
+
+        // Populate file with control data.
+        file.taskId = this.id!;
+
+        return this.xhr.post<UploadPostResponse>(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload`,
+            file,
             {
                 headers: [
                     [ 'Authorization', `Bearer ${ token }` ]
@@ -135,7 +199,10 @@ export default abstract class Task implements TaskI {
             const { server_filename } = data;
             if (thereIsUndefined([ server_filename ])) throw new UpdateError('File cannot be uploaded');
 
-            this.files.push({ server_filename, filename: file });
+            // Populate file with control data.
+            file.serverFilename = server_filename;
+            // Insert inside the array of included files.
+            this.files.push(file);
 
             return this;
         })
@@ -144,20 +211,69 @@ export default abstract class Task implements TaskI {
         });
     }
 
-    async process(params: ProcessParams = {}) {
+    public async deleteFile(file: BaseFile): Promise<TaskI> {
         const token = await this.auth.getToken();
+
+        const index = this.files.indexOf(file);
+        if (index === -1) throw new FileNotExistsError();
+
+        const fileToRemove = this.files[index];
+        return this.xhr.post(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload/delete`,
+            JSON.stringify(
+                {
+                    task: this.id,
+                    server_filename: fileToRemove.serverFilename
+                }
+            ),
+            {
+                headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                    [ 'Authorization', `Bearer ${ token }` ]
+                ],
+                transformResponse: res => { return JSON.parse(res) }
+            }
+        )
+        .then(() => {
+            // Remove file locally.
+            // Be careful with parallelism problems, it is needed a
+            // new search to remove the file.
+            const index = this.files.indexOf(file);
+            this.files.splice(index, 1);
+
+            return this;
+        });
+    }
+
+    public getFiles(): Array<BaseFile> {
+        return this.files;
+    }
+
+    public async process(params: ProcessParams = {}) {
+        const token = await this.auth.getToken();
+
+        // Convert to files request format.
+        const files: ProcessFilesParameter = this.files.map((file: BaseFile) => {
+            return {
+                server_filename: file.serverFilename,
+                filename: file.filename
+            };
+        });
 
         return this.xhr.post<ProcessPostResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/process`,
-            {
-                task: this.id,
-                tool: this.type,
-                files: this.files,
-                // Include optional params.
-                ...params
-            },
+            JSON.stringify(
+                {
+                    task: this.id,
+                    tool: this.type,
+                    files,
+                    // Include optional params.
+                    ...params
+                }
+            ),
             {
                 headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
                     [ 'Authorization', `Bearer ${ token }` ]
                 ],
                 transformResponse: res => { return JSON.parse(res) }
@@ -181,35 +297,40 @@ export default abstract class Task implements TaskI {
         });
     }
 
-    async download() {
+    public async download() {
         const token = await this.auth.getToken();
 
         return this.xhr.get<DownloadResponse>(`${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/download/${ this.id }`, {
             headers: [
                 [ 'Authorization', `Bearer ${ token }` ]
-            ]
+            ],
+            binary: true
         })
-        .then((base64) => {
+        .then((data) => {
             // Be careful with this negation. It depends on server response:
-            // Error if base64 === undefined || base64 === '' || base64 === null || base64 === false.
-            if (!base64) throw new DownloadError('File cannot be downloaded');
+            // Error if data === undefined || data === '' || data === null || data === false.
+            if (!data) throw new DownloadError('File cannot be downloaded');
 
-            return base64;
+            return data;
         })
         .catch(e => {
             throw e;
         });
     }
 
-    async delete() {
+    public async delete() {
         const token = await this.auth.getToken();
 
-        return this.xhr.delete<DeleteResponse>(`${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/task/${ this.id }`, {
-            headers: [
-                [ 'Authorization', `Bearer ${ token }` ]
-            ],
-            transformResponse: res => { return JSON.parse(res) }
-        })
+        return this.xhr.delete<DeleteResponse>(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/task/${ this.id }`,
+            {
+                headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                    [ 'Authorization', `Bearer ${ token }` ]
+                ],
+                transformResponse: res => { return JSON.parse(res) }
+            }
+        )
         .then((data) => {
             const { download_filename, file_number, filesize,
                     output_extensions, output_filesize,
@@ -231,17 +352,20 @@ export default abstract class Task implements TaskI {
         });
     }
 
-    async connect(nextTool: ILovePDFTool) {
+    public async connect(nextTool: ILovePDFTool) {
         const token = await this.auth.getToken();
 
         return this.xhr.post<ConnectResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/task/next`,
-            {
-                task: this.id,
-                tool: nextTool
-            },
+            JSON.stringify(
+                {
+                    task: this.id,
+                    tool: nextTool
+                }
+            ),
             {
                 headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
                     [ 'Authorization', `Bearer ${ token }` ]
                 ],
                 transformResponse: res => { return JSON.parse(res) }
@@ -255,10 +379,7 @@ export default abstract class Task implements TaskI {
             }
 
             const newTaskFiles = Object.entries(files).map(([ server_filename, filename ]) => {
-                return {
-                    server_filename,
-                    filename
-                };
+                return new BaseFile(this.id!, server_filename, filename);
             });
 
             const taskFactory = new TaskFactory();
@@ -326,6 +447,13 @@ type ConnectResponse = {
 
 // -----
 
+type ProcessFilesParameter = Array< {
+    server_filename: string;
+    filename: string;
+    rotate?: number;
+    password?: string;
+} >;
+
 /**
  * Be careful: 'metas' property uses PascalCase due to PDF specification.
  * To know more, visit the next link:
@@ -383,11 +511,6 @@ export interface ProcessParams {
     custom_string?: string;
     // Callback url.
     webhook?: string;
-};
-
-type File = {
-    filename: string;
-    server_filename: string;
 };
 
 /**

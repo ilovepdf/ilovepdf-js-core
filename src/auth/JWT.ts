@@ -63,10 +63,15 @@ export default class JWT implements Auth {
 
     private async getTokenFromServer(): Promise<string> {
         return this.xhr.post<AuthResponse>(`${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/auth`,
+        JSON.stringify(
+            {
+                public_key: this.publicKey
+            }
+        ),
         {
-            public_key: this.publicKey
-        },
-        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ]
+            ],
             transformResponse: res => { return JSON.parse(res) }
         }
         )

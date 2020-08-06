@@ -1,5 +1,5 @@
 import ILovePDFTool from "../types/ILovePDFTool";
-import Task, { TaskParams } from "./Task";
+import { TaskParams, TaskI } from "./Task";
 import MergeTask from "./MergeTask";
 import TaskTypeNotExistsError from "../errors/TaskTypeNotExistsError";
 import SplitTask from "./SplitTask";
@@ -22,7 +22,7 @@ import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
 
 export interface TaskFactoryI {
-    newTask: (taskType: ILovePDFTool, auth: Auth, xhr: XHRInterface, params?: TaskParams) => Task;
+    newTask: (taskType: ILovePDFTool, auth: Auth, xhr: XHRInterface, params?: TaskParams) => TaskI;
 }
 
 export default class TaskFactory implements TaskFactoryI {
@@ -32,7 +32,7 @@ export default class TaskFactory implements TaskFactoryI {
      * @param taskType - Task type that will use a specific ILovePDF tool.
      * @param params - Parameters to customize the process.
      */
-    newTask(taskType: ILovePDFTool, auth: Auth, xhr: XHRInterface, params: TaskParams = {}): Task {
+    newTask(taskType: ILovePDFTool, auth: Auth, xhr: XHRInterface, params: TaskParams = {}): TaskI {
         if (taskType === 'merge') {
             return new MergeTask(auth, xhr, params);
         }
@@ -68,7 +68,7 @@ export default class TaskFactory implements TaskFactoryI {
             const { password } = params as ProtectProcessParams;
             if (!password) throw new RequiredParamError('\'password\' property is required');
 
-            return new ProtectTask(auth , xhr, params);
+            return new ProtectTask(auth , xhr, password, params);
         }
         else if (taskType === 'repair') {
             return new RepairTask(auth, xhr, params);
