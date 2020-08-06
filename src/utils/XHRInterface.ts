@@ -1,6 +1,7 @@
 export type Options = {
     headers?: Array< [ string, string ] >;
     transformResponse?: (response: any) => any;
+    binary?: boolean;
 };
 
 export default interface XHRInterface {
