@@ -10,6 +10,7 @@ export default interface TaskI {
     start: () => Promise<TaskI>;
     /**
      * Adds a file to task.
+     * @param file - File or public URL.
      * @returns Itself.
      */
     addFile: (file: BaseFile | string) => Promise<TaskI>;
