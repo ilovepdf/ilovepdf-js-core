@@ -1,8 +1,9 @@
-import Task, { ProcessParams } from "./Task";
+import Task from "./Task";
 import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
+import { ProcessParams } from "./TaskI";
 
 interface PageNumberProcessParams extends ProcessParams {
     // PDF is in facing page or not.

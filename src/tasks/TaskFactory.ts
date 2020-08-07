@@ -1,5 +1,5 @@
 import ILovePDFTool from "../types/ILovePDFTool";
-import { TaskParams, TaskI } from "./Task";
+import { TaskParams } from "./Task";
 import MergeTask from "./MergeTask";
 import TaskTypeNotExistsError from "../errors/TaskTypeNotExistsError";
 import SplitTask from "./SplitTask";
@@ -20,6 +20,7 @@ import HtmlPdfTask from "./HtmlPdfTask";
 import ExtractTask from "./ExtractTask";
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
+import TaskI from "./TaskI";
 
 export interface TaskFactoryI {
     newTask: (taskType: ILovePDFTool, auth: Auth, xhr: XHRInterface, params?: TaskParams) => TaskI;
