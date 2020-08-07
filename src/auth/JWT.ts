@@ -5,6 +5,10 @@ import XHRInterface from "../utils/XHRInterface";
 import JWTAlgorithms from 'jsonwebtoken';
 
 export default class JWT implements Auth {
+    // There are times between responses that servers demands
+    // a little delay or it does not accept
+    private static TIME_DELAY = 5;
+
     private xhr: XHRInterface;
     private token?: string;
 
@@ -90,9 +94,15 @@ export default class JWT implements Auth {
     }
 
     private async getTokenLocally(): Promise<string> {
+        const timeNow = Date.now() / 1000;
+
         const payload = {
             jti: this.publicKey,
-            iss: globals.API_URL
+            iss: globals.API_URL,
+            // There is an error in server that does not accept
+            // recent generated tokens. Due to this, iat time is
+            // modified with the current time less a time delay.
+            iat: timeNow - JWT.TIME_DELAY
         };
 
         // When execution comes here, this var always will have a value.
