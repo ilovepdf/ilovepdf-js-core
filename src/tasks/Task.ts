@@ -104,7 +104,7 @@ export default abstract class Task implements TaskI {
     public async start() {
         const token = await this.auth.getToken();
 
-        return this.xhr.get<StartGetResponse>(`${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/start/${ this.type }`, {
+        return this.xhr.get<StartResponse>(`${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/start/${ this.type }`, {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
                 [ 'Authorization', `Bearer ${ token }` ]
@@ -139,7 +139,7 @@ export default abstract class Task implements TaskI {
     private async uploadFromUrl(fileUrl: string) {
         const token = await this.auth.getToken();
 
-        return this.xhr.post<UploadPostResponse>(
+        return this.xhr.post<UploadResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload`,
             JSON.stringify(
                 {
@@ -185,7 +185,7 @@ export default abstract class Task implements TaskI {
         // Populate file with control data.
         file.taskId = this.id!;
 
-        return this.xhr.post<UploadPostResponse>(
+        return this.xhr.post<UploadResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload`,
             file,
             {
@@ -260,7 +260,7 @@ export default abstract class Task implements TaskI {
             };
         });
 
-        return this.xhr.post<ProcessPostResponse>(
+        return this.xhr.post<ProcessResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/process`,
             JSON.stringify(
                 {
@@ -397,16 +397,16 @@ export default abstract class Task implements TaskI {
 
 // ILovePDF type responses from API.
 
-type StartGetResponse = {
+type StartResponse = {
     server?: string;
     task?: string;
 };
 
-type UploadPostResponse = {
+type UploadResponse = {
     server_filename: string;
 };
 
-type ProcessPostResponse = {
+type ProcessResponse = {
     download_filename: string;
     filesize: number;
     output_filesize: number;
