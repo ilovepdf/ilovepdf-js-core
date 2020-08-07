@@ -104,7 +104,8 @@ export default abstract class Task implements TaskI {
     public async start() {
         const token = await this.auth.getToken();
 
-        return this.xhr.get<StartResponse>(`${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/start/${ this.type }`, {
+        return this.xhr.get<StartResponse>(
+            `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/start/${ this.type }`, {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
                 [ 'Authorization', `Bearer ${ token }` ]
@@ -256,7 +257,9 @@ export default abstract class Task implements TaskI {
         const files: ProcessFilesParameter = this.files.map((file: BaseFile) => {
             return {
                 server_filename: file.serverFilename,
-                filename: file.filename
+                filename: file.filename,
+                rotate: file.params.rotate,
+                password: file.params.password
             };
         });
 
@@ -300,7 +303,8 @@ export default abstract class Task implements TaskI {
     public async download() {
         const token = await this.auth.getToken();
 
-        return this.xhr.get<DownloadResponse>(`${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/download/${ this.id }`, {
+        return this.xhr.get<DownloadResponse>(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/download/${ this.id }`, {
             headers: [
                 [ 'Authorization', `Bearer ${ token }` ]
             ],
