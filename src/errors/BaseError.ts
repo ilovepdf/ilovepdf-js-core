@@ -4,12 +4,13 @@
  * all the other errors inherits from this class.
  */
 export default class BaseError extends Error {
+    public __proto__: Error;
 
     constructor(message: string = '') {
         super(message);
         this.name = 'BaseError';
         // Set the prototype explicitly.
-        Object.setPrototypeOf(this, BaseError.prototype);
+        this.__proto__ = new.target.prototype;
     }
 
 }
