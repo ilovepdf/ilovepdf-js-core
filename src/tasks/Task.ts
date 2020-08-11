@@ -19,6 +19,7 @@ import ProcessResponse from '../types/responses/ProcessResponse';
 import DeleteResponse from '../types/responses/DeleteResponse';
 import ConnectResponse from '../types/responses/ConnectResponse';
 import TaskI, { ProcessParams } from './TaskI';
+import FileAlreadyExistsError from '../errors/FileAlreadyExistsError';
 
 export type TaskParams = {
     id?: string;
@@ -144,6 +145,10 @@ export default abstract class Task implements TaskI {
     }
 
     private async uploadFromFile(file: BaseFile) {
+        if (this.files.indexOf(file) !== -1) {
+            throw new FileAlreadyExistsError();
+        }
+
         const token = await this.auth.getToken();
 
         // Populate file with control data.
@@ -182,14 +187,8 @@ export default abstract class Task implements TaskI {
         if (index === -1) throw new FileNotExistsError();
 
         const fileToRemove = this.files[index];
-        return this.xhr.post(
-            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload/delete`,
-            JSON.stringify(
-                {
-                    task: this.id,
-                    server_filename: fileToRemove.serverFilename
-                }
-            ),
+        return this.xhr.delete(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload/${ this.id }/${ fileToRemove.serverFilename }`,
             {
                 headers: [
                     [ 'Content-Type', 'application/json;charset=UTF-8' ],
