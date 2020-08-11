@@ -25,7 +25,3 @@ npm install @ilovepdf/ilovepdf-corejs
 ## Documentation
 
 Please see https://developer.ilovepdf.com/docs for up-to-date documentation.
-
-<!-- TALK WITH MARCO OR ALEIX -->
-<!-- ## License
-The code is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT). -->
