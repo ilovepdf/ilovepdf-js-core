@@ -1,3 +1,6 @@
+import FileStatus from "./FileStatus";
+import TaskStatus from "./TaskStatus";
+
 type ProcessResponse = {
     download_filename: string;
     filesize: number;
@@ -5,7 +8,11 @@ type ProcessResponse = {
     output_filenumber: number;
     output_extensions: Array<string>;
     timer: string;
-    status: string;
+    status: TaskStatus;
+    validations?: Array<{
+        server_filename: string;
+        status: FileStatus;
+    }>;
 };
 
 export default ProcessResponse;

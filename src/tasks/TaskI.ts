@@ -1,8 +1,18 @@
 import ILovePDFTool from "../types/ILovePDFTool";
 import DownloadResponse from "../types/responses/DownloadResponse";
 import BaseFile from "./BaseFile";
+import StartResponse from "../types/responses/StartResponse";
+import DeleteResponse from "../types/responses/DeleteResponse";
+import ConnectResponse from "../types/responses/ConnectResponse";
+import ProcessResponse from "../types/responses/ProcessResponse";
+import UploadResponse from "../types/responses/UploadResponse";
+import DeleteFileResponse from "../types/responses/DeleteFileResponse";
 
 export default interface TaskI {
+    /**
+     * Server response from each function call.
+     */
+    readonly responses: Responses;
     /**
      * Starts task retrieving the assigned server and task id.
      * @returns Itself.
@@ -46,6 +56,19 @@ export default interface TaskI {
      */
     connect: (nextTool: ILovePDFTool) => Promise<TaskI>;
 }
+
+/**
+ * Object to save server responses.
+ */
+export type Responses = {
+    start: StartResponse | null,
+    addFile: UploadResponse | null,
+    deleteFile: DeleteFileResponse | null,
+    process: ProcessResponse | null,
+    download: DownloadResponse | null,
+    delete: DeleteResponse | null,
+    connect: ConnectResponse | null
+};
 
 /**
  * Be careful: 'metas' property uses PascalCase due to PDF specification.

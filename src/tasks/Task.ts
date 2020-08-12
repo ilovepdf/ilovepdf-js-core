@@ -18,8 +18,9 @@ import UploadResponse from '../types/responses/UploadResponse';
 import ProcessResponse from '../types/responses/ProcessResponse';
 import DeleteResponse from '../types/responses/DeleteResponse';
 import ConnectResponse from '../types/responses/ConnectResponse';
-import TaskI, { ProcessParams } from './TaskI';
+import TaskI, { ProcessParams, Responses } from './TaskI';
 import FileAlreadyExistsError from '../errors/FileAlreadyExistsError';
+import DeleteFileResponse from '../types/responses/DeleteFileResponse';
 
 export type TaskParams = {
     id?: string;
@@ -29,6 +30,7 @@ export type TaskParams = {
 
 export default abstract class Task implements TaskI {
     public abstract type: ILovePDFTool;
+    public readonly responses: Responses;
 
     private id: string | undefined;
     private server: string | undefined;
@@ -63,6 +65,16 @@ export default abstract class Task implements TaskI {
             this.files = [];
         }
 
+        this.responses = {
+            start: null,
+            addFile: null,
+            deleteFile: null,
+            process: null,
+            download: null,
+            delete: null,
+            connect: null
+        }
+
     }
 
     public async start() {
@@ -85,6 +97,9 @@ export default abstract class Task implements TaskI {
 
             this.server = server;
             this.id = task;
+
+            // Keep response.
+            this.responses.start = data;
 
             return this;
         })
@@ -126,6 +141,9 @@ export default abstract class Task implements TaskI {
 
             const file = new BaseFile(this.id!, server_filename, this.getBasename(fileUrl));
             this.files.push(file);
+
+            // Keep response.
+            this.responses.addFile = data;
 
             return this;
         })
@@ -187,7 +205,7 @@ export default abstract class Task implements TaskI {
         if (index === -1) throw new FileNotExistsError();
 
         const fileToRemove = this.files[index];
-        return this.xhr.delete(
+        return this.xhr.delete<DeleteFileResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload/${ this.id }/${ fileToRemove.serverFilename }`,
             {
                 headers: [
@@ -197,12 +215,15 @@ export default abstract class Task implements TaskI {
                 transformResponse: res => { return JSON.parse(res) }
             }
         )
-        .then(() => {
+        .then((data) => {
             // Remove file locally.
             // Be careful with parallelism problems, it is needed a
             // new search to remove the file.
             const index = this.files.indexOf(file);
             this.files.splice(index, 1);
+
+            // Keep response.
+            this.responses.deleteFile = data;
 
             return this;
         });
@@ -255,6 +276,9 @@ export default abstract class Task implements TaskI {
                 throw new ProcessError('Task cannot be processed');
             }
 
+            // Keep response.
+            this.responses.process = data;
+
             return this;
         })
         .catch(e => {
@@ -276,6 +300,9 @@ export default abstract class Task implements TaskI {
             // Be careful with this negation. It depends on server response:
             // Error if data === undefined || data === '' || data === null || data === false.
             if (!data) throw new DownloadError('File cannot be downloaded');
+
+            // Keep response.
+            this.responses.download = data;
 
             return data;
         })
@@ -310,6 +337,9 @@ export default abstract class Task implements TaskI {
 
                 throw new DeleteError('Task cannot be deleted');
             }
+
+            // Keep response.
+            this.responses.delete = data;
 
             return this;
         })
@@ -347,6 +377,9 @@ export default abstract class Task implements TaskI {
             const newTaskFiles = Object.entries(files).map(([ server_filename, filename ]) => {
                 return new BaseFile(this.id!, server_filename, filename);
             });
+
+            // Keep response.
+            this.responses.connect = data;
 
             const taskFactory = new TaskFactory();
             // Create the next new task and populate its attrs with response data.
