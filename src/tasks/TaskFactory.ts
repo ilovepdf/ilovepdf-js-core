@@ -65,11 +65,7 @@ export default class TaskFactory implements TaskFactoryI {
             return new PdfJpgTask(auth, xhr, params);
         }
         else if (taskType === 'protect') {
-            // For protect, para property 'password' is required.
-            const { password } = params as ProtectProcessParams;
-            if (!password) throw new RequiredParamError('\'password\' property is required');
-
-            return new ProtectTask(auth , xhr, password, params);
+            return new ProtectTask(auth , xhr, params);
         }
         else if (taskType === 'repair') {
             return new RepairTask(auth, xhr, params);
