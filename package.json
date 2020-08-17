@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "build": "tsc",
-    "test": "jest ./src --detectOpenHandles"
+    "test": "jest ./src --detectOpenHandles -t \"ExtractTask\""
   },
   "dependencies": {
     "@types/jsonwebtoken": "^8.5.0",
