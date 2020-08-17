@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import ILovePDFFile from "../utils/ILovePDFFile";
 import path from 'path';
 import { inRange } from "../utils/math";
-import ProtectTask from "./ProtectTask";
+import UnlockTask from "./UnlockTask";
 
 // Load env vars.
 dotenv.config();
@@ -14,35 +14,35 @@ const taskFactory = new TaskFactory();
 const xhr = new XHRPromise();
 const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-describe('ProtectTask', () => {
+describe('UnlockTask', () => {
 
     it('process', () => {
-        const task = taskFactory.newTask('protect', auth, xhr) as ProtectTask;
+        const task = taskFactory.newTask('unlock', auth, xhr) as UnlockTask;
 
         return task.start()
         .then(() => {
-            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample_protected.pdf'), { password: 'test' });
             return task.addFile(file);
         })
         .then(() => {
-            return task.process({ password: 'test' });
+            return task.process();
         })
         .then(() => {
             return task.download();
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 3310, 150) ).toBeTruthy();
+            expect( inRange(data.length, 2784, 350) ).toBeTruthy();
         });
     });
 
-    it('process without a password', () => {
-        const task = taskFactory.newTask('protect', auth, xhr) as ProtectTask;
+    it('process with wrong password', () => {
+        const task = taskFactory.newTask('unlock', auth, xhr) as UnlockTask;
 
         expect(() => {
             return task.start()
             .then(() => {
-                const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+                const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample_protected.pdf'), { password: 'wrong password' });
                 return task.addFile(file);
             })
             .then(() => {

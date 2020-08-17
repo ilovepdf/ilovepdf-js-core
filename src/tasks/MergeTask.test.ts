@@ -5,7 +5,8 @@ import dotenv from 'dotenv';
 import ILovePDFFile from "../utils/ILovePDFFile";
 import path from 'path';
 import { inRange } from "../utils/math";
-import ProtectTask from "./ProtectTask";
+import fs from 'fs';
+import MergeTask from "./MergeTask";
 
 // Load env vars.
 dotenv.config();
@@ -14,10 +15,10 @@ const taskFactory = new TaskFactory();
 const xhr = new XHRPromise();
 const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-describe('ProtectTask', () => {
+describe('MergeTask', () => {
 
     it('process', () => {
-        const task = taskFactory.newTask('protect', auth, xhr) as ProtectTask;
+        const task = taskFactory.newTask('merge', auth, xhr) as MergeTask;
 
         return task.start()
         .then(() => {
@@ -25,31 +26,19 @@ describe('ProtectTask', () => {
             return task.addFile(file);
         })
         .then(() => {
-            return task.process({ password: 'test' });
+            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+            return task.addFile(file);
+        })
+        .then(() => {
+            return task.process();
         })
         .then(() => {
             return task.download();
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 3310, 150) ).toBeTruthy();
+            expect( inRange(data.length, 5173, 150) ).toBeTruthy();
         });
-    });
-
-    it('process without a password', () => {
-        const task = taskFactory.newTask('protect', auth, xhr) as ProtectTask;
-
-        expect(() => {
-            return task.start()
-            .then(() => {
-                const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
-                return task.addFile(file);
-            })
-            .then(() => {
-                return task.process();
-            });
-        })
-        .rejects.toThrow();
     });
 
 });
