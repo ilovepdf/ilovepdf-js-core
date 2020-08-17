@@ -13,6 +13,12 @@
 // const xhr = new XHRPromise();
 // const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
+describe('Pass', () => {
+    it('pass', () => {
+
+    });
+})
+
 // describe('SignTask', () => {
 
 //     it('signs', async () => {
