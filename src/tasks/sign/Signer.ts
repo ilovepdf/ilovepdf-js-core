@@ -1,4 +1,4 @@
-import { SignatureFileI } from "./SignatureFile";
+import { SignatureFileI, SignatureFileJSON } from "./SignatureFile";
 import FileAlreadyExistsError from "../../errors/FileAlreadyExistsError";
 
 export interface SignerI {
@@ -27,6 +27,8 @@ export default class Signer implements SignerI {
     public addFile(file: SignatureFileI) {
         const index = this.files.indexOf(file);
         if (index !== -1) throw new FileAlreadyExistsError();
+
+        this.files.push(file);
     }
 
     public deleteFile(file: SignatureFileI) {
@@ -35,10 +37,13 @@ export default class Signer implements SignerI {
     }
 
     public toJSON(): SignerJSON {
+        const files = this.files.map(file => file.toJSON());
+
         return {
             name: this.name,
             email: this.email,
-            ...this.params
+            ...this.params,
+            files
         };
     }
 
@@ -80,4 +85,5 @@ export type SignerJSON = {
     access_code?: string;
     // Accepted signature types.
     force_signature_type?: 'all' | 'text' | 'sign' | 'image';
+    files: Array<SignatureFileJSON>
 };

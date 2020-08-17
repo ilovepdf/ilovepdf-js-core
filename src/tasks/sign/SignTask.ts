@@ -13,6 +13,7 @@ export interface SignProcessParams {
     lock_order?: boolean;
     expiration_date?: number;
     certified?: boolean;
+    custom_int?: number;
     custom_string?: string;
     mode?: 'single' | 'multiple' | 'batch';
     uuid_visible?: boolean;
@@ -32,8 +33,12 @@ export default class SignTask extends Task {
         this.signers = [];
     }
 
-    public async process(params: SignProcessParams = {}) {
+    // FIXME:Remove default values when server is well-configured.
+    public async process(params: SignProcessParams = { mode: 'single', custom_int: null as unknown as number, custom_string: '' }) {
         const token = await this.auth.getToken();
+
+        // Convert to files request format.
+        const files = this.getFilesBodyFormat();
 
         const signers = this.signers.map(signer => (
             signer.toJSON()
@@ -44,7 +49,7 @@ export default class SignTask extends Task {
             JSON.stringify(
                 {
                     task: this.id,
-                    files: this.files,
+                    files,
                     ...this.requester,
                     signers,
                     // Include optional params.
@@ -60,12 +65,10 @@ export default class SignTask extends Task {
             }
         )
         .then((data) => {
-            console.log(data);
+            // Keep response.
+            this.responses.process = data;
 
             return this;
-        })
-        .catch(e => {
-            throw e;
         });
 
     }
@@ -73,6 +76,8 @@ export default class SignTask extends Task {
     public addSigner(signer: SignerI) {
         const index = this.signers.indexOf(signer);
         if (index !== -1) throw new SignerAlreadyExistsError();
+
+        this.signers.push(signer);
     }
 
     public deleteSigner(signer: SignerI) {
@@ -82,7 +87,5 @@ export default class SignTask extends Task {
 
 }
 
-type SignResponse = {
-
-
-};
+// FIXME: Fill this type when signature API REST is well-documented.
+type SignResponse = any;

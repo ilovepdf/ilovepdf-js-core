@@ -237,14 +237,7 @@ export default abstract class Task implements TaskI {
         const token = await this.auth.getToken();
 
         // Convert to files request format.
-        const files: ProcessFilesBody = this.files.map((file: BaseFile) => {
-            return {
-                server_filename: file.serverFilename,
-                filename: file.filename,
-                rotate: file.params.rotate,
-                password: file.params.password
-            };
-        });
+        const files = this.getFilesBodyFormat();
 
         return this.xhr.post<ProcessResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/process`,
@@ -284,6 +277,19 @@ export default abstract class Task implements TaskI {
         .catch(e => {
             throw e;
         });
+    }
+
+    protected getFilesBodyFormat(): ProcessFilesBody {
+        const files: ProcessFilesBody = this.files.map((file: BaseFile) => {
+            return {
+                server_filename: file.serverFilename,
+                filename: file.filename,
+                rotate: file.params.rotate,
+                password: file.params.password
+            };
+        });
+
+        return files;
     }
 
     public async download() {
