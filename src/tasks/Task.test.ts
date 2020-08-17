@@ -79,6 +79,7 @@ describe('Task', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 15383, 5) ).toBeTruthy();
         });
     });
@@ -110,6 +111,7 @@ describe('Task', () => {
             return connectedTask.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 17807, 5) ).toBeTruthy();
         });
     });
