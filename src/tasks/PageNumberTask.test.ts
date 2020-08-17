@@ -32,7 +32,7 @@ describe('PageNumberTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 13494, 5) ).toBeTruthy();
+            expect( inRange(data.length, 13494, 150) ).toBeTruthy();
         });
     });
 
@@ -52,7 +52,7 @@ describe('PageNumberTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 15446, 5) ).toBeTruthy();
+            expect( inRange(data.length, 15446, 150) ).toBeTruthy();
         });
     });
 

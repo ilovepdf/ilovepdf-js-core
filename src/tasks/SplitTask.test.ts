@@ -32,7 +32,7 @@ describe('SplitTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 2070, 5) ).toBeTruthy();
+            expect( inRange(data.length, 2070, 350) ).toBeTruthy();
         });
     });
 

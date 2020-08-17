@@ -32,7 +32,7 @@ describe('ProtectTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 3310, 5) ).toBeTruthy();
+            expect( inRange(data.length, 3310, 150) ).toBeTruthy();
         });
     });
 

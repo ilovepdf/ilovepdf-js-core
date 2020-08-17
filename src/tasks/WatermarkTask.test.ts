@@ -32,7 +32,7 @@ describe('WatermarkTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 14641, 5) ).toBeTruthy();
+            expect( inRange(data.length, 14641, 150) ).toBeTruthy();
         });
     });
 
@@ -52,7 +52,7 @@ describe('WatermarkTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 26097, 5) ).toBeTruthy();
+            expect( inRange(data.length, 26097, 150) ).toBeTruthy();
         });
     });
 

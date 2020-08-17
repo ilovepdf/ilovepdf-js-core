@@ -32,7 +32,7 @@ describe('PdfaTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 22510, 5) ).toBeTruthy();
+            expect( inRange(data.length, 22510, 200) ).toBeTruthy();
         });
     });
 
@@ -52,7 +52,7 @@ describe('PdfaTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 22420, 5) ).toBeTruthy();
+            expect( inRange(data.length, 22420, 200) ).toBeTruthy();
         });
     });
 
