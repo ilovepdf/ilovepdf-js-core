@@ -3,7 +3,7 @@ import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
-import { ProcessParams } from "./TaskI";
+import { ProcessParams } from "./Task";
 
 interface PdfJpgProcessParams extends ProcessParams {
     // If 'pages' is chosen, converts every PDF page to a JPG image.

@@ -6,12 +6,11 @@ import SplitTask from "./SplitTask";
 import CompressTask from "./CompressTask";
 import WatermarkTask from "./WatermarkTask";
 import ValidatePdfaTask from "./ValidatePdfaTask";
-import ProtectTask, { ProtectProcessParams } from "./ProtectTask";
+import ProtectTask from "./ProtectTask";
 import PdfJpgTask from "./PdfJpgTask";
 import PdfaTask from "./PdfaTask";
 import PageNumberTask from "./PageNumberTask";
 import ImagePdfTask from "./ImagePdfTask";
-import RequiredParamError from "../errors/RequiredParamError";
 import UnlockTask from "./UnlockTask";
 import RotateTask from "./RotateTask";
 import RepairTask from "./RepairTask";
@@ -21,6 +20,7 @@ import ExtractTask from "./ExtractTask";
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
 import TaskI from "./TaskI";
+import SignTask from "./sign/SignTask";
 
 export interface TaskFactoryI {
     newTask: (taskType: ILovePDFTool, auth: Auth, xhr: XHRInterface, params?: TaskParams) => TaskI;
@@ -81,6 +81,9 @@ export default class TaskFactory implements TaskFactoryI {
         }
         else if (taskType === 'watermark') {
             return new WatermarkTask(auth, xhr, params);
+        }
+        else if (taskType === 'sign') {
+            return new SignTask(auth, xhr, params);
         }
 
         // Don't return and throw an error.

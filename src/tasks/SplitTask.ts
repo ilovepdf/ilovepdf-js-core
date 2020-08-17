@@ -3,7 +3,7 @@ import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
-import { ProcessParams } from "./TaskI";
+import { ProcessParams } from "./Task";
 
 interface SplitProcessParams extends ProcessParams {
     // Sets how to split the document.
