@@ -1,16 +1,15 @@
 import FormData from 'form-data';
 import fs from 'fs';
-import path from 'path';
 import BaseFile, { BaseFileParams } from '../tasks/BaseFile';
 
 export default class ILovePDFFile extends BaseFile {
     private file: Buffer;
 
-    constructor(filepath: string, params?: BaseFileParams) {
-        const basename = getBasename(filepath);
+    constructor(fileAbsolutePath: string, params?: BaseFileParams) {
+        const basename = getBasename(fileAbsolutePath);
         super('', '', basename, params);
 
-        const file = fs.readFileSync(path.resolve(__dirname, filepath));
+        const file = fs.readFileSync(fileAbsolutePath);
         this.file = file;
     }
 
