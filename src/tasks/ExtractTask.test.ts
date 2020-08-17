@@ -21,7 +21,7 @@ describe('ExtractTask', () => {
 
         return task.start()
         .then(() => {
-            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample_2b.pdf'));
             return task.addFile(file);
         })
         .then(() => {
@@ -41,7 +41,7 @@ describe('ExtractTask', () => {
 
         return task.start()
         .then(() => {
-            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample_2b.pdf'));
             return task.addFile(file);
         })
         .then(() => {
@@ -53,10 +53,6 @@ describe('ExtractTask', () => {
         .then(data => {
             console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 3724, 5) ).toBeTruthy();
-        })
-        .catch(err => {
-            console.log(err.response.data.error);
-            throw err;
         });
     });
 
