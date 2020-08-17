@@ -31,6 +31,7 @@ describe('ProtectTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 3310, 5) ).toBeTruthy();
         });
     });

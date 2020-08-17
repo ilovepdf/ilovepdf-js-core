@@ -31,6 +31,7 @@ describe('PdfJpgTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 235687, 5) ).toBeTruthy();
         });
     });
@@ -50,6 +51,7 @@ describe('PdfJpgTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 68487, 5) ).toBeTruthy();
         });
     });

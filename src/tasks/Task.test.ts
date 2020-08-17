@@ -80,7 +80,7 @@ describe('Task', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 15383, 5) ).toBeTruthy();
+            expect( inRange(data.length, 15383, 200) ).toBeTruthy();
         });
     });
 
@@ -112,7 +112,7 @@ describe('Task', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 17807, 5) ).toBeTruthy();
+            expect( inRange(data.length, 17807, 200) ).toBeTruthy();
         });
     });
 

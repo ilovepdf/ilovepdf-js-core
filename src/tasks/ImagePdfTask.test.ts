@@ -31,6 +31,7 @@ describe('ImagePdfTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 3805, 5) ).toBeTruthy();
         });
     });
@@ -50,6 +51,7 @@ describe('ImagePdfTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 3700, 5) ).toBeTruthy();
         });
     });

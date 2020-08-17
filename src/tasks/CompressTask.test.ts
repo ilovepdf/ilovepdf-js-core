@@ -31,6 +31,7 @@ describe('CompressTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 1697, 5) ).toBeTruthy();
         });
     });
@@ -50,6 +51,7 @@ describe('CompressTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 1762, 5) ).toBeTruthy();
         });
     });

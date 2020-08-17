@@ -31,6 +31,7 @@ describe('WatermarkTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 14641, 5) ).toBeTruthy();
         });
     });
@@ -50,6 +51,7 @@ describe('WatermarkTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 26097, 5) ).toBeTruthy();
         });
     });

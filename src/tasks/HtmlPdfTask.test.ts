@@ -30,6 +30,7 @@ describe('HtmlPdfTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 288855, 5) ).toBeTruthy();
         });
     });
@@ -62,6 +63,7 @@ describe('HtmlPdfTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 289114, 5) ).toBeTruthy();
         });
     });

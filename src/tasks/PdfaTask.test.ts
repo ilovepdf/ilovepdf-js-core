@@ -31,6 +31,7 @@ describe('PdfaTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 22510, 5) ).toBeTruthy();
         });
     });
@@ -50,6 +51,7 @@ describe('PdfaTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 22420, 5) ).toBeTruthy();
         });
     });

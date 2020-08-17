@@ -31,6 +31,7 @@ describe('PageNumberTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 13494, 5) ).toBeTruthy();
         });
     });
@@ -50,6 +51,7 @@ describe('PageNumberTask', () => {
             return task.download();
         })
         .then(data => {
+            console.log(`Length: ${ data.length }`);
             expect( inRange(data.length, 15446, 5) ).toBeTruthy();
         });
     });
