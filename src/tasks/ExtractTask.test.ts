@@ -55,7 +55,7 @@ describe('ExtractTask', () => {
             expect( inRange(data.length, 3724, 5) ).toBeTruthy();
         })
         .catch(err => {
-            console.log(err);
+            console.log(err.response.data.error);
             throw err;
         });
     });
