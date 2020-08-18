@@ -37,7 +37,7 @@ describe('MergeTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 5173, 150) ).toBeTruthy();
+            expect( inRange(data.length, 5173, 250) ).toBeTruthy();
         });
     });
 
