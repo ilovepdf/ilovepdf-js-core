@@ -2,12 +2,27 @@ import { SignatureFileI, SignatureFileJSON } from "./SignatureFile";
 import FileAlreadyExistsError from "../../errors/FileAlreadyExistsError";
 
 export interface SignerI {
+    // Signer name.
     name: string;
+    // Signer email.
     email: string;
+    // Signer optional parameters.
     params: SignerParams;
+    // Associated signature files.
     readonly files: Array<SignatureFileI>;
+    /**
+     * Adds a file to the signer. If exists, throws an error.
+     * @param file - File to add.
+     */
     addFile: (file: SignatureFileI) => void;
+    /**
+     * Deletes a file previously added. If not exist does not do anything.
+     * @param file - File to add.
+     */
     deleteFile: (file: SignatureFileI) => void;
+    /**
+     * Creates a JSON response to append as a body in a HTTP request.
+     */
     toJSON: () => SignerJSON;
 }
 
@@ -53,7 +68,8 @@ export type SignerParams = {
    /**
     * Type of Signer:
     * signer: Person who has to sign the document.
-    * validator:
+    * validator: Person who accepts or rejects the document.
+    * witness: Person who can access and see the document.
     */
    type?: 'signer' | 'validator' | 'witness';
    // Number to filter in the GET /signer resource.
@@ -85,5 +101,6 @@ export type SignerJSON = {
     access_code?: string;
     // Accepted signature types.
     force_signature_type?: 'all' | 'text' | 'sign' | 'image';
+    // Associated PDF files.
     files: Array<SignatureFileJSON>
 };

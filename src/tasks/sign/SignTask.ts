@@ -9,13 +9,30 @@ import { SignerI } from "./Signer";
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
 
 export interface SignProcessParams {
-    language?: string;
+    // Emails language that will be received by signers.
+    language?: 'EN' | 'ES' | 'FR' | 'IT' | 'JA' | 'ZH-CN' | 'ZH-TW' | 'BG';
+    // If true, allow signers to sign in parallel. Otherwise, do it sequentially.
     lock_order?: boolean;
+    // Days until the signature request will expire.
     expiration_date?: number;
+    // If true, a signed certified hash and a qualified timestamp is embedded to
+    // the signed documents, ensuring document and signatures integrity in the
+    // future. Certified signatures are eIDAS, ESIGN & UETA compliant.
     certified?: boolean;
+    // Requester number to facilitate filtering.
     custom_int?: number;
+    // Requester string to facilitate filtering.
     custom_string?: string;
+    /**
+     * single: The signer is only one and no requests will be sent.
+     * multiple: A signature request will be sent to the signers by a requester.
+     *           All signers sign the same document.
+     * batch: A signature request will be sent to the signers by a requester.
+     *        Every signer sign the document separately.
+     */
     mode?: 'single' | 'multiple' | 'batch';
+    // If true, displays UUID at the bottom of the signature. Otherwise, it is hidden.
+    // This has only aesthetic purposes.
     uuid_visible?: boolean;
 }
 
