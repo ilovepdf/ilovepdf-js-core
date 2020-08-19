@@ -3,7 +3,7 @@ import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
-import { ProcessParams } from "./Task";
+import TaskBaseProcess, { ProcessParams } from "./TaskBaseProcess";
 
 interface SplitProcessParams extends ProcessParams {
     // Sets how to split the document.
@@ -19,7 +19,7 @@ interface SplitProcessParams extends ProcessParams {
     merge_after?: boolean;
 }
 
-export default class SplitTask extends Task {
+export default class SplitTask extends TaskBaseProcess {
     public type: ILovePDFTool;
 
     constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {

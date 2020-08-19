@@ -23,7 +23,7 @@ export interface SignerI {
     /**
      * Creates a JSON response to append as a body in a HTTP request.
      */
-    toJSON: () => SignerJSON;
+    toJSON: (batchMode?: boolean) => SignerJSON;
 }
 
 export default class Signer implements SignerI {
@@ -51,8 +51,10 @@ export default class Signer implements SignerI {
         if (index !== -1) this.files.splice(index, 1);
     }
 
-    public toJSON(): SignerJSON {
-        const files = this.files.map(file => file.toJSON());
+    public toJSON(batchMode: boolean = false): SignerJSON {
+        let files;
+
+        if (!batchMode) files = this.files.map(file => file.toJSON());
 
         return {
             name: this.name,
@@ -102,5 +104,5 @@ export type SignerJSON = {
     // Accepted signature types.
     force_signature_type?: 'all' | 'text' | 'sign' | 'image';
     // Associated PDF files.
-    files: Array<SignatureFileJSON>
+    files?: Array<SignatureFileJSON>
 };

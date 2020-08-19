@@ -3,7 +3,7 @@ import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
-import { ProcessParams } from "./Task";
+import TaskBaseProcess, { ProcessParams } from "./TaskBaseProcess";
 
 interface HtmlPdfProcessParams extends ProcessParams {
     view_width?: number;
@@ -17,7 +17,7 @@ interface HtmlPdfProcessParams extends ProcessParams {
     single_page?: boolean;
 }
 
-export default class HtmlPdfTask extends Task {
+export default class HtmlPdfTask extends TaskBaseProcess {
     public type: ILovePDFTool;
 
     constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {

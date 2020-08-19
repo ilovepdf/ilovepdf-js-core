@@ -3,7 +3,7 @@ import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
-import { ProcessParams } from "./Task";
+import TaskBaseProcess, { ProcessParams } from "./TaskBaseProcess";
 
 interface PdfaProcessParams extends ProcessParams {
     // Sets the PDF/A conformance level.
@@ -11,7 +11,7 @@ interface PdfaProcessParams extends ProcessParams {
     allow_downgrade?: boolean;
 }
 
-export default class PdfaTask extends Task {
+export default class PdfaTask extends TaskBaseProcess {
     public type: ILovePDFTool;
 
     constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {

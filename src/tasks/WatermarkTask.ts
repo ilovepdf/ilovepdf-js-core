@@ -3,7 +3,7 @@ import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
-import { ProcessParams } from "./Task";
+import TaskBaseProcess, { ProcessParams } from "./TaskBaseProcess";
 
 interface WatermarkProcessParams extends ProcessParams {
     // Text if only text it will be inserted. The same with image mode.
@@ -42,7 +42,7 @@ interface WatermarkProcessParams extends ProcessParams {
     layer?: 'above' | 'below';
 }
 
-export default class WatermarkTask extends Task {
+export default class WatermarkTask extends TaskBaseProcess {
     public type: ILovePDFTool;
 
     constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {

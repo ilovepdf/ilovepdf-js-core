@@ -3,7 +3,7 @@ import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
-import { ProcessParams } from "./Task";
+import TaskBaseProcess, { ProcessParams } from "./TaskBaseProcess";
 
 interface ImagePdfProcessParams extends ProcessParams {
     orientation?: 'portrait' | 'landscape';
@@ -13,7 +13,7 @@ interface ImagePdfProcessParams extends ProcessParams {
     merge_after?: boolean;
 }
 
-export default class ImagePdfTask extends Task {
+export default class ImagePdfTask extends TaskBaseProcess {
     public type: ILovePDFTool;
 
     constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {

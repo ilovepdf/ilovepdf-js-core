@@ -3,7 +3,7 @@ import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
-import { ProcessParams } from "./Task";
+import TaskBaseProcess, { ProcessParams } from "./TaskBaseProcess";
 
 interface PageNumberProcessParams extends ProcessParams {
     // PDF is in facing page or not.
@@ -37,7 +37,7 @@ interface PageNumberProcessParams extends ProcessParams {
     text?: string;
 }
 
-export default class PageNumberTask extends Task {
+export default class PageNumberTask extends TaskBaseProcess {
     public type: ILovePDFTool;
 
     constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {

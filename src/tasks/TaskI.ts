@@ -12,7 +12,7 @@ export default interface TaskI {
     /**
      * Server response from each function call.
      */
-    readonly responses: Responses;
+    readonly responses: ResponsesI;
     /**
      * Starts task retrieving the assigned server and task id.
      * @returns Itself.
@@ -30,6 +30,8 @@ export default interface TaskI {
      */
     deleteFile: (file: BaseFile) => Promise<TaskI>;
     /**
+     * Returns an array with the files added to the task
+     * sorted by older to newest.
      * @returns An array with all the uploaded files.
      */
     getFiles: () => Array<BaseFile>;
@@ -60,12 +62,12 @@ export default interface TaskI {
 /**
  * Object to save server responses.
  */
-export type Responses = {
-    start: StartResponse | null,
-    addFile: UploadResponse | null,
-    deleteFile: DeleteFileResponse | null,
-    process: ProcessResponse | null,
-    download: DownloadResponse | null,
-    delete: DeleteResponse | null,
-    connect: ConnectResponse | null
+export type ResponsesI = {
+    start: StartResponse | null;
+    addFile: UploadResponse | null;
+    deleteFile: DeleteFileResponse | null;
+    process: object | null;
+    download: DownloadResponse | null;
+    delete: DeleteResponse | null;
+    connect: ConnectResponse | null;
 };

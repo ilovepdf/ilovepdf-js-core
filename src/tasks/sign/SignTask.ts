@@ -5,8 +5,12 @@ import Auth from "../../auth/Auth";
 import XHRInterface from "../../utils/XHRInterface";
 import globals from '../../constants/globals.json';
 import Requester from "./Requester";
-import { SignerI } from "./Signer";
+import { SignerI, SignerJSON } from "./Signer";
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
+import { ResponsesI } from "../TaskI";
+import SignatureFile from "./SignatureFile";
+import SignatureProcessResponse from "../../types/responses/SignatureProcessResponse";
+import { isArray } from "util";
 
 export interface SignProcessParams {
     // Emails language that will be received by signers.
@@ -31,16 +35,23 @@ export interface SignProcessParams {
      *        Every signer sign the document separately.
      */
     mode?: 'single' | 'multiple' | 'batch';
+    // REQUIRED if 'batch' mode is enabled.
+    // Each file that needs to be sign by each signer.
+    batch_elements?: Array<SignatureFile>;
     // If true, displays UUID at the bottom of the signature. Otherwise, it is hidden.
     // This has only aesthetic purposes.
     uuid_visible?: boolean;
 }
 
+interface Responses extends ResponsesI {
+    process: SignatureProcessResponse | null;
+}
+
 export default class SignTask extends Task {
     public type: ILovePDFTool;
-
     public requester: Requester | null;
     public readonly signers: Array<SignerI>;
+    public readonly responses: Responses;
 
     constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {
         super(auth, xhr, params);
@@ -48,10 +59,19 @@ export default class SignTask extends Task {
         this.type = 'sign';
         this.requester = null;
         this.signers = [];
+        this.responses = {
+            start: null,
+            addFile: null,
+            deleteFile: null,
+            process: null,
+            download: null,
+            delete: null,
+            connect: null
+        }
     }
 
     // FIXME:Remove default values when server is well-configured.
-    public async process(params: SignProcessParams = { mode: 'single', custom_int: null as unknown as number, custom_string: '' }) {
+    public async process(params: SignProcessParams = { mode: 'single', custom_int: null as unknown as number, custom_string: null as unknown as string }) {
         const token = await this.auth.getToken();
 
         // Convert to files request format.
@@ -61,7 +81,9 @@ export default class SignTask extends Task {
             signer.toJSON()
         ));
 
-        return this.xhr.post<SignResponse>(
+        const batch_elements = params.batch_elements?.map(file => file.toJSON());
+
+        return this.xhr.post<SignatureProcessResponse | SignatureProcessResponse[]>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature`,
             JSON.stringify(
                 {
@@ -69,6 +91,7 @@ export default class SignTask extends Task {
                     files,
                     ...this.requester,
                     signers,
+                    batch_elements,
                     // Include optional params.
                     ...params
                 }
@@ -83,7 +106,10 @@ export default class SignTask extends Task {
         )
         .then((data) => {
             // Keep response.
-            this.responses.process = data;
+            // Be careful, server returns an array of 1 element instead
+            // of the element directly on batch mode.
+            if (isArray(data)) this.responses.process = data[0];
+            else this.responses.process = data;
 
             return this;
         });
@@ -103,6 +129,3 @@ export default class SignTask extends Task {
     }
 
 }
-
-// FIXME: Fill this type when signature API REST is well-documented.
-type SignResponse = any;

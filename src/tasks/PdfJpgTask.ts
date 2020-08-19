@@ -3,7 +3,7 @@ import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
-import { ProcessParams } from "./Task";
+import TaskBaseProcess, { ProcessParams } from "./TaskBaseProcess";
 
 interface PdfJpgProcessParams extends ProcessParams {
     // If 'pages' is chosen, converts every PDF page to a JPG image.
@@ -12,7 +12,7 @@ interface PdfJpgProcessParams extends ProcessParams {
     dpi?: number;
 }
 
-export default class PdfJpgTask extends Task {
+export default class PdfJpgTask extends TaskBaseProcess {
     public type: ILovePDFTool;
 
     constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {

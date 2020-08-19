@@ -37,8 +37,8 @@ export default class JWT implements Auth {
         }
 
         return tokenPromise.then(token => {
-            this.token = token;
             // Cache token.
+            this.token = token;
             return token;
         });
     }
