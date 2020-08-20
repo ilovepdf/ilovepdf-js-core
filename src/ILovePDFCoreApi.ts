@@ -3,7 +3,14 @@ import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
 import GetSignerResponse from "./types/responses/GetSignerResponse";
 
-const updateSigner = async (auth: Auth, xhr: XHRInterface, signerToken: string, data: UpdateSignerData) => {
+/**
+ * Updates a signer that was processed and it is inside ILovePDF servers.
+ * @param auth - Auth system to generate the correct credentials.
+ * @param xhr - XHR system to make requests.
+ * @param signerToken - Token of the signer that has to be updated.
+ * @param data - Object with values to change.
+ */
+const updateSigner = async (auth: Auth, xhr: XHRInterface, signerToken: string, data: UpdateSignerData): Promise<GetSignerResponse> => {
     const token = await auth.getToken();
 
     return xhr.put<GetSignerResponse>(

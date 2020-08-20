@@ -21,6 +21,7 @@ describe('ILovePDFCoreApi', () => {
         const taskFactory = new TaskFactory();
 
         task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+
         return task.start()
         .then(() => {
             return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
