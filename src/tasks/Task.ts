@@ -2,7 +2,6 @@ import StartError from '../errors/StartError';
 import globals from '../constants/globals.json';
 import DeleteError from '../errors/DeleteError';
 import UpdateError from '../errors/UpdateError';
-import ProcessError from '../errors/ProcessError';
 import DownloadError from '../errors/DownloadError';
 import ConnectError from '../errors/ConnectError';
 import ILovePDFTool from '../types/ILovePDFTool';
@@ -15,14 +14,12 @@ import FileNotExistsError from '../errors/FileNotExistsError';
 import DownloadResponse from '../types/responses/DownloadResponse';
 import StartResponse from '../types/responses/StartResponse';
 import UploadResponse from '../types/responses/UploadResponse';
-import ProcessResponse from '../types/responses/ProcessResponse';
 import DeleteResponse from '../types/responses/DeleteResponse';
 import ConnectResponse from '../types/responses/ConnectResponse';
 import TaskI, { ResponsesI } from './TaskI';
 import FileAlreadyExistsError from '../errors/FileAlreadyExistsError';
 import DeleteFileResponse from '../types/responses/DeleteFileResponse';
 import { thereIsUndefined } from '../utils/typecheck';
-import { ProcessParams } from './TaskBaseProcess';
 
 export type TaskParams = {
     id?: string;

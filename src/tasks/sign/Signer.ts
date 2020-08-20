@@ -10,6 +10,9 @@ export interface SignerI {
     params: SignerParams;
     // Associated signature files.
     readonly files: Array<SignatureFileI>;
+    // Token of this signer. It is filled by the system on
+    // process a signature process.
+    token: string;
     /**
      * Adds a file to the signer. If exists, throws an error.
      * @param file - File to add.
@@ -23,7 +26,7 @@ export interface SignerI {
     /**
      * Creates a JSON response to append as a body in a HTTP request.
      */
-    toJSON: (batchMode?: boolean) => SignerJSON;
+    toJSON: () => SignerJSON;
 }
 
 export default class Signer implements SignerI {
@@ -31,12 +34,14 @@ export default class Signer implements SignerI {
     public email: string;
     public params: SignerParams;
     public readonly files: Array<SignatureFileI>;
+    public token: string;
 
     constructor(name: string, email: string, params: SignerParams = {}) {
         this.name = name;
         this.email = email;
         this.params = params;
         this.files = [];
+        this.token = '';
     }
 
     public addFile(file: SignatureFileI) {
@@ -51,10 +56,8 @@ export default class Signer implements SignerI {
         if (index !== -1) this.files.splice(index, 1);
     }
 
-    public toJSON(batchMode: boolean = false): SignerJSON {
-        let files;
-
-        if (!batchMode) files = this.files.map(file => file.toJSON());
+    public toJSON(): SignerJSON {
+        const files = this.files.map(file => file.toJSON());
 
         return {
             name: this.name,
@@ -84,7 +87,7 @@ export type SignerParams = {
    force_signature_type?: 'all' | 'text' | 'sign' | 'image';
 };
 
-export type SignerJSON = {
+export interface SignerJSON {
     // Signer full name.
     name: string;
     // Signer email.

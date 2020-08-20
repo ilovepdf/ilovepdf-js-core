@@ -5,11 +5,11 @@ import Auth from "../../auth/Auth";
 import XHRInterface from "../../utils/XHRInterface";
 import globals from '../../constants/globals.json';
 import Requester from "./Requester";
-import { SignerI, SignerJSON } from "./Signer";
+import { SignerI } from "./Signer";
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
 import { ResponsesI } from "../TaskI";
 import SignatureFile from "./SignatureFile";
-import SignatureProcessResponse from "../../types/responses/SignatureProcessResponse";
+import SignatureProcessResponse, { SignerResponse } from "../../types/responses/SignatureProcessResponse";
 import { isArray } from "util";
 
 export interface SignProcessParams {
@@ -70,7 +70,7 @@ export default class SignTask extends Task {
         }
     }
 
-    // FIXME:Remove default values when server is well-configured.
+    // FIXME: Remove default values when server is well-configured.
     public async process(params: SignProcessParams = { mode: 'single', custom_int: null as unknown as number, custom_string: null as unknown as string }) {
         const token = await this.auth.getToken();
 
@@ -81,7 +81,9 @@ export default class SignTask extends Task {
             signer.toJSON()
         ));
 
-        const batch_elements = params.batch_elements?.map(file => file.toJSON());
+        // On batch mode, signature files are put in the root of the object.
+        let batch_elements;
+        if (params.mode === 'batch') batch_elements = params.batch_elements?.map(file => file.toJSON());
 
         return this.xhr.post<SignatureProcessResponse | SignatureProcessResponse[]>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature`,
@@ -111,8 +113,20 @@ export default class SignTask extends Task {
             if (isArray(data)) this.responses.process = data[0];
             else this.responses.process = data;
 
+            // Fill signer tokens.
+            this.fillSignerTokens(this.responses.process.signers);
+
             return this;
         });
+
+    }
+
+    private fillSignerTokens(responseSigners: Array<SignerResponse>) {
+
+        this.signers.forEach((signer, index) => {
+            const { token_signer } = responseSigners[index];
+            signer.token = token_signer;
+        })
 
     }
 

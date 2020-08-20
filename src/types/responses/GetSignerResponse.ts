@@ -1,0 +1,60 @@
+import { SignatureFileJSON } from "../../tasks/sign/SignatureFile";
+import ServerFile from "../ServerFile";
+
+type GetSignerResponse = {
+    id: number;
+    signature_id: number;
+    uuid: string;
+    user_id: number;
+    custom_int: number;
+    custom_string: string;
+    name: string;
+    email: string;
+    phone: unknown;
+    phone_reviewed: unknown;
+    phone_retries_left: number;
+    type: 'signer' | 'validator' | 'witness';
+    token_signer: string;
+    token_requester: string;
+    token_shared: string;
+    status: string;
+    email_status: number;
+    phone_status: number;
+    created: unknown;
+    font: unknown;
+    color: unknown;
+    initials: unknown;
+    signature_type: unknown;
+    initials_type: unknown;
+    ip_signed: unknown;
+    browser_signed: unknown;
+    access_code: string;
+    phone_access_code: string;
+    force_signature_type: 'sign' | 'text' | 'image' | 'all';
+    notes: unknown;
+    signature_image_server_filename: unknown;
+    initials_image_server_filename: unknown;
+    revision_doc: unknown;
+    letter_color: unknown;
+    backup_ilovepdf: unknown;
+    backup_s3: unknown;
+    files: Array<SignatureFileJSON>;
+    task: string;
+    audit: Array<Audit>;
+    signatureFiles: Array<ServerFile>;
+};
+
+type Audit = {
+    id: number;
+    user_id: number;
+    signer_id: number;
+    advisor_id: number;
+    log_id: number;
+    signature_id: number;
+    action: string;
+    action_datetime: string;
+    ip: string;
+    browser: string;
+};
+
+export default GetSignerResponse;

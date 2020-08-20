@@ -113,7 +113,7 @@ export default class XHRPromise implements XHRInterface {
         }
 
         // Configuration to not encode in case of binary file.
-        const responseType: ResponseType | undefined = !!options.binary ? 'arraybuffer' : 'text';
+        const responseType: ResponseType = !!options.binary ? 'arraybuffer' : 'text';
 
         // Transform response.
         const { transformResponse } = options;
