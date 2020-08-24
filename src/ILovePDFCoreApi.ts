@@ -2,6 +2,7 @@ import XHRInterface from "./utils/XHRInterface";
 import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
 import GetSignerResponse from "./types/responses/GetSignerResponse";
+import { SignatureFileJSON } from "../dist/tasks/sign/SignatureFile";
 
 /**
  * Updates a signer that was processed and it is inside ILovePDF servers.
@@ -65,6 +66,7 @@ export type UpdateSignerData = {
      * Image uploaded for signer and his initials.
      */
     initials_image_server_filename?: string;
+    files?: Array<SignatureFileJSON>;
 };
 
 export default {
