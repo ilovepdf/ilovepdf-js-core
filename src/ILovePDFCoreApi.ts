@@ -42,7 +42,10 @@ export type UpdateSignerData = {
      */
     notes?: string;
     access_code?: string;
-    phone_access_code?: string;
+    /**
+     * If true, enable sms validation.
+     */
+    phone_access_code?: boolean;
     validated_phone?: boolean;
     /**
      * Signature font.

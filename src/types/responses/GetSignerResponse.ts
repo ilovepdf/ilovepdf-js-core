@@ -55,7 +55,10 @@ type GetSignerResponse = {
      */
     browser_signed: string;
     access_code: string;
-    phone_access_code: string;
+    /**
+     * If true, enable sms validation.
+     */
+    phone_access_code: boolean;
     force_signature_type: 'sign' | 'text' | 'image' | 'all';
     /**
      * Custom message for signer from requester.
