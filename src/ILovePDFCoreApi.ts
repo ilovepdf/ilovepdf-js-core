@@ -27,22 +27,41 @@ const updateSigner = async (auth: Auth, xhr: XHRInterface, signerToken: string, 
 
 export type UpdateSignerData = {
     name?: string;
-    initials?: unknown;
-    status?: string;
-    ip_signed?: unknown;
+    /**
+     * Initials text.
+     */
+    initials?: string;
+    /**
+     * Signature status.
+     */
+    status?: 'waiting' | 'sent' | 'viewed' | 'signed' | 'validated' | 'nonvalidated' | 'declined' | 'error';
     custom_int?: number;
     custom_string?: string;
-    browser_signed?: unknown;
-    notes?: unknown;
+    /**
+     * Custom message for signer from requester.
+     */
+    notes?: string;
     access_code?: string;
     phone_access_code?: string;
-    validated_phone?: unknown;
-    font?: unknown;
-    color?: unknown;
-    signature_type?: unknown;
-    initials_type?: unknown;
-    signature_image_server_filename?: unknown;
-    initials_image_server_filename?: unknown;
+    validated_phone?: boolean;
+    /**
+     * Signature font.
+     */
+    font?: 'Arial-Unicode-MS' | 'Shadows-Into-Light' | 'La-Belle-Aurore' | 'Alex-Brush-Regular' | 'Allura-Regular' | 'Handlee-Regular' | 'Kristi-Regular' | 'Marck-Script' | 'Reenie-Beanie' | 'Satisfy-Regular' | 'SmoothStone-Regular' | 'TheSecret-Regular' | 'Zeyada';
+    /**
+     * Signature color.
+     */
+    color?: string;
+    signature_type?: 'text' | 'sign' | 'image';
+    initials_type?: 'text' | 'sign' | 'image';
+    /**
+     * Image uploaded for signer and his signature.
+     */
+    signature_image_server_filename?: string;
+    /**
+     * Image uploaded for signer and his initials.
+     */
+    initials_image_server_filename?: string;
 };
 
 export default {

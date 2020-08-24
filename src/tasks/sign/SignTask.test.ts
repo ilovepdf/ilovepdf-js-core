@@ -45,7 +45,11 @@ describe('SignTask', () => {
             signer.addFile(signatureFile);
             task.addSigner(signer);
 
-            return task.process();
+            return task.process({
+                mode: 'single',
+                custom_int: 0,
+                custom_string: '0'
+            });
         });
 
     });

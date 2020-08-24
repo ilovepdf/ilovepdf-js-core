@@ -70,8 +70,7 @@ export default class SignTask extends Task {
         }
     }
 
-    // FIXME: Remove default values when server is well-configured.
-    public async process(params: SignProcessParams = { mode: 'single', custom_int: null as unknown as number, custom_string: null as unknown as string }) {
+    public async process(params: SignProcessParams = {}) {
         const token = await this.auth.getToken();
 
         // Convert to files request format.
