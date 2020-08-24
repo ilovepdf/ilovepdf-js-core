@@ -44,7 +44,7 @@ export interface SignProcessParams {
 }
 
 interface Responses extends ResponsesI {
-    process: SignatureProcessResponse | null;
+    process: Array<SignatureProcessResponse> | null;
 }
 
 export default class SignTask extends Task {
@@ -107,14 +107,21 @@ export default class SignTask extends Task {
             }
         )
         .then((data) => {
-            // Keep response.
-            // Be careful, server returns an array of 1 element instead
-            // of the element directly on batch mode.
-            if (isArray(data)) this.responses.process = data[0];
-            else this.responses.process = data;
+            // Maintain a consistency returning always an array
+            // with signatures.
+            if (isArray(data)) {
+                data.forEach(signature => {
+                    this.fillSignerTokens(signature.signers);
+                });
 
-            // Fill signer tokens.
-            this.fillSignerTokens(this.responses.process.signers);
+                // Keep response.
+                this.responses.process = data;
+            }
+            else {
+                this.fillSignerTokens(data.signers);
+                // Keep response.
+                this.responses.process = [ data ];
+            }
 
             return this;
         });

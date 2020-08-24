@@ -92,7 +92,7 @@ describe('SignTask', () => {
         .then(() => {
             const response = task.responses.process!;
             // Assert that files were uploaded.
-            expect(response.signers[0].files).not.toBeNull();
+            expect(response[0].signers[0].files).not.toBeNull();
         });
 
     });
@@ -142,7 +142,7 @@ describe('SignTask', () => {
         .then(() => {
             const response = task.responses.process!;
             // Assert that files were uploaded.
-            expect(response.signers[0].files).not.toBeNull();
+            expect(response[0].signers[0].files).not.toBeNull();
         });
     });
 
