@@ -70,12 +70,28 @@ export default class JWT implements Auth {
 
         if (!!this.token) {
 
-            try {
-                // Throws an error if token is invalid.
-                JWTAlgorithms.verify(this.token, this.secretKey);
+            // When there is secret key, signature and expiration date can be validated.
+            if (this.secretKey) {
+
+                try {
+                    // Throws an error if token is invalid.
+                    JWTAlgorithms.verify(this.token, this.secretKey);
+                }
+                catch (error) {
+                    this.token = undefined;
+                }
+
             }
-            catch (error) {
-                this.token = undefined;
+            else { // Otherwise, look only expiration date.
+                const decoded = JWTAlgorithms.decode(this.token) as { exp: string };
+                const { exp } = decoded;
+
+                // Get epoch in seconds.
+                const timeNow = Date.now() / 1000;
+
+                // If it is an expired token, reset token cache.
+                const isExpired = timeNow > Number(exp);
+                if (isExpired) this.token = undefined;
             }
 
         }
