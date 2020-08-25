@@ -7,11 +7,10 @@ import globals from '../../constants/globals.json';
 import Requester from "./Requester";
 import { SignerI } from "./Signer";
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
-import { ResponsesI } from "../TaskI";
+import TaskI, { ResponsesI } from "../TaskI";
 import SignatureFile from "./SignatureFile";
 import SignatureProcessResponse, { SignerResponse } from "../../types/responses/SignatureProcessResponse";
 import { isArray } from "util";
-import TaskI from "../../../dist/tasks/TaskI";
 
 export interface SignProcessParams {
     // Emails language that will be received by signers.

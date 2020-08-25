@@ -2,8 +2,8 @@ import XHRInterface from "./utils/XHRInterface";
 import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
 import GetSignerResponse from "./types/responses/GetSignerResponse";
-import { SignatureFileJSON } from "../dist/tasks/sign/SignatureFile";
 import GetSignatureTemplateResponse from "./types/responses/GetSignatureTemplateResponse";
+import { SignatureFileJSON } from "./tasks/sign/SignatureFile";
 
 /**
  * Updates a signer that was processed and it is inside ILovePDF servers.
