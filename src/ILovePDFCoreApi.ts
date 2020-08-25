@@ -70,7 +70,7 @@ export type UpdateSignerData = {
     files?: Array<SignatureFileJSON>;
 };
 
-const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateId: string) => {
+const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateId: string): Promise<GetSignatureTemplateResponse> => {
     const token = await auth.getToken();
 
     return xhr.get<GetSignatureTemplateResponse>(
