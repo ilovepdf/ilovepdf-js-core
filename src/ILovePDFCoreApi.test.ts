@@ -159,4 +159,13 @@ describe('ILovePDFCoreApi', () => {
         });
     });
 
+    it('gets a template', () => {
+        const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+        // If template id does not exist, the return object is a preset template.
+        return ILovePDFCoreApi.getSignatureTemplate(auth, xhr, 'something')
+        .then(data => {
+            expect(data.name).toBe('Preset template 1');
+        });
+    });
+
 });

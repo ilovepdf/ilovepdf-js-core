@@ -5,6 +5,7 @@ import XHRPromise from "../../utils/XHRPromise";
 import JWT from "../../auth/JWT";
 import SignatureFile from "./SignatureFile";
 import Signer from "./Signer";
+import ILovePDFCoreApi from "../../ILovePDFCoreApi";
 
 // Load env vars.
 dotenv.config();
@@ -51,7 +52,6 @@ describe('SignTask', () => {
                 custom_string: '0'
             });
         });
-
     });
 
     it('executes multiple signature requests', async () => {
@@ -98,7 +98,6 @@ describe('SignTask', () => {
             // Assert that files were uploaded.
             expect(response[0].signers[0].files).not.toBeNull();
         });
-
     });
 
     it('executes a signature batch request', () => {
@@ -147,6 +146,55 @@ describe('SignTask', () => {
             const response = task.responses.process!;
             // Assert that files were uploaded.
             expect(response[0].signers[0].files).not.toBeNull();
+        });
+    });
+
+    it('saves task as template', () => {
+        const signTask = taskFactory.newTask('sign', auth, xhr) as SignTask;
+
+        return signTask.start()
+        .then(() => {
+            return signTask.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+        })
+        .then(() => {
+            // Requester.
+            signTask.requester = {
+                name: 'Diego',
+                email: 'req@ester.com'
+            };
+
+            // Signer.
+            const file = signTask.getFiles()[0];
+            const signatureFile = new SignatureFile(file, [{
+                type: 'signature',
+                position: '300 -100',
+                pages: '1',
+                size: 40,
+                color: 'red',
+                font: '',
+                content: ''
+            }]);
+
+            const signer = new Signer('Diego Signer', 'invent@ado.com');
+            signer.addFile(signatureFile);
+            signTask.addSigner(signer);
+
+            return signTask.saveAsTemplate({
+                template_name: 'This is my template',
+                mode: 'single',
+                custom_int: 0,
+                custom_string: '0'
+            });
+        })
+        .then(() => {
+            const { task } = signTask.responses.start;
+            const xhr = new XHRPromise();
+            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+
+            return ILovePDFCoreApi.getSignatureTemplate(auth, xhr, task);
+        })
+        .then(data => {
+            expect(data.name).toBe('This is my template');
         });
     });
 

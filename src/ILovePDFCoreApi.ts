@@ -3,6 +3,7 @@ import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
 import GetSignerResponse from "./types/responses/GetSignerResponse";
 import { SignatureFileJSON } from "../dist/tasks/sign/SignatureFile";
+import GetSignatureTemplateResponse from "./types/responses/GetSignatureTemplateResponse";
 
 /**
  * Updates a signer that was processed and it is inside ILovePDF servers.
@@ -69,6 +70,21 @@ export type UpdateSignerData = {
     files?: Array<SignatureFileJSON>;
 };
 
+const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateId: string) => {
+    const token = await auth.getToken();
+
+    return xhr.get<GetSignatureTemplateResponse>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/template/${ templateId }`,
+        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                [ 'Authorization', `Bearer ${ token }` ]
+            ],
+            transformResponse: res => { return JSON.parse(res) }
+        });
+}
+
 export default {
-    updateSigner
+    updateSigner,
+    getSignatureTemplate
 }

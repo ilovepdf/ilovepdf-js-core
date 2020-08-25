@@ -11,6 +11,7 @@ import { ResponsesI } from "../TaskI";
 import SignatureFile from "./SignatureFile";
 import SignatureProcessResponse, { SignerResponse } from "../../types/responses/SignatureProcessResponse";
 import { isArray } from "util";
+import TaskI from "../../../dist/tasks/TaskI";
 
 export interface SignProcessParams {
     // Emails language that will be received by signers.
@@ -43,6 +44,10 @@ export interface SignProcessParams {
     uuid_visible?: boolean;
 }
 
+export interface SignTemplateParams extends SignProcessParams {
+    template_name: string;
+}
+
 interface Responses extends ResponsesI {
     process: Array<SignatureProcessResponse> | null;
 }
@@ -70,33 +75,35 @@ export default class SignTask extends Task {
         }
     }
 
+    /**
+     * Saves the current task as template.
+     * @param params - Template params.
+     */
+    public async saveAsTemplate(params: SignTemplateParams): Promise<TaskI> {
+        const token = await this.auth.getToken();
+        const data = this.createSignatureData(params);
+
+        return this.xhr.post(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/template`,
+            data,
+            {
+                headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                    [ 'Authorization', `Bearer ${ token }` ]
+                ],
+                transformResponse: res => { return JSON.parse(res) }
+            }
+        )
+        .then(() => { return this; });
+    }
+
     public async process(params: SignProcessParams = {}) {
         const token = await this.auth.getToken();
-
-        // Convert to files request format.
-        const files = this.getFilesBodyFormat();
-
-        const signers = this.signers.map(signer => (
-            signer.toJSON()
-        ));
-
-        // On batch mode, signature files are put in the root of the object.
-        let batch_elements;
-        if (params.mode === 'batch') batch_elements = params.batch_elements?.map(file => file.toJSON());
+        const data = this.createSignatureData(params);
 
         return this.xhr.post<SignatureProcessResponse | SignatureProcessResponse[]>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature`,
-            JSON.stringify(
-                {
-                    task: this.id,
-                    files,
-                    ...this.requester,
-                    signers,
-                    batch_elements,
-                    // Include optional params.
-                    ...params
-                }
-            ),
+            data,
             {
                 headers: [
                     [ 'Content-Type', 'application/json;charset=UTF-8' ],
@@ -125,6 +132,35 @@ export default class SignTask extends Task {
             return this;
         });
 
+    }
+
+    /**
+     * Creates a signature object as string to send to server.
+     * @param params - Params to create a custom signature.
+     */
+    private createSignatureData(params: SignProcessParams): string {
+        // Convert to files request format.
+        const files = this.getFilesBodyFormat();
+
+        const signers = this.signers.map(signer => (
+            signer.toJSON()
+        ));
+
+        // On batch mode, signature files are put in the root of the object.
+        let batch_elements;
+        if (params.mode === 'batch') batch_elements = params.batch_elements?.map(file => file.toJSON());
+
+        return JSON.stringify(
+            {
+                task: this.id,
+                files,
+                ...this.requester,
+                signers,
+                batch_elements,
+                // Include optional params.
+                ...params
+            }
+        );
     }
 
     private fillSignerTokens(responseSigners: Array<SignerResponse>) {
