@@ -36,7 +36,7 @@ export interface SignProcessParams {
      */
     mode?: 'single' | 'multiple' | 'batch';
     // REQUIRED if 'batch' mode is enabled.
-    // Each file that needs to be sign by each signer.
+    // Each file that needs to be signed by each signer.
     batch_elements?: Array<SignatureFile>;
     // If true, displays UUID at the bottom of the signature. Otherwise, it is hidden.
     // This has only aesthetic purposes.
