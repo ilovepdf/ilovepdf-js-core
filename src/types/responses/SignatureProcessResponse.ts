@@ -5,7 +5,9 @@ type SignatureProcessResponse = {
 };
 
 export interface SignerResponse extends SignerJSON {
-    token_signer: string;
+    token_signer?: string;
+    token_requester: string;
+    token_shared: string;
 }
 
 export default SignatureProcessResponse;

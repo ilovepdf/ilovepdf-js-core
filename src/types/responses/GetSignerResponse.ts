@@ -17,7 +17,7 @@ type GetSignerResponse = {
     phone_reviewed: string;
     phone_retries_left: number;
     type: 'signer' | 'validator' | 'witness';
-    token_signer: string;
+    token_signer?: string;
     token_requester: string;
     token_shared: string;
     /**

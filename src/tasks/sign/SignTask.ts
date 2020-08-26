@@ -137,8 +137,9 @@ export default class SignTask extends Task {
     private fillSignerTokens(responseSigners: Array<SignerResponse>) {
 
         this.signers.forEach((signer, index) => {
-            const { token_signer } = responseSigners[index];
-            signer.token = token_signer;
+            const { token_signer, token_requester } = responseSigners[index];
+            signer.token_signer = token_signer || '';
+            signer.token_requester = token_requester;
         })
 
     }

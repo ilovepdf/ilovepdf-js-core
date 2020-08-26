@@ -12,7 +12,10 @@ export interface SignerI {
     readonly files: Array<SignatureFileI>;
     // Token of this signer. It is filled by the system on
     // process a signature process.
-    token: string;
+    token_signer: string;
+    // Token of this signer. It is filled by the system on
+    // process a signature process.
+    token_requester: string;
     /**
      * Adds a file to the signer. If exists, throws an error.
      * @param file - File to add.
@@ -34,14 +37,16 @@ export default class Signer implements SignerI {
     public email: string;
     public params: SignerParams;
     public readonly files: Array<SignatureFileI>;
-    public token: string;
+    public token_signer: string;
+    public token_requester: string;
 
     constructor(name: string, email: string, params: SignerParams = {}) {
         this.name = name;
         this.email = email;
         this.params = params;
         this.files = [];
-        this.token = '';
+        this.token_signer = '';
+        this.token_requester = '';
     }
 
     public addFile(file: SignatureFileI) {

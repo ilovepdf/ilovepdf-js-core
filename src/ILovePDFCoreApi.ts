@@ -28,47 +28,42 @@ const updateSigner = async (auth: Auth, xhr: XHRInterface, signerToken: string, 
 };
 
 export type UpdateSignerData = {
-    name?: string;
-    /**
-     * Initials text.
-     */
-    initials?: string;
-    /**
-     * Signature status.
-     */
     status?: 'waiting' | 'sent' | 'viewed' | 'signed' | 'validated' | 'nonvalidated' | 'declined' | 'error';
-    custom_int?: number;
-    custom_string?: string;
-    /**
-     * Custom message for signer from requester.
-     */
-    notes?: string;
-    access_code?: string;
-    /**
-     * If true, enable sms validation.
-     */
-    phone_access_code?: boolean;
-    validated_phone?: boolean;
-    /**
-     * Signature font.
-     */
-    font?: 'Arial-Unicode-MS' | 'Shadows-Into-Light' | 'La-Belle-Aurore' | 'Alex-Brush-Regular' | 'Allura-Regular' | 'Handlee-Regular' | 'Kristi-Regular' | 'Marck-Script' | 'Reenie-Beanie' | 'Satisfy-Regular' | 'SmoothStone-Regular' | 'TheSecret-Regular' | 'Zeyada';
-    /**
-     * Signature color.
-     */
-    color?: string;
-    signature_type?: 'text' | 'sign' | 'image';
-    initials_type?: 'text' | 'sign' | 'image';
-    /**
-     * Image uploaded for signer and his signature.
-     */
-    signature_image_server_filename?: string;
-    /**
-     * Image uploaded for signer and his initials.
-     */
-    initials_image_server_filename?: string;
-    files?: Array<SignatureFileJSON>;
 };
+
+const updateSignerEmail = async (auth: Auth, xhr: XHRInterface, requesterToken: string, email: string): Promise<GetSignerResponse> => {
+    const token = await auth.getToken();
+
+    return xhr.put<GetSignerResponse>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/fix-email/${ requesterToken }`,
+        {
+            email
+        },
+        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                [ 'Authorization', `Bearer ${ token }` ]
+            ],
+            transformResponse: res => { return JSON.parse(res) }
+        });
+}
+
+const updateSignerPhone = async (auth: Auth, xhr: XHRInterface, requesterToken: string, phone: string): Promise<GetSignerResponse> => {
+    const token = await auth.getToken();
+
+    return xhr.put<GetSignerResponse>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/fix-phone/${ requesterToken }`,
+        {
+            phone
+        },
+        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                [ 'Authorization', `Bearer ${ token }` ]
+            ],
+            transformResponse: res => { return JSON.parse(res) }
+        });
+}
 
 const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateId: string): Promise<GetSignatureTemplateResponse> => {
     const token = await auth.getToken();
@@ -86,5 +81,7 @@ const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateId: s
 
 export default {
     updateSigner,
+    updateSignerEmail,
+    updateSignerPhone,
     getSignatureTemplate
 }
