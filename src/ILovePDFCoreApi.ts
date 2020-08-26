@@ -6,10 +6,10 @@ import GetSignatureTemplateResponse from "./types/responses/GetSignatureTemplate
 import { SignatureFileJSON } from "./tasks/sign/SignatureFile";
 
 /**
- * Updates a signer that was processed and it is inside ILovePDF servers.
+ * Updates a signer that was also the requester in a signature process.
  * @param auth - Auth system to generate the correct credentials.
  * @param xhr - XHR system to make requests.
- * @param signerToken - Token of the signer that has to be updated.
+ * @param signerToken - Signer token of the signer that has to be updated.
  * @param data - Object with values to change.
  */
 const updateSigner = async (auth: Auth, xhr: XHRInterface, signerToken: string, data: UpdateSignerData): Promise<GetSignerResponse> => {
@@ -31,6 +31,13 @@ export type UpdateSignerData = {
     status?: 'waiting' | 'sent' | 'viewed' | 'signed' | 'validated' | 'nonvalidated' | 'declined' | 'error';
 };
 
+/**
+ * Updates a signer email in a signature process.
+ * @param auth - Auth system to generate the correct credentials.
+ * @param xhr - XHR system to make requests.
+ * @param requesterToken - Request token of the signer that has to be updated.
+ * @param email - New email.
+ */
 const updateSignerEmail = async (auth: Auth, xhr: XHRInterface, requesterToken: string, email: string): Promise<GetSignerResponse> => {
     const token = await auth.getToken();
 
@@ -48,6 +55,13 @@ const updateSignerEmail = async (auth: Auth, xhr: XHRInterface, requesterToken: 
         });
 }
 
+/**
+ * Updates a signer phone in a signature process.
+ * @param auth - Auth system to generate the correct credentials.
+ * @param xhr - XHR system to make requests.
+ * @param requesterToken - Request token of the signer that has to be updated.
+ * @param phone - New phone.
+ */
 const updateSignerPhone = async (auth: Auth, xhr: XHRInterface, requesterToken: string, phone: string): Promise<GetSignerResponse> => {
     const token = await auth.getToken();
 
@@ -65,11 +79,17 @@ const updateSignerPhone = async (auth: Auth, xhr: XHRInterface, requesterToken: 
         });
 }
 
-const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateId: string): Promise<GetSignatureTemplateResponse> => {
+/**
+ *
+ * @param auth - Auth system to generate the correct credentials.
+ * @param xhr - XHR system to make requests.
+ * @param taskId - Task id of the task that created the template.
+ */
+const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, taskId: string): Promise<GetSignatureTemplateResponse> => {
     const token = await auth.getToken();
 
     return xhr.get<GetSignatureTemplateResponse>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/template/${ templateId }`,
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/template/${ taskId }`,
         {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
