@@ -96,41 +96,13 @@ export default class SignTask extends Task {
         .then(() => { return this; });
     }
 
-    public async process(params: SignProcessParams = {}) {
-        const token = await this.auth.getToken();
+    public async processFromTemplate(template: TemplateElement): Promise<TaskI> {
+        return this.processWithData(template);
+    }
+
+    public async process(params: SignProcessParams = {}): Promise<TaskI> {
         const data = this.createSignatureData(params);
-
-        return this.xhr.post<SignatureProcessResponse | SignatureProcessResponse[]>(
-            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature`,
-            data,
-            {
-                headers: [
-                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
-                    [ 'Authorization', `Bearer ${ token }` ]
-                ],
-                transformResponse: res => { return JSON.parse(res) }
-            }
-        )
-        .then((data) => {
-            // Maintain a consistency returning always an array
-            // with signatures.
-            if (isArray(data)) {
-                data.forEach(signature => {
-                    this.fillSignerTokens(signature.signers);
-                });
-
-                // Keep response.
-                this.responses.process = data;
-            }
-            else {
-                this.fillSignerTokens(data.signers);
-                // Keep response.
-                this.responses.process = [ data ];
-            }
-
-            return this;
-        });
-
+        return this.processWithData(data);
     }
 
     /**
@@ -171,6 +143,41 @@ export default class SignTask extends Task {
 
     }
 
+    private async processWithData(processData: any) {
+        const token = await this.auth.getToken();
+
+        return this.xhr.post<SignatureProcessResponse | SignatureProcessResponse[]>(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature`,
+            processData,
+            {
+                headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                    [ 'Authorization', `Bearer ${ token }` ]
+                ],
+                transformResponse: res => { return JSON.parse(res) }
+            }
+        )
+        .then((data) => {
+            // Maintain a consistency returning always an array
+            // with signatures.
+            if (isArray(data)) {
+                data.forEach(signature => {
+                    this.fillSignerTokens(signature.signers);
+                });
+
+                // Keep response.
+                this.responses.process = data;
+            }
+            else {
+                this.fillSignerTokens(data.signers);
+                // Keep response.
+                this.responses.process = [ data ];
+            }
+
+            return this;
+        });
+    }
+
     public addSigner(signer: SignerI) {
         const index = this.signers.indexOf(signer);
         if (index !== -1) throw new SignerAlreadyExistsError();
@@ -184,3 +191,7 @@ export default class SignTask extends Task {
     }
 
 }
+
+export interface TemplateElement extends SignatureProcessResponse {
+    template_name: string;
+};
