@@ -56,7 +56,10 @@ interface Responses extends ResponsesI {
 interface Status extends StatusI {
     document: SignatureStatus;
     signers: {
-        [email: string]: number
+        [email: string]: {
+            email_status: number;
+            phone_status: number;
+        }
     };
 }
 
@@ -111,8 +114,11 @@ export default class SignTask extends Task {
          };
 
         response.signers.forEach(signer => {
-            const { email, email_status} = signer;
-            status.signers[email] = email_status;
+            const { email, email_status, phone_status } = signer;
+            status.signers[email] = {
+                email_status,
+                phone_status
+            };
         })
 
         return status;
