@@ -72,6 +72,10 @@ export default class SignTask extends Task {
             delete: null,
             connect: null
         }
+
+        // Binding.
+        this.updateSignerPhone = this.updateSignerPhone.bind(this);
+        this.updateSignerEmail = this.updateSignerEmail.bind(this);
     }
 
     /**
@@ -184,11 +188,55 @@ export default class SignTask extends Task {
         if (index !== -1) throw new SignerAlreadyExistsError();
 
         this.signers.push(signer);
+        signer.addEvent('update.phone', this.updateSignerPhone);
+        signer.addEvent('update.email', this.updateSignerEmail);
     }
 
     public deleteSigner(signer: SignerI) {
         const index = this.signers.indexOf(signer);
-        if (index !== -1) this.signers.splice(index, 1);
+
+        if (index !== -1) {
+            this.signers.splice(index, 1);
+            signer.addEvent('update.phone', this.updateSignerPhone);
+            signer.addEvent('update.email', this.updateSignerEmail);
+        }
+
+    }
+
+    private async updateSignerPhone(signer: SignerI, phone: string): Promise<unknown> {
+        const data = JSON.stringify({ phone });
+
+        return this.updateSignerField(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/signer/fix-phone/${ signer.token_requester }`,
+            signer,
+            data
+        );
+    }
+
+    private async updateSignerEmail(signer: SignerI, email: string): Promise<unknown> {
+        const data = JSON.stringify({ email });
+
+        return this.updateSignerField(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/signer/fix-email/${ signer.token_requester }`,
+            signer,
+            data
+        );
+    }
+
+    private async updateSignerField(url: string, signer: SignerI, data: string): Promise<unknown> {
+        const token = await this.auth.getToken();
+
+        return this.xhr.put(
+            url,
+            data,
+            {
+                headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                    [ 'Authorization', `Bearer ${ token }` ]
+                ],
+                transformResponse: res => { return JSON.parse(res) }
+            }
+        );
     }
 
 }

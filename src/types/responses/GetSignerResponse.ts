@@ -1,5 +1,6 @@
 import { SignatureFileJSON } from "../../tasks/sign/SignatureFile";
 import ServerFile from "../ServerFile";
+import SignerStatus from "./SignerStatus";
 
 type GetSignerResponse = {
     id: number;
@@ -23,7 +24,7 @@ type GetSignerResponse = {
     /**
      * Signature status.
      */
-    status: 'waiting' | 'sent' | 'viewed' | 'signed' | 'validated' | 'nonvalidated' | 'declined' | 'error';
+    status: SignerStatus;
     email_status: number;
     phone_status: number;
     /**
