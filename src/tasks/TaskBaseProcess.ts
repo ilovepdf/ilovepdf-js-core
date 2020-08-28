@@ -1,14 +1,20 @@
 import Task, { TaskParams } from "./Task";
 import ProcessResponse from "../types/responses/ProcessResponse";
-import { ResponsesI } from "./TaskI";
+import { ResponsesI, StatusI } from "./TaskI";
 import globals from '../constants/globals.json';
 import ProcessError from "../errors/ProcessError";
 import { thereIsUndefined } from "../utils/typecheck";
 import XHRInterface from "../utils/XHRInterface";
 import Auth from "../auth/Auth";
+import TaskStatus from "../types/responses/TaskStatus";
+import GetTaskResponse from "../types/responses/GetTaskResponse";
 
 interface Responses extends ResponsesI {
     process: ProcessResponse | null;
+}
+
+interface Status extends StatusI {
+    document: TaskStatus | '';
 }
 
 export default abstract class TaskBaseProcess extends Task {
@@ -28,6 +34,34 @@ export default abstract class TaskBaseProcess extends Task {
         }
     }
 
+    /**
+     * @inheritdoc
+     */
+    public async getStatus() {
+        const token = await this.auth.getToken();
+
+        const response = await this.xhr.get<GetTaskResponse>(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/task/${ this.id }`,
+            {
+                headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                    [ 'Authorization', `Bearer ${ token }` ]
+                ],
+                transformResponse: res => { return JSON.parse(res) }
+            }
+        )
+
+        const status: Status = {
+            document: response.status
+         };
+
+        return status;
+    }
+
+    /**
+     * @inheritdoc
+     * @param params - Params to run the process step.
+     */
     public async process(params: ProcessParams = {}) {
         const token = await this.auth.getToken();
 

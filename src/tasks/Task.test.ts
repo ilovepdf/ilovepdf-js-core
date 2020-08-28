@@ -157,4 +157,22 @@ describe('Task', () => {
         .rejects.toThrow();
     })
 
+    it('gets a task status', () => {
+        const task = taskFactory.newTask('compress', auth, xhr);
+
+        return task.start()
+        .then(task => {
+            return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+        })
+        .then(task => {
+            return task.process();
+        })
+        .then(task =>{
+            return task.getStatus();
+        })
+        .then(status => {
+            expect(status.document).toBe('TaskSuccess');
+        });
+    });
+
 });

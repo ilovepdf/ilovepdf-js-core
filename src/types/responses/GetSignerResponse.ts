@@ -1,6 +1,6 @@
 import { SignatureFileJSON } from "../../tasks/sign/SignatureFile";
 import ServerFile from "../ServerFile";
-import SignerStatus from "./SignerStatus";
+import SignatureStatus from "./SignatureStatus";
 
 type GetSignerResponse = {
     id: number;
@@ -24,7 +24,7 @@ type GetSignerResponse = {
     /**
      * Signature status.
      */
-    status: SignerStatus;
+    status: SignatureStatus;
     email_status: number;
     phone_status: number;
     /**

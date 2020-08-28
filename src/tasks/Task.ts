@@ -16,7 +16,7 @@ import StartResponse from '../types/responses/StartResponse';
 import UploadResponse from '../types/responses/UploadResponse';
 import DeleteResponse from '../types/responses/DeleteResponse';
 import ConnectResponse from '../types/responses/ConnectResponse';
-import TaskI, { ResponsesI } from './TaskI';
+import TaskI, { ResponsesI, StatusI } from './TaskI';
 import FileAlreadyExistsError from '../errors/FileAlreadyExistsError';
 import DeleteFileResponse from '../types/responses/DeleteFileResponse';
 import { thereIsUndefined } from '../utils/typecheck';
@@ -75,6 +75,11 @@ export default abstract class Task implements TaskI {
         }
 
     }
+
+    /**
+     * @inheritdoc
+     */
+    public abstract async getStatus(): Promise<StatusI>;
 
     /**
      * @inheritdoc

@@ -1,6 +1,6 @@
 import { SignatureFileI, SignatureFileJSON } from "./SignatureFile";
 import FileAlreadyExistsError from "../../errors/FileAlreadyExistsError";
-import SignerStatus from "../../types/responses/SignerStatus";
+import SignatureStatus from "../../types/responses/SignatureStatus";
 
 export interface SignerI {
     /**
@@ -10,11 +10,7 @@ export interface SignerI {
     /**
      * Signer email.
      */
-    email: string;
-    /**
-     * Signer status.
-     */
-    status: SignerStatus;
+    readonly email: string;
     /**
      * Signer optional parameters.
      */
@@ -46,7 +42,7 @@ export interface SignerI {
     /**
      * Updates signer status and fires 'update.status' event.
      */
-    updateStatus: (status: SignerStatus) => Promise<void>;
+    updateStatus: (status: SignatureStatus) => Promise<void>;
     /**
      * Updates signer phone and fires 'update.phone' event.
      */
@@ -71,25 +67,27 @@ export interface SignerI {
 
 export default class Signer implements SignerI {
     public readonly name: string;
-    public email: string;
-    public status: SignerStatus;
     public readonly params: SignerParams;
     public readonly files: Array<SignatureFileI>;
 
     public token_signer: string;
     public token_requester: string;
 
+    private _email: string;
     private events: Events;
 
     constructor(name: string, email: string, params: SignerParams = {}) {
         this.name = name;
-        this.email = email;
-        this.status = 'waiting';
+        this._email = email;
         this.params = params;
         this.files = [];
         this.token_signer = '';
         this.token_requester = '';
         this.events = {};
+    }
+
+    get email() {
+        return this._email;
     }
 
     public addFile(file: SignatureFileI) {
@@ -104,9 +102,8 @@ export default class Signer implements SignerI {
         if (index !== -1) this.files.splice(index, 1);
     }
 
-    public async updateStatus(status: SignerStatus) {
+    public async updateStatus(status: SignatureStatus) {
         await this.fireEvent('update.status', this, status);
-        this.status = status;
     }
 
     public async updatePhone(phone: string) {
@@ -116,7 +113,7 @@ export default class Signer implements SignerI {
 
     public async updateEmail(email: string) {
         await this.fireEvent('update.email', this, email);
-        this.email = email;
+        this._email = email;
     }
 
     public addEvent<T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) {
@@ -207,4 +204,4 @@ interface ListenerEventMap {
 
 type UpdateStringEvent = (signer: SignerI, field: string) => Promise<any>;
 
-type UpdateStatusEvent = (signer: SignerI, status: SignerStatus) => Promise<any>;
+type UpdateStatusEvent = (signer: SignerI, status: SignatureStatus) => Promise<any>;

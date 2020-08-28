@@ -4,7 +4,6 @@ import BaseFile from "./BaseFile";
 import StartResponse from "../types/responses/StartResponse";
 import DeleteResponse from "../types/responses/DeleteResponse";
 import ConnectResponse from "../types/responses/ConnectResponse";
-import ProcessResponse from "../types/responses/ProcessResponse";
 import UploadResponse from "../types/responses/UploadResponse";
 import DeleteFileResponse from "../types/responses/DeleteFileResponse";
 
@@ -13,6 +12,10 @@ export default interface TaskI {
      * Server response from each function call.
      */
     readonly responses: ResponsesI;
+    /**
+     * Retrieve task status object.
+     */
+    getStatus: () => Promise<StatusI>;
     /**
      * Starts task retrieving the assigned server and task id.
      * @returns Itself.
@@ -66,8 +69,12 @@ export type ResponsesI = {
     start: StartResponse | null;
     addFile: UploadResponse | null;
     deleteFile: DeleteFileResponse | null;
-    process: object | null;
+    process: Object | null;
     download: DownloadResponse | null;
     delete: DeleteResponse | null;
     connect: ConnectResponse | null;
+};
+
+export interface StatusI {
+    document: Object;
 };

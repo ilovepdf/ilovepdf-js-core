@@ -3,7 +3,6 @@ import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
 import GetSignerResponse from "./types/responses/GetSignerResponse";
 import GetSignatureTemplateResponse from "./types/responses/GetSignatureTemplateResponse";
-import { SignatureFileJSON } from "./tasks/sign/SignatureFile";
 
 /**
  * Updates a signer that was also the requester in a signature process.
@@ -80,7 +79,7 @@ const updateSignerPhone = async (auth: Auth, xhr: XHRInterface, requesterToken: 
 }
 
 /**
- *
+ * Retrieves a signature template.
  * @param auth - Auth system to generate the correct credentials.
  * @param xhr - XHR system to make requests.
  * @param taskId - Task id of the task that created the template.

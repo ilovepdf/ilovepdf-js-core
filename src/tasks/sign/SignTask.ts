@@ -7,11 +7,12 @@ import globals from '../../constants/globals.json';
 import Requester from "./Requester";
 import { SignerI } from "./Signer";
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
-import TaskI, { ResponsesI } from "../TaskI";
+import TaskI, { ResponsesI, StatusI } from "../TaskI";
 import SignatureFile from "./SignatureFile";
-import SignatureProcessResponse, { SignerResponse } from "../../types/responses/SignatureProcessResponse";
+import SignatureProcessResponse from "../../types/responses/SignatureProcessResponse";
 import { isArray } from "util";
-import SignerStatus from "../../types/responses/SignerStatus";
+import SignatureStatus from "../../types/responses/SignatureStatus";
+import GetSignerResponse from "../../types/responses/GetSignerResponse";
 
 export interface SignProcessParams {
     // Emails language that will be received by signers.
@@ -52,6 +53,13 @@ interface Responses extends ResponsesI {
     process: Array<SignatureProcessResponse> | null;
 }
 
+interface Status extends StatusI {
+    document: SignatureStatus;
+    signers: {
+        [email: string]: number
+    };
+}
+
 export default class SignTask extends Task {
     public type: ILovePDFTool;
     public requester: Requester | null;
@@ -78,6 +86,36 @@ export default class SignTask extends Task {
         this.updateSignerPhone = this.updateSignerPhone.bind(this);
         this.updateSignerEmail = this.updateSignerEmail.bind(this);
         this.updateSignerStatus = this.updateSignerStatus.bind(this);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public async getStatus(): Promise<Status> {
+        const token = await this.auth.getToken();
+
+        const response = await this.xhr.get<SignatureProcessResponse>(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/${ this.id }`,
+            {
+                headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                    [ 'Authorization', `Bearer ${ token }` ]
+                ],
+                transformResponse: res => { return JSON.parse(res) }
+            }
+        )
+
+        const status: Status = {
+            document: response.status,
+            signers: {}
+         };
+
+        response.signers.forEach(signer => {
+            const { email, email_status} = signer;
+            status.signers[email] = email_status;
+        })
+
+        return status;
     }
 
     /**
@@ -140,7 +178,7 @@ export default class SignTask extends Task {
         );
     }
 
-    private fillSignerTokens(responseSigners: Array<SignerResponse>) {
+    private fillSignerTokens(responseSigners: Array<GetSignerResponse>) {
 
         this.signers.forEach((signer, index) => {
             const { token_signer, token_requester } = responseSigners[index];
@@ -227,7 +265,7 @@ export default class SignTask extends Task {
         );
     }
 
-    private async updateSignerStatus(signer: SignerI, status: SignerStatus): Promise<unknown> {
+    private async updateSignerStatus(signer: SignerI, status: SignatureStatus): Promise<unknown> {
         const data = JSON.stringify({ status });
 
         return this.updateSignerField(
