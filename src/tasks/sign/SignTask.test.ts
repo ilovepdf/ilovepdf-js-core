@@ -373,7 +373,7 @@ describe('SignTask', () => {
                 content: null as unknown as string
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'req@ester.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -386,12 +386,13 @@ describe('SignTask', () => {
                 custom_string: '0'
             });
         })
+        .then(async () => {
+            // Waiting for signature_status change.
+            return await new Promise(r => setTimeout(r, 1000));
+        })
         .then(() => {
             const signer = task.signers[0];
-            return signer.updateStatus('sent');
-        })
-        .catch(err => {
-            expect(err.response.data.error.param.status).toBe('Can\'t be set to sent');
+            return signer.updateStatus('error');
         });
     });
 

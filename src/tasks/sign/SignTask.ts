@@ -11,6 +11,7 @@ import TaskI, { ResponsesI } from "../TaskI";
 import SignatureFile from "./SignatureFile";
 import SignatureProcessResponse, { SignerResponse } from "../../types/responses/SignatureProcessResponse";
 import { isArray } from "util";
+import SignerStatus from "../../types/responses/SignerStatus";
 
 export interface SignProcessParams {
     // Emails language that will be received by signers.
@@ -76,6 +77,7 @@ export default class SignTask extends Task {
         // Binding.
         this.updateSignerPhone = this.updateSignerPhone.bind(this);
         this.updateSignerEmail = this.updateSignerEmail.bind(this);
+        this.updateSignerStatus = this.updateSignerStatus.bind(this);
     }
 
     /**
@@ -190,6 +192,7 @@ export default class SignTask extends Task {
         this.signers.push(signer);
         signer.addEvent('update.phone', this.updateSignerPhone);
         signer.addEvent('update.email', this.updateSignerEmail);
+        signer.addEvent('update.status', this.updateSignerStatus);
     }
 
     public deleteSigner(signer: SignerI) {
@@ -199,6 +202,7 @@ export default class SignTask extends Task {
             this.signers.splice(index, 1);
             signer.addEvent('update.phone', this.updateSignerPhone);
             signer.addEvent('update.email', this.updateSignerEmail);
+            signer.addEvent('update.status', this.updateSignerStatus);
         }
 
     }
@@ -218,6 +222,16 @@ export default class SignTask extends Task {
 
         return this.updateSignerField(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/signer/fix-email/${ signer.token_requester }`,
+            signer,
+            data
+        );
+    }
+
+    private async updateSignerStatus(signer: SignerI, status: SignerStatus): Promise<unknown> {
+        const data = JSON.stringify({ status });
+
+        return this.updateSignerField(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/signer/${ signer.token_signer }`,
             signer,
             data
         );
