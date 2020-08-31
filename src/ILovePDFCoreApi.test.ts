@@ -64,7 +64,7 @@ describe('ILovePDFCoreApi', () => {
         .then(async () => {
             const { task: taskId } = task.responses.start;
             const response = await ILovePDFCoreApi.getSignatureTemplate(auth, xhr, taskId);
-            expect(response.name).toBe('Plantillita');
+            expect(response.template_name).toBe('Plantillita');
         });
     });
 
