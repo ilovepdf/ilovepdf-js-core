@@ -1,4 +1,4 @@
-import { SignatureFileI, SignatureFileJSON } from "./SignatureFile";
+import SignatureFile, { SignatureFileI, SignatureFileJSON } from "./SignatureFile";
 import FileAlreadyExistsError from "../../errors/FileAlreadyExistsError";
 import SignatureStatus from "../../types/responses/SignatureStatus";
 
@@ -147,6 +147,29 @@ export default class Signer implements SignerI {
             ...this.params,
             files
         };
+    }
+
+    public static from(signerJSON: SignerJSON): Signer {
+        const { name, email, access_code, custom_int, custom_string,
+                force_signature_type, phone, type, files = [] } = signerJSON;
+
+        // Define signer.
+        const signer = new Signer(name, email, {
+            access_code,
+            custom_int,
+            custom_string,
+            force_signature_type,
+            phone,
+            type
+        })
+
+        // Add its files.
+        files.forEach(file => {
+            const signFile = SignatureFile.from(file);
+            signer.addFile(signFile);
+        });
+
+        return signer;
     }
 
 }

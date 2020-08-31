@@ -9,6 +9,10 @@ import DeleteFileResponse from "../types/responses/DeleteFileResponse";
 
 export default interface TaskI {
     /**
+     * Task id.
+     */
+    readonly id: string;
+    /**
      * Server response from each function call.
      */
     readonly responses: ResponsesI;

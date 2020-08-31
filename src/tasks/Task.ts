@@ -31,11 +31,12 @@ export default abstract class Task implements TaskI {
     public abstract type: ILovePDFTool;
     public readonly responses: ResponsesI;
 
-    protected id: string | undefined;
-    protected server: string | undefined;
+    protected server: string;
     protected files: Array<BaseFile>;
     protected auth: Auth;
     protected xhr: XHRInterface;
+
+    private _id: string;
 
     /**
      *
@@ -49,13 +50,9 @@ export default abstract class Task implements TaskI {
 
         const { id, server, files } = params;
 
-        if (!!id) {
-            this.id = id;
-        }
+        this._id = !!id ? id : '';
 
-        if (!!server) {
-            this.server = server;
-        }
+        this.server = !!server ? server : '';
 
         if (!!files) {
             this.files = files;
@@ -74,6 +71,10 @@ export default abstract class Task implements TaskI {
             connect: null
         }
 
+    }
+
+    get id() {
+        return this._id;
     }
 
     /**
@@ -102,8 +103,8 @@ export default abstract class Task implements TaskI {
                 throw new StartError('Task cannot be started');
             }
 
-            this.server = server;
-            this.id = task;
+            this.server = server!;
+            this._id = task!;
 
             // Keep response.
             this.responses.start = data;

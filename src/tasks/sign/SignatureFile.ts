@@ -28,6 +28,15 @@ export default class SignatureFile implements SignatureFileI {
         };
     }
 
+    public static from(signatureFileJSON: SignatureFileJSON): SignatureFile {
+        const { elements, server_filename } = signatureFileJSON;
+
+        const file = new BaseFile('', server_filename);
+
+        const signatureFile = new SignatureFile(file, elements);
+        return signatureFile;
+    }
+
 }
 
 export type SignatureFileJSON = {

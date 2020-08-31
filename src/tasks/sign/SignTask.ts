@@ -63,18 +63,23 @@ interface Status extends StatusI {
     };
 }
 
+interface SignTaskParams extends TaskParams {
+    requester?: Requester;
+    signers?: Array<SignerI>;
+}
+
 export default class SignTask extends Task {
     public type: ILovePDFTool;
     public requester: Requester | null;
     public readonly signers: Array<SignerI>;
     public readonly responses: Responses;
 
-    constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {
+    constructor(auth: Auth, xhr: XHRInterface , params: SignTaskParams = {}) {
         super(auth, xhr, params);
 
         this.type = 'sign';
-        this.requester = null;
-        this.signers = [];
+        this.requester = !!params.requester ? params.requester : null;
+        this.signers = !!params.signers ? params.signers : [];
         this.responses = {
             start: null,
             addFile: null,
@@ -106,12 +111,12 @@ export default class SignTask extends Task {
                 ],
                 transformResponse: res => { return JSON.parse(res) }
             }
-        )
+        );
 
         const status: Status = {
             document: response.status,
             signers: {}
-         };
+        };
 
         response.signers.forEach(signer => {
             const { email, email_status, phone_status } = signer;

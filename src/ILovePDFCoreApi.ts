@@ -1,94 +1,24 @@
 import XHRInterface from "./utils/XHRInterface";
 import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
-import GetSignerResponse from "./types/responses/GetSignerResponse";
 import GetSignatureTemplateResponse from "./types/responses/GetSignatureTemplateResponse";
-
-/**
- * Updates a signer that was also the requester in a signature process.
- * @param auth - Auth system to generate the correct credentials.
- * @param xhr - XHR system to make requests.
- * @param signerToken - Signer token of the signer that has to be updated.
- * @param data - Object with values to change.
- */
-const updateSigner = async (auth: Auth, xhr: XHRInterface, signerToken: string, data: UpdateSignerData): Promise<GetSignerResponse> => {
-    const token = await auth.getToken();
-
-    return xhr.put<GetSignerResponse>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/${ signerToken }`,
-        data,
-        {
-            headers: [
-                [ 'Content-Type', 'application/json;charset=UTF-8' ],
-                [ 'Authorization', `Bearer ${ token }` ]
-            ],
-            transformResponse: res => { return JSON.parse(res) }
-        });
-};
-
-export type UpdateSignerData = {
-    status?: 'waiting' | 'sent' | 'viewed' | 'signed' | 'validated' | 'nonvalidated' | 'declined' | 'error';
-};
-
-/**
- * Updates a signer email in a signature process.
- * @param auth - Auth system to generate the correct credentials.
- * @param xhr - XHR system to make requests.
- * @param requesterToken - Request token of the signer that has to be updated.
- * @param email - New email.
- */
-const updateSignerEmail = async (auth: Auth, xhr: XHRInterface, requesterToken: string, email: string): Promise<GetSignerResponse> => {
-    const token = await auth.getToken();
-
-    return xhr.put<GetSignerResponse>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/fix-email/${ requesterToken }`,
-        {
-            email
-        },
-        {
-            headers: [
-                [ 'Content-Type', 'application/json;charset=UTF-8' ],
-                [ 'Authorization', `Bearer ${ token }` ]
-            ],
-            transformResponse: res => { return JSON.parse(res) }
-        });
-}
-
-/**
- * Updates a signer phone in a signature process.
- * @param auth - Auth system to generate the correct credentials.
- * @param xhr - XHR system to make requests.
- * @param requesterToken - Request token of the signer that has to be updated.
- * @param phone - New phone.
- */
-const updateSignerPhone = async (auth: Auth, xhr: XHRInterface, requesterToken: string, phone: string): Promise<GetSignerResponse> => {
-    const token = await auth.getToken();
-
-    return xhr.put<GetSignerResponse>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/fix-phone/${ requesterToken }`,
-        {
-            phone
-        },
-        {
-            headers: [
-                [ 'Content-Type', 'application/json;charset=UTF-8' ],
-                [ 'Authorization', `Bearer ${ token }` ]
-            ],
-            transformResponse: res => { return JSON.parse(res) }
-        });
-}
+import SignTask from "./tasks/sign/SignTask";
+import SignatureProcessResponse from "./types/responses/SignatureProcessResponse";
+import Signer from "./tasks/sign/Signer";
+import Requester from "./tasks/sign/Requester";
+import BaseFile from "./tasks/BaseFile";
 
 /**
  * Retrieves a signature template.
  * @param auth - Auth system to generate the correct credentials.
  * @param xhr - XHR system to make requests.
- * @param taskId - Task id of the task that created the template.
+ * @param templateTaskId - Task id of the task that created the template.
  */
-const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, taskId: string): Promise<GetSignatureTemplateResponse> => {
+const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateTaskId: string): Promise<GetSignatureTemplateResponse> => {
     const token = await auth.getToken();
 
     return xhr.get<GetSignatureTemplateResponse>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/template/${ taskId }`,
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/template/${ templateTaskId }`,
         {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
@@ -98,9 +28,55 @@ const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, taskId: strin
         });
 }
 
+/**
+ * Retrieves a signature task.
+ * @param auth - Auth system to generate the correct credentials.
+ * @param xhr - XHR system to make requests.
+ * @param templateTaskId - Task id of the task that created the template.
+ */
+const getSignature = async (auth: Auth, xhr: XHRInterface, templateTaskId: string): Promise<SignTask> => {
+    const token = await auth.getToken();
+
+    const response = await xhr.get<SignatureProcessResponse>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ templateTaskId }`,
+        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                [ 'Authorization', `Bearer ${ token }` ]
+            ],
+            transformResponse: res => { return JSON.parse(res) }
+        }
+    );
+
+    const { email, name, custom_int, custom_string, task } = response;
+
+    const requester: Requester = {
+        email,
+        name,
+        custom_int,
+        custom_string
+    }
+
+    const signers = response.signers.map(signerResponse => {
+        const signer = Signer.from(signerResponse);
+        return signer;
+    });
+
+    const files = response.files.map(file => {
+        return new BaseFile('', file.server_filename, file.filename);
+    });
+
+    const signTask = new SignTask(auth, xhr, {
+        files,
+        id: task,
+        requester,
+        server: '',
+        signers
+    })
+
+    return signTask;
+}
+
 export default {
-    updateSigner,
-    updateSignerEmail,
-    updateSignerPhone,
     getSignatureTemplate
 }
