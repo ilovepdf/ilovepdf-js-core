@@ -154,7 +154,8 @@ export default class SignTask extends Task {
     }
 
     public async processFromTemplate(template: TemplateElement): Promise<TaskI> {
-        return this.processWithData(template);
+        const data = JSON.stringify(template);
+        return this.processWithData(data);
     }
 
     public async process(params: SignProcessParams = {}): Promise<TaskI> {
