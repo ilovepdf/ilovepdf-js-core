@@ -2,7 +2,7 @@ import XHRInterface from "./utils/XHRInterface";
 import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
 import GetSignatureTemplateResponse from "./types/responses/GetSignatureTemplateResponse";
-import SignTask from "./tasks/sign/SignTask";
+import SignTask, { TemplateElement } from "./tasks/sign/SignTask";
 import SignatureProcessResponse from "./types/responses/SignatureProcessResponse";
 import Signer from "./tasks/sign/Signer";
 import Requester from "./tasks/sign/Requester";
@@ -14,10 +14,10 @@ import BaseFile from "./tasks/BaseFile";
  * @param xhr - XHR system to make requests.
  * @param templateTaskId - Task id of the task that created the template.
  */
-const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateTaskId: string): Promise<GetSignatureTemplateResponse> => {
+const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateTaskId: string): Promise<TemplateElement> => {
     const token = await auth.getToken();
 
-    return xhr.get<GetSignatureTemplateResponse>(
+    const response = await xhr.get<GetSignatureTemplateResponse>(
         `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/template/${ templateTaskId }`,
         {
             headers: [
@@ -26,6 +26,8 @@ const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateTaskI
             ],
             transformResponse: res => { return JSON.parse(res) }
         });
+
+    return JSON.parse(response.elements) as TemplateElement;
 }
 
 /**
