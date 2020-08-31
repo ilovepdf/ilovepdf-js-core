@@ -77,9 +77,16 @@ export default class SignTask extends Task {
     constructor(auth: Auth, xhr: XHRInterface , params: SignTaskParams = {}) {
         super(auth, xhr, params);
 
+        // Bindings.
+        this.updateSignerPhone = this.updateSignerPhone.bind(this);
+        this.updateSignerEmail = this.updateSignerEmail.bind(this);
+        this.updateSignerStatus = this.updateSignerStatus.bind(this);
+
         this.type = 'sign';
         this.requester = !!params.requester ? params.requester : null;
         this.signers = !!params.signers ? params.signers : [];
+        this.addSignerListeners(this.signers);
+
         this.responses = {
             start: null,
             addFile: null,
@@ -89,11 +96,6 @@ export default class SignTask extends Task {
             delete: null,
             connect: null
         }
-
-        // Binding.
-        this.updateSignerPhone = this.updateSignerPhone.bind(this);
-        this.updateSignerEmail = this.updateSignerEmail.bind(this);
-        this.updateSignerStatus = this.updateSignerStatus.bind(this);
     }
 
     /**
@@ -237,23 +239,36 @@ export default class SignTask extends Task {
     public addSigner(signer: SignerI) {
         const index = this.signers.indexOf(signer);
         if (index !== -1) throw new SignerAlreadyExistsError();
-
+        // Add signers to manage instance changes.
+        this.addSignerListeners([ signer ]);
         this.signers.push(signer);
-        signer.addEvent('update.phone', this.updateSignerPhone);
-        signer.addEvent('update.email', this.updateSignerEmail);
-        signer.addEvent('update.status', this.updateSignerStatus);
     }
 
     public deleteSigner(signer: SignerI) {
         const index = this.signers.indexOf(signer);
 
         if (index !== -1) {
+            // Remove listeners for garbage collector.
+            this.removeSignerListeners([ signer ]);
             this.signers.splice(index, 1);
+        }
+
+    }
+
+    private addSignerListeners(signers: Array<SignerI>) {
+        signers.forEach(signer => {
             signer.addEvent('update.phone', this.updateSignerPhone);
             signer.addEvent('update.email', this.updateSignerEmail);
             signer.addEvent('update.status', this.updateSignerStatus);
-        }
+        });
+    }
 
+    private removeSignerListeners(signers: Array<SignerI>) {
+        signers.forEach(signer => {
+            signer.removeEvent('update.phone', this.updateSignerPhone);
+            signer.removeEvent('update.email', this.updateSignerEmail);
+            signer.removeEvent('update.status', this.updateSignerStatus);
+        });
     }
 
     private async updateSignerPhone(signer: SignerI, phone: string): Promise<unknown> {
@@ -261,7 +276,6 @@ export default class SignTask extends Task {
 
         return this.updateSignerField(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/signer/fix-phone/${ signer.token_requester }`,
-            signer,
             data
         );
     }
@@ -271,7 +285,6 @@ export default class SignTask extends Task {
 
         return this.updateSignerField(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/signer/fix-email/${ signer.token_requester }`,
-            signer,
             data
         );
     }
@@ -281,12 +294,11 @@ export default class SignTask extends Task {
 
         return this.updateSignerField(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/signer/${ signer.token_signer }`,
-            signer,
             data
         );
     }
 
-    private async updateSignerField(url: string, signer: SignerI, data: string): Promise<unknown> {
+    private async updateSignerField(url: string, data: string): Promise<unknown> {
         const token = await this.auth.getToken();
 
         return this.xhr.put(

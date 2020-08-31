@@ -1,6 +1,7 @@
 import SignatureFile, { SignatureFileI, SignatureFileJSON } from "./SignatureFile";
 import FileAlreadyExistsError from "../../errors/FileAlreadyExistsError";
 import SignatureStatus from "../../types/responses/SignatureStatus";
+import GetSignerResponse from "../../types/responses/GetSignerResponse";
 
 export interface SignerI {
     /**
@@ -149,9 +150,10 @@ export default class Signer implements SignerI {
         };
     }
 
-    public static from(signerJSON: SignerJSON): Signer {
+    public static from(signerJSON: GetSignerResponse): Signer {
         const { name, email, access_code, custom_int, custom_string,
-                force_signature_type, phone, type, files = [] } = signerJSON;
+                force_signature_type, phone, type, files = [],
+                token_requester, token_signer } = signerJSON;
 
         // Define signer.
         const signer = new Signer(name, email, {
@@ -161,10 +163,14 @@ export default class Signer implements SignerI {
             force_signature_type,
             phone,
             type
-        })
+        });
+
+        // Inject response data.
+        signer.token_requester = token_requester;
+        signer.token_signer = !!token_signer ? token_signer : '';
 
         // Add its files.
-        files.forEach(file => {
+        files?.forEach(file => {
             const signFile = SignatureFile.from(file);
             signer.addFile(signFile);
         });
@@ -214,7 +220,7 @@ export interface SignerJSON {
     // Accepted signature types.
     force_signature_type?: 'all' | 'text' | 'sign' | 'image';
     // Associated PDF files.
-    files?: Array<SignatureFileJSON>
+    files?: Array<SignatureFileJSON> | null;
 };
 
 type Events = { [eventType: string]: Array<Function> };

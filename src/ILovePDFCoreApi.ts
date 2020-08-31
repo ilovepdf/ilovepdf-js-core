@@ -32,13 +32,13 @@ const getSignatureTemplate = async (auth: Auth, xhr: XHRInterface, templateTaskI
  * Retrieves a signature task.
  * @param auth - Auth system to generate the correct credentials.
  * @param xhr - XHR system to make requests.
- * @param templateTaskId - Task id of the task that created the template.
+ * @param signatureTaskId - Signature task id.
  */
-const getSignature = async (auth: Auth, xhr: XHRInterface, templateTaskId: string): Promise<SignTask> => {
+const getSignature = async (auth: Auth, xhr: XHRInterface, signatureTaskId: string): Promise<SignTask> => {
     const token = await auth.getToken();
 
     const response = await xhr.get<SignatureProcessResponse>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ templateTaskId }`,
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureTaskId }`,
         {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
@@ -70,13 +70,16 @@ const getSignature = async (auth: Auth, xhr: XHRInterface, templateTaskId: strin
         files,
         id: task,
         requester,
-        server: '',
         signers
     })
+
+    // Assign worker.
+    await signTask.start();
 
     return signTask;
 }
 
 export default {
-    getSignatureTemplate
+    getSignatureTemplate,
+    getSignature
 }

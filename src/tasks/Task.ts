@@ -104,7 +104,7 @@ export default abstract class Task implements TaskI {
             }
 
             this.server = server!;
-            this._id = task!;
+            this._id = this._id ? this._id : task!;
 
             // Keep response.
             this.responses.start = data;
