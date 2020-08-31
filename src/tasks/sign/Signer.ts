@@ -55,11 +55,11 @@ export interface SignerI {
     /**
      * Adds an event that fires on specific event type.
      */
-    addEvent: <T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) => void;
+    addEventListener: <T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) => void;
     /**
      * Removes an event that fires on specific event type.
      */
-    removeEvent: <T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) => void;
+    removeEventListener: <T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) => void;
     /**
      * Creates a JSON response to append as a body in a HTTP request.
      */
@@ -117,13 +117,13 @@ export default class Signer implements SignerI {
         this._email = email;
     }
 
-    public addEvent<T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) {
+    public addEventListener<T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) {
         if (!this.events[eventType]) this.events[eventType] = [];
 
         this.events[eventType].push(listener);
     }
 
-    public removeEvent<T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) {
+    public removeEventListener<T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) {
         if (!this.events[eventType]) return;
 
         const index = this.events[eventType].indexOf(listener);

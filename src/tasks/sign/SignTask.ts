@@ -258,17 +258,17 @@ export default class SignTask extends Task {
 
     private addSignerListeners(signers: Array<SignerI>) {
         signers.forEach(signer => {
-            signer.addEvent('update.phone', this.updateSignerPhone);
-            signer.addEvent('update.email', this.updateSignerEmail);
-            signer.addEvent('update.status', this.updateSignerStatus);
+            signer.addEventListener('update.phone', this.updateSignerPhone);
+            signer.addEventListener('update.email', this.updateSignerEmail);
+            signer.addEventListener('update.status', this.updateSignerStatus);
         });
     }
 
     private removeSignerListeners(signers: Array<SignerI>) {
         signers.forEach(signer => {
-            signer.removeEvent('update.phone', this.updateSignerPhone);
-            signer.removeEvent('update.email', this.updateSignerEmail);
-            signer.removeEvent('update.status', this.updateSignerStatus);
+            signer.removeEventListener('update.phone', this.updateSignerPhone);
+            signer.removeEventListener('update.email', this.updateSignerEmail);
+            signer.removeEventListener('update.status', this.updateSignerStatus);
         });
     }
 
