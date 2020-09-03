@@ -1,19 +1,18 @@
 {
   "name": "@ilovepdf/ilovepdf-js-core",
   "author": {
-    "email": "info@ilovepdf.com",
+    "email": "developer@ilovepdf.com",
     "name": "ILOVEPDF S.L.",
     "url": "https://developer.ilovepdf.com/"
   },
   "license": "MIT",
   "description": "ILovePDF Api - Core Library",
-  "version": "0.1.0",
+  "version": "0.1.5",
   "main": "dist/index.js",
-  "private": true,
   "scripts": {
-    "build": "tsc && sed 's#dist/##' ./package.json > ./dist/package.json",
+    "build": "tsc && sed 's#dist/##' ./package.json > ./dist/package.json && cp README.md ./dist",
     "test": "jest ./src --detectOpenHandles",
-    "upload-npm": "npm test && npm run build && cd ./dist && npm publish --acess public"
+    "upload-npm": "npm test && npm run build && cd ./dist && npm publish --access public"
   },
   "dependencies": {
     "@types/jsonwebtoken": "^8.5.0",
@@ -36,5 +35,18 @@
   "jest": {
     "testEnvironment": "node",
     "testTimeout": 10000
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilovepdf/ilovepdf-js-core"
+  },
+  "keywords": [
+    "pdf",
+    "library",
+    "tool",
+    "merge",
+    "split",
+    "compress",
+    "convert"
+  ]
 }
