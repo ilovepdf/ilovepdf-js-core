@@ -1,4 +1,4 @@
-iLovePDF Api - Core Library
+iLovePDF Api - JS Core Library
 --------------------------
 
 Core library to serve a set of classes and functions in order to create new API libraries based in JavaScript or TypeScript. Some examples are @ilovepdf/ilovepdf-js and @ilovepdf/ilovepdf-nodejs.
