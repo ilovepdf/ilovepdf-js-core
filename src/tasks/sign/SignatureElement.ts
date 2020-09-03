@@ -8,17 +8,29 @@ type SignatureElement = {
      * input: input element to fill by the signer.
      */
     type: 'signature' | 'initials' | 'name' | 'date' | 'text' | 'input';
-    // Position of the element inside the pdf page.
+    /**
+     * Position of the element inside the pdf page.
+     */
     position: string;
-    // Pages where put the element.
+    /**
+     * Pages where put the element.
+     */
     pages: string;
-    // Element size.
+    /**
+     * Element size.
+     */
     size: number;
-    // Element color.
+    /**
+     * Element color.
+     */
     color: string;
-    // Element font.
+    /**
+     * Element font.
+     */
     font: string;
-    // Element content.
+    /**
+     * Element content.
+     */
     content: string;
 };
 

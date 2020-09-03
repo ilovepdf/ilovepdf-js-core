@@ -189,37 +189,60 @@ export type SignerParams = {
     * witness: Person who can access and see the document.
     */
     type?: 'signer' | 'validator' | 'witness';
-    // Number to filter in the GET /signer resource.
+    /**
+     * Number to filter in the GET /signer resource.
+     */
     custom_int?: number;
-    // String to filter in the GET /signer resource.
+    /**
+     * String to filter in the GET /signer resource.
+     */
     custom_string?: string;
-    // Defines a code to view the document.
+    /**
+     * Defines a code to view the document.
+     */
     access_code?: string;
-    // Accepted signature types.
+    /**
+     * Accepted signature types.
+     */
     force_signature_type?: 'all' | 'text' | 'sign' | 'image';
 };
 
 export interface SignerJSON {
-    // Signer full name.
+    /**
+     * Signer full name.
+     */
     name: string;
-    // Signer email.
+    /**
+     * Signer email.
+     */
     email: string;
     phone?: string;
     /**
      * Type of Signer:
      * signer: Person who has to sign the document.
-     * validator:
+     * validator: Person who accepts or rejects the document.
+     * witness: Person who can access and see the document.
      */
     type?: 'signer' | 'validator' | 'witness';
-    // Number to filter in the GET /signer resource.
+    /**
+     * Number to filter in the GET /signer resource.
+     */
     custom_int?: number;
-    // String to filter in the GET /signer resource.
+    /**
+     * String to filter in the GET /signer resource.
+     */
     custom_string?: string;
-    // Defines a code to view the document.
+    /**
+     * Defines a code to view the document.
+     */
     access_code?: string;
-    // Accepted signature types.
+    /**
+     * Accepted signature types.
+     */
     force_signature_type?: 'all' | 'text' | 'sign' | 'image';
-    // Associated PDF files.
+    /**
+     * Associated PDF files.
+     */
     files?: Array<SignatureFileJSON> | null;
 };
 

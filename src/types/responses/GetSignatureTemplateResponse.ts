@@ -15,9 +15,21 @@ type GetSignatureTemplateResponse = {
      * Template id. It's equals to its task id.
      */
     template: string;
+    /**
+     * User id who created the signature.
+     */
     user_id: number;
+    /**
+     * Custom string to filter in the future.
+     */
     custom_string: string;
+    /**
+     * Custom number to filter in the future.
+     */
     custom_int: number;
+    /**
+     * DB primary key.
+     */
     id: number;
 };
 

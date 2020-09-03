@@ -1,9 +1,11 @@
-/**
- * 'files' property is an object with a key-value
- * representing server_filename-filename.
- */
 type ConnectResponse = {
+    /**
+     * Task id.
+     */
     task: string;
+    /**
+     * Key-value representing server_filename-filename.
+     */
     files: {
         [ server_filename: string ]: string
     }
