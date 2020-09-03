@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc && sed 's#dist/##' ./package.json > ./dist/package.json",
     "test": "jest ./src --detectOpenHandles",
-    "prepublish": "npm run build"
+    "upload-npm": "npm test && npm run build && cd ./dist && npm publish --acess public"
   },
   "dependencies": {
     "@types/jsonwebtoken": "^8.5.0",
