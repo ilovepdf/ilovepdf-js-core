@@ -1,0 +1,52 @@
+{
+  "name": "@ilovepdf/ilovepdf-js-core",
+  "author": {
+    "email": "developer@ilovepdf.com",
+    "name": "ILOVEPDF S.L.",
+    "url": "https://developer.ilovepdf.com/"
+  },
+  "license": "MIT",
+  "description": "ILovePDF Api - Core Library",
+  "version": "0.1.5",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc && sed 's#dist/##' ./package.json > ./dist/package.json && cp README.md ./dist",
+    "test": "jest ./src --detectOpenHandles",
+    "upload-npm": "npm test && npm run build && cd ./dist && npm publish --access public"
+  },
+  "dependencies": {
+    "@types/jsonwebtoken": "^8.5.0",
+    "jsonwebtoken": "^8.5.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-typescript": "^7.10.4",
+    "@types/jest": "^26.0.9",
+    "babel-jest": "^26.2.2",
+    "dotenv": "^8.2.0",
+    "jest": "^26.2.2",
+    "@types/form-data": "^2.5.0",
+    "@types/node": "^14.0.27",
+    "axios": "^0.19.2",
+    "form-data": "^3.0.0",
+    "typescript": "^3.8.3"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 10000
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ilovepdf/ilovepdf-js-core"
+  },
+  "keywords": [
+    "pdf",
+    "library",
+    "tool",
+    "merge",
+    "split",
+    "compress",
+    "convert"
+  ]
+}
