@@ -15,19 +15,31 @@ import SignatureStatus from "../../types/responses/SignatureStatus";
 import GetSignerResponse from "../../types/responses/GetSignerResponse";
 
 export interface SignProcessParams {
-    // Emails language that will be received by signers.
+    /**
+     * Emails language that will be received by signers.
+     */
     language?: 'EN' | 'ES' | 'FR' | 'IT' | 'JA' | 'ZH-CN' | 'ZH-TW' | 'BG';
-    // If true, allow signers to sign in parallel. Otherwise, do it sequentially.
+    /**
+     * If true, allow signers to sign in parallel. Otherwise, do it sequentially.
+     */
     lock_order?: boolean;
-    // Days until the signature request will expire.
+    /**
+     * Days until the signature request will expire.
+     */
     expiration_date?: number;
-    // If true, a signed certified hash and a qualified timestamp is embedded to
-    // the signed documents, ensuring document and signatures integrity in the
-    // future. Certified signatures are eIDAS, ESIGN & UETA compliant.
+    /**
+     * If true, a signed certified hash and a qualified timestamp is embedded to
+     * the signed documents, ensuring document and signatures integrity in the
+     * future. Certified signatures are eIDAS, ESIGN & UETA compliant.
+     */
     certified?: boolean;
-    // Requester number to facilitate filtering.
+    /**
+     * Requester number to facilitate filtering.
+     */
     custom_int?: number;
-    // Requester string to facilitate filtering.
+    /**
+     * Requester string to facilitate filtering.
+     */
     custom_string?: string;
     /**
      * single: The signer is only one and no requests will be sent.
@@ -37,12 +49,25 @@ export interface SignProcessParams {
      *        Every signer sign the document separately.
      */
     mode?: 'single' | 'multiple' | 'batch';
-    // REQUIRED if 'batch' mode is enabled.
-    // Each file that needs to be signed by each signer.
+    /**
+     * REQUIRED if 'batch' mode is enabled.
+     * Each file that needs to be signed by each signer.
+     */
     batch_elements?: Array<SignatureFile>;
-    // If true, displays UUID at the bottom of the signature. Otherwise, it is hidden.
-    // This has only aesthetic purposes.
+    /**
+     * If true, displays UUID at the bottom of the signature. Otherwise, it is hidden.
+     * This has only aesthetic purposes.
+     */
     uuid_visible?: boolean;
+    /**
+     * Enables signature reminders.
+     */
+    reminders?: boolean;
+    /**
+     * If 'reminders' is true, reminders cycle can be set.
+     * 1 <= signer_reminder_days_cycle <= expiration_days.
+     */
+    signer_reminder_days_cycle?: number;
 }
 
 export interface SignTemplateParams extends SignProcessParams {
@@ -318,5 +343,8 @@ export default class SignTask extends Task {
 }
 
 export interface TemplateElement extends SignatureProcessResponse {
+    /**
+     * Template name.
+     */
     template_name: string;
 };
