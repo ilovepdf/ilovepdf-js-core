@@ -10,7 +10,6 @@ import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
 import TaskI, { ResponsesI, StatusI } from "../TaskI";
 import SignatureFile from "./SignatureFile";
 import SignatureProcessResponse from "../../types/responses/SignatureProcessResponse";
-import { isArray } from "util";
 import SignatureStatus from "../../types/responses/SignatureStatus";
 import GetSignerResponse from "../../types/responses/GetSignerResponse";
 
@@ -244,7 +243,7 @@ export default class SignTask extends Task {
         .then((data) => {
             // Maintain a consistency returning always an array
             // with signatures.
-            if (isArray(data)) {
+            if (Array.isArray(data)) {
                 data.forEach(signature => {
                     this.fillSignerTokens(signature.signers);
                 });
