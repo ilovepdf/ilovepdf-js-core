@@ -17,9 +17,10 @@ import UploadResponse from '../types/responses/UploadResponse';
 import DeleteResponse from '../types/responses/DeleteResponse';
 import ConnectResponse from '../types/responses/ConnectResponse';
 import TaskI, { ResponsesI, StatusI } from './TaskI';
-import FileAlreadyExistsError from '../errors/FileAlreadyExistsError';
 import DeleteFileResponse from '../types/responses/DeleteFileResponse';
 import { thereIsUndefined } from '../utils/typecheck';
+import ElementAlreadyExistsError from '../errors/ElementAlreadyExistsError copy';
+import ElementNotExistsError from '../errors/ElementNotExistError';
 
 export type TaskParams = {
     id?: string;
@@ -80,7 +81,7 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public abstract async getStatus(): Promise<StatusI>;
+    public abstract getStatus(): Promise<StatusI>;
 
     /**
      * @inheritdoc
@@ -175,7 +176,7 @@ export default abstract class Task implements TaskI {
 
     private async uploadFromFile(file: BaseFile) {
         if (this.files.indexOf(file) !== -1) {
-            throw new FileAlreadyExistsError();
+            throw new ElementAlreadyExistsError();
         }
 
         const token = await this.auth.getToken();
@@ -216,7 +217,7 @@ export default abstract class Task implements TaskI {
         const token = await this.auth.getToken();
 
         const index = this.files.indexOf(file);
-        if (index === -1) throw new FileNotExistsError();
+        if (index === -1) throw new ElementNotExistsError();
 
         const fileToRemove = this.files[index];
         return this.xhr.delete<DeleteFileResponse>(
@@ -253,7 +254,7 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public abstract async process(params?: Object): Promise<TaskI>;
+    public abstract process(params?: Object): Promise<TaskI>;
 
     protected getFilesBodyFormat(): ProcessFilesBody {
         const files: ProcessFilesBody = this.files.map((file: BaseFile) => {

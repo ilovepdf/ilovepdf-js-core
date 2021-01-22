@@ -1,7 +1,8 @@
 import SignatureFile, { SignatureFileI, SignatureFileJSON } from "./SignatureFile";
-import FileAlreadyExistsError from "../../errors/FileAlreadyExistsError";
 import SignatureStatus from "../../types/responses/SignatureStatus";
 import GetSignerResponse from "../../types/responses/GetSignerResponse";
+import ElementAlreadyExistsError from "../../errors/ElementAlreadyExistsError copy";
+import ElementNotExistsError from "../../errors/ElementNotExistError";
 
 export interface SignerI {
     /**
@@ -93,14 +94,19 @@ export default class Signer implements SignerI {
 
     public addFile(file: SignatureFileI) {
         const index = this.files.indexOf(file);
-        if (index !== -1) throw new FileAlreadyExistsError();
+        if (index !== -1) throw new ElementAlreadyExistsError();
 
         this.files.push(file);
     }
 
     public deleteFile(file: SignatureFileI) {
         const index = this.files.indexOf(file);
-        if (index !== -1) this.files.splice(index, 1);
+
+        if (index === -1) {
+            throw new ElementNotExistsError();
+        }
+
+        this.files.splice(index, 1);
     }
 
     public async updateStatus(status: SignatureStatus) {

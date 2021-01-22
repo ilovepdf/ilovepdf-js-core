@@ -21,6 +21,7 @@ import HtmlPdfTask from './HtmlPdfTask';
 import ExtractTask from './ExtractTask';
 import TaskTypeNotExistsError from '../errors/TaskTypeNotExistsError';
 import ILovePDFTool from '../types/ILovePDFTool';
+import EditTask from './edit/EditTask';
 
 // Load env vars.
 dotenv.config();
@@ -114,6 +115,11 @@ describe('TaskFactory', () => {
     it('creates a sign task', () => {
         const task = taskFactory.newTask('sign', auth, xhr);
         expect(task).toBeInstanceOf(SignTask);
+    })
+
+    it('creates an edit task', () => {
+        const task = taskFactory.newTask('editpdf', auth, xhr);
+        expect(task).toBeInstanceOf(EditTask);
     })
 
     it('returns an error on invalid tool', () => {

@@ -1,6 +1,6 @@
 import Task, { TaskParams } from "./Task";
 import ProcessResponse from "../types/responses/ProcessResponse";
-import { ResponsesI, StatusI } from "./TaskI";
+import TaskI, { ResponsesI, StatusI } from "./TaskI";
 import globals from '../constants/globals.json';
 import ProcessError from "../errors/ProcessError";
 import { thereIsUndefined } from "../utils/typecheck";
@@ -62,7 +62,7 @@ export default abstract class TaskBaseProcess extends Task {
      * @inheritdoc
      * @param params - Params to run the process step.
      */
-    public async process(params: ProcessParams = {}) {
+    public async process(params: ProcessParams = {}): Promise<TaskI> {
         const token = await this.auth.getToken();
 
         // Convert to files request format.

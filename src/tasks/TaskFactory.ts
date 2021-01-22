@@ -21,6 +21,7 @@ import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
 import TaskI from "./TaskI";
 import SignTask from "./sign/SignTask";
+import EditTask from "./edit/EditTask";
 
 export interface TaskFactoryI {
     newTask: (taskType: ILovePDFTool, auth: Auth, xhr: XHRInterface, params?: TaskParams) => TaskI;
@@ -84,6 +85,9 @@ export default class TaskFactory implements TaskFactoryI {
         }
         else if (taskType === 'sign') {
             return new SignTask(auth, xhr, params);
+        }
+        else if (taskType === 'editpdf') {
+            return new EditTask(auth, xhr, params);
         }
 
         // Don't return and throw an error.
