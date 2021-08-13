@@ -121,8 +121,10 @@ export default class XHRPromise implements XHRInterface {
         return {
             headers,
             responseType,
-            transformResponse
-        };
+            transformResponse,
+            maxBodyLength: Infinity,
+            maxContentLength: Infinity,
+        } as AxiosRequestConfig;
     }
 
 }
