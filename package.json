@@ -7,7 +7,7 @@
   },
   "license": "MIT",
   "description": "ILovePDF Api - Core Library",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && sed 's#dist/##' ./package.json > ./dist/package.json && cp README.md ./dist",
@@ -15,8 +15,9 @@
     "upload-npm": "npm test && npm run build && cd ./dist && npm publish --access public"
   },
   "dependencies": {
-    "@types/jsonwebtoken": "^8.5.0",
-    "jsonwebtoken": "^8.5.1"
+    "jsonwebtoken": "^8.5.1",
+    "axios": "^0.21.1",
+    "form-data": "^3.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.11.1",
@@ -25,10 +26,9 @@
     "@types/form-data": "^2.5.0",
     "@types/jest": "^26.0.9",
     "@types/node": "^14.0.27",
-    "axios": "^0.21.1",
+    "@types/jsonwebtoken": "^8.5.0",
     "babel-jest": "^26.2.2",
     "dotenv": "^8.2.0",
-    "form-data": "^3.0.0",
     "jest": "^26.2.2",
     "typescript": "^3.8.3"
   },
