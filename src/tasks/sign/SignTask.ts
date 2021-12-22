@@ -44,15 +44,8 @@ export interface SignProcessParams {
      * single: The signer is only one and no requests will be sent.
      * multiple: A signature request will be sent to the signers by a requester.
      *           All signers sign the same document.
-     * batch: A signature request will be sent to the signers by a requester.
-     *        Every signer sign the document separately.
      */
-    mode?: 'single' | 'multiple' | 'batch';
-    /**
-     * REQUIRED if 'batch' mode is enabled.
-     * Each file that needs to be signed by each signer.
-     */
-    batch_elements?: Array<SignatureFile>;
+    mode?: 'single' | 'multiple';
     /**
      * If true, displays UUID at the bottom of the signature. Otherwise, it is hidden.
      * This has only aesthetic purposes.
@@ -67,10 +60,6 @@ export interface SignProcessParams {
      * 1 <= signer_reminder_days_cycle <= expiration_days.
      */
     signer_reminder_days_cycle?: number;
-}
-
-export interface SignTemplateParams extends SignProcessParams {
-    template_name: string;
 }
 
 interface Responses extends ResponsesI {
@@ -155,33 +144,6 @@ export default class SignTask extends Task {
         return status;
     }
 
-    /**
-     * Saves the current task as template.
-     * @param params - Template params.
-     */
-    public async saveAsTemplate(params: SignTemplateParams): Promise<TaskI> {
-        const token = await this.auth.getToken();
-        const data = this.createSignatureData(params);
-
-        return this.xhr.post(
-            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/template`,
-            data,
-            {
-                headers: [
-                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
-                    [ 'Authorization', `Bearer ${ token }` ]
-                ],
-                transformResponse: res => { return JSON.parse(res) }
-            }
-        )
-        .then(() => { return this; });
-    }
-
-    public async processFromTemplate(template: TemplateElement): Promise<TaskI> {
-        const data = JSON.stringify(template);
-        return this.processWithData(data);
-    }
-
     public async process(params: SignProcessParams = {}): Promise<TaskI> {
         const data = this.createSignatureData(params);
         return this.processWithData(data);
@@ -199,17 +161,12 @@ export default class SignTask extends Task {
             signer.toJSON()
         ));
 
-        // On batch mode, signature files are put in the root of the object.
-        let batch_elements;
-        if (params.mode === 'batch') batch_elements = params.batch_elements?.map(file => file.toJSON());
-
         return JSON.stringify(
             {
                 task: this.id,
                 files,
                 ...this.requester,
                 signers,
-                batch_elements,
                 // Include optional params.
                 ...params
             }
@@ -340,10 +297,3 @@ export default class SignTask extends Task {
     }
 
 }
-
-export interface TemplateElement extends SignatureProcessResponse {
-    /**
-     * Template name.
-     */
-    template_name: string;
-};
