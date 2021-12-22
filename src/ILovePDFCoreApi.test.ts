@@ -9,7 +9,6 @@ import CompressTask from './tasks/CompressTask';
 import ILovePDFFile from './utils/ILovePDFFile';
 import { inRange } from './utils/math';
 import path from 'path';
-import { sign } from 'crypto';
 import ILovePDFCoreApi from './ILovePDFCoreApi';
 
 // Load env vars.
@@ -18,55 +17,6 @@ dotenv.config();
 const xhr = new XHRPromise();
 
 describe('ILovePDFCoreApi', () => {
-
-    it('gets a template', () => {
-        // Create sign task to create a signer in servers.
-        const taskFactory = new TaskFactory();
-
-        const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
-
-        const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
-
-        return task.start()
-        .then(() => {
-            return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-        })
-        .then(() => {
-            // Requester.
-            task.requester = {
-                name: 'Diego',
-                email: 'req@ester.com'
-            };
-
-            // Signer.
-            const file = task.getFiles()[0];
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-                color: 'red',
-                font: '',
-                content: ''
-            }]);
-
-            const signer = new Signer('Diego Signer', 'invent@ado.com');
-            signer.addFile(signatureFile);
-            task.addSigner(signer);
-
-            return task.saveAsTemplate({
-                template_name: 'Plantillita',
-                mode: 'single',
-                custom_int: 0,
-                custom_string: '0'
-            });
-        })
-        .then(async () => {
-            const { task: taskId } = task.responses.start;
-            const response = await ILovePDFCoreApi.getSignatureTemplate(auth, xhr, taskId);
-            expect(response.template_name).toBe('Plantillita');
-        });
-    });
 
     describe('file_encryption_key', () => {
 
