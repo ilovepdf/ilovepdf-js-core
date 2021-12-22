@@ -1,6 +1,6 @@
 /**
  * All possible statuses of a signature.
  */
-type SignatureStatus = 'waiting' | 'sent' | 'viewed' | 'signed' | 'validated' | 'nonvalidated' | 'declined' | 'error';
+type SignatureStatus = 'draft' | 'sent' | 'delivered' | 'waiting' | 'completed' | 'void' | 'declined' | 'expired' | 'deleted' ;
 
 export default SignatureStatus;
