@@ -13,13 +13,13 @@ import GetSignatureListResponse from "./types/responses/GetSignatureListResponse
  * Retrieves a signature task.
  * @param auth - Auth system to generate the correct credentials.
  * @param xhr - XHR system to make requests.
- * @param signatureTaskId - Signature task id.
+ * @param signatureToken - Signature token.
  */
-const getSignature = async (auth: Auth, xhr: XHRInterface, signatureTaskId: string): Promise<SignTask> => {
+const getSignature = async (auth: Auth, xhr: XHRInterface, signatureToken: string): Promise<SignTask> => {
     const token = await auth.getToken();
 
-    const response = await xhr.get<SignatureProcessResponse>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureTaskId }`,
+    const response = await xhr.get<GetSignatureResponse>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/requesterview/${ signatureToken }`,
         {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
@@ -47,15 +47,14 @@ const getSignature = async (auth: Auth, xhr: XHRInterface, signatureTaskId: stri
         return new BaseFile('', file.server_filename, file.filename);
     });
 
+
     const signTask = new SignTask(auth, xhr, {
         files,
         id: task,
         requester,
-        signers
+        signers,
+        token: signatureToken,
     })
-
-    // Assign worker.
-    await signTask.start();
 
     return signTask;
 };
@@ -76,14 +75,19 @@ const getSignatureList = async (auth: Auth, xhr: XHRInterface,
         }
     );
 
-    const signatureList = response.map( signature => (
-        createExistingSignTask( auth, xhr, signature )
-    ) );
+    const signatureList: Array<SignTask> = [];
+
+    for( let i = 0; i < response.length; i++ ) {
+        const signature = response[i];
+        const signTask = await createExistingSignTask(auth, xhr, signature);
+
+        signatureList.push(signTask);
+    }
 
     return signatureList;
 };
 
-function createExistingSignTask( auth: Auth, xhr: XHRInterface, response: GetSignatureResponse ): SignTask {
+async function createExistingSignTask( auth: Auth, xhr: XHRInterface, response: GetSignatureResponse ): Promise<SignTask> {
     const { email, name, custom_int, custom_string, task } = response;
 
     const requester: Requester = {

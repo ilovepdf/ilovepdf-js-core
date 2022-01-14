@@ -35,6 +35,11 @@ type SignatureProcessResponse = {
      * Signature files.
      */
     files: Array<ServerFile>;
+    /**
+     * Attribute that works like a signature id in order
+     * to manage the signature after task is processed.
+     */
+    token_requester: string;
 };
 
 export default SignatureProcessResponse;

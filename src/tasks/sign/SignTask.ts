@@ -77,6 +77,7 @@ interface Status extends StatusI {
 }
 
 interface SignTaskParams extends TaskParams {
+    token?: string;
     requester?: Requester;
     signers?: Array<SignerI>;
 }
@@ -84,6 +85,7 @@ interface SignTaskParams extends TaskParams {
 export default class SignTask extends Task {
     public type: ILovePDFTool;
     public requester: Requester | null;
+    public token: string | null;
     public readonly signers: Array<SignerI>;
     public readonly responses: Responses;
 
@@ -96,6 +98,7 @@ export default class SignTask extends Task {
         this.updateSignerStatus = this.updateSignerStatus.bind(this);
 
         this.type = 'sign';
+        this.token = !!params.token ? params.token : null;
         this.requester = !!params.requester ? params.requester : null;
         this.signers = !!params.signers ? params.signers : [];
         this.addSignerListeners(this.signers);
@@ -146,7 +149,16 @@ export default class SignTask extends Task {
 
     public async process(params: SignProcessParams = {}): Promise<TaskI> {
         const data = this.createSignatureData(params);
-        return this.processWithData(data);
+
+        return this.processWithData(data)
+            .then( task => {
+                const responsesLength = this.responses.process!.length;
+                const lastResponse = this.responses.process![ responsesLength - 1 ];
+                // Keep the token invariant.
+                this.token = lastResponse.token_requester;
+
+                return task;
+            } );
     }
 
     /**

@@ -123,31 +123,28 @@ describe('ILovePDFCoreApi', () => {
                 type: 'signature',
                 position: '300 -100',
                 pages: '1',
-                size: 40,
-                color: 'red',
-                font: '',
-                content: ''
+                size: 28,
+                color: '#000000',
+                font: null as unknown as string,
+                content: null as unknown as string
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com');
+            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+                type: 'signer',
+                force_signature_type: 'all'
+            });
             signer.addFile(signatureFile);
             task.addSigner(signer);
 
             return task.process({
-                mode: 'single',
+                mode: 'multiple',
                 custom_int: 0,
                 custom_string: '0'
             });
         })
         .then(async () => {
-            const signTask = await ILovePDFCoreApi.getSignature(auth, xhr, task.id);
-            const signer = signTask.signers[0];
-            await signer.updatePhone('654654654');
-            expect(signer.params.phone).toBe('654654654');
-            // // Look if signer management still works.
-            const updatedTask = await ILovePDFCoreApi.getSignature(auth, xhr, task.id);
-            const updatedSigner = updatedTask.signers[0];
-            expect(updatedSigner.params.phone).toBe('654654654');
+            const signTask = await ILovePDFCoreApi.getSignature(auth, xhr, task.token);
+            expect(signTask.token).toBe(task.token);
         });
     });
 
