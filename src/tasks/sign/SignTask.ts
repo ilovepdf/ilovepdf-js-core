@@ -7,8 +7,7 @@ import globals from '../../constants/globals.json';
 import Requester from "./Requester";
 import { SignerI } from "./Signer";
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
-import TaskI, { ResponsesI, StatusI } from "../TaskI";
-import SignatureFile from "./SignatureFile";
+import TaskI, { ResponsesI } from "../TaskI";
 import SignatureProcessResponse from "../../types/responses/SignatureProcessResponse";
 import SignatureStatus from "../../types/responses/SignatureStatus";
 import GetSignerResponse from "../../types/responses/GetSignerResponse";
@@ -66,16 +65,6 @@ interface Responses extends ResponsesI {
     process: Array<SignatureProcessResponse> | null;
 }
 
-interface Status extends StatusI {
-    document: SignatureStatus;
-    signers: {
-        [email: string]: {
-            email_status: number;
-            phone_status: number;
-        }
-    };
-}
-
 interface SignTaskParams extends TaskParams {
     token?: string;
     requester?: Requester;
@@ -117,11 +106,11 @@ export default class SignTask extends Task {
     /**
      * @inheritdoc
      */
-    public async getStatus(): Promise<Status> {
+    public async getStatus(): Promise<SignatureStatus> {
         const token = await this.auth.getToken();
 
         const response = await this.xhr.get<SignatureProcessResponse>(
-            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/${ this.id }`,
+            `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ this.token }`,
             {
                 headers: [
                     [ 'Content-Type', 'application/json;charset=UTF-8' ],
@@ -131,20 +120,7 @@ export default class SignTask extends Task {
             }
         );
 
-        const status: Status = {
-            document: response.status,
-            signers: {}
-        };
-
-        response.signers.forEach(signer => {
-            const { email, email_status, phone_status } = signer;
-            status.signers[email] = {
-                email_status,
-                phone_status
-            };
-        })
-
-        return status;
+        return response.status;
     }
 
     public async process(params: SignProcessParams = {}): Promise<TaskI> {

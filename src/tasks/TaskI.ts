@@ -19,7 +19,7 @@ export default interface TaskI {
     /**
      * Retrieve task status object.
      */
-    getStatus: () => Promise<StatusI>;
+    getStatus: () => Promise<string>;
     /**
      * Starts task retrieving the assigned server and task id.
      * @returns Itself.
@@ -77,8 +77,4 @@ export type ResponsesI = {
     download: DownloadResponse | null;
     delete: DeleteResponse | null;
     connect: ConnectResponse | null;
-};
-
-export interface StatusI {
-    document: Object;
 };

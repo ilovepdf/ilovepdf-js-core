@@ -1,6 +1,6 @@
 import Task, { TaskParams } from "./Task";
 import ProcessResponse from "../types/responses/ProcessResponse";
-import TaskI, { ResponsesI, StatusI } from "./TaskI";
+import TaskI, { ResponsesI } from "./TaskI";
 import globals from '../constants/globals.json';
 import ProcessError from "../errors/ProcessError";
 import { thereIsUndefined } from "../utils/typecheck";
@@ -11,10 +11,6 @@ import GetTaskResponse from "../types/responses/GetTaskResponse";
 
 interface Responses extends ResponsesI {
     process: ProcessResponse | null;
-}
-
-interface Status extends StatusI {
-    document: TaskStatus | '';
 }
 
 export default abstract class TaskBaseProcess extends Task {
@@ -37,7 +33,7 @@ export default abstract class TaskBaseProcess extends Task {
     /**
      * @inheritdoc
      */
-    public async getStatus() {
+    public async getStatus(): Promise<TaskStatus> {
         const token = await this.auth.getToken();
 
         const response = await this.xhr.get<GetTaskResponse>(
@@ -51,11 +47,7 @@ export default abstract class TaskBaseProcess extends Task {
             }
         )
 
-        const status: Status = {
-            document: response.status
-         };
-
-        return status;
+        return response.status;
     }
 
     /**

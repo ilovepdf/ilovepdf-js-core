@@ -116,7 +116,27 @@ async function createExistingSignTask( auth: Auth, xhr: XHRInterface, response: 
     return signTask;
 }
 
+const voidSignature = async (auth: Auth, xhr: XHRInterface,
+                             signatureToken: string): Promise< void > => {
+
+    const token = await auth.getToken();
+
+    xhr.put(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/void/${ signatureToken }`,
+        undefined,
+        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                [ 'Authorization', `Bearer ${ token }` ]
+            ],
+        }
+    ).catch( err => {
+        console.log( JSON.stringify( err.response.data ) );
+    } );
+};
+
 export default {
     getSignature,
     getSignatureList,
+    voidSignature,
 }

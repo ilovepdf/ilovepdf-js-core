@@ -46,7 +46,7 @@ describe('Task', () => {
             return task.getStatus();
         })
         .then(status => {
-            expect(status.document).toBe('TaskSuccess');
+            expect(status).toBe('TaskSuccess');
         });
     });
 

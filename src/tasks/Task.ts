@@ -16,7 +16,7 @@ import StartResponse from '../types/responses/StartResponse';
 import UploadResponse from '../types/responses/UploadResponse';
 import DeleteResponse from '../types/responses/DeleteResponse';
 import ConnectResponse from '../types/responses/ConnectResponse';
-import TaskI, { ResponsesI, StatusI } from './TaskI';
+import TaskI, { ResponsesI } from './TaskI';
 import DeleteFileResponse from '../types/responses/DeleteFileResponse';
 import { thereIsUndefined } from '../utils/typecheck';
 import ElementAlreadyExistsError from '../errors/ElementAlreadyExistsError copy';
@@ -81,7 +81,7 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public abstract getStatus(): Promise<StatusI>;
+    public abstract getStatus(): Promise<string>;
 
     /**
      * @inheritdoc
