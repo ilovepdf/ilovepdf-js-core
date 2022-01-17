@@ -121,7 +121,7 @@ const voidSignature = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
-    xhr.put(
+    await xhr.put(
         `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/void/${ signatureToken }`,
         undefined,
         {
@@ -138,11 +138,28 @@ const increaseSignatureExpirationDays = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
-    xhr.put(
+    await xhr.put(
         `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/increase-expiration-days/${ signatureToken }`,
         {
             days: daysAmount,
         },
+        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                [ 'Authorization', `Bearer ${ token }` ]
+            ],
+        }
+    );
+};
+
+const sendReminders = async (auth: Auth, xhr: XHRInterface,
+                             signatureToken: string): Promise< void > => {
+
+    const token = await auth.getToken();
+
+    await xhr.post(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/sendReminder/${ signatureToken }`,
+        undefined,
         {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
@@ -157,4 +174,5 @@ export default {
     getSignatureList,
     voidSignature,
     increaseSignatureExpirationDays,
+    sendReminders,
 }
