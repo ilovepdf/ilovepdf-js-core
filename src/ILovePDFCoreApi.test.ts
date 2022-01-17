@@ -249,9 +249,79 @@ describe('ILovePDFCoreApi', () => {
         await ILovePDFCoreApi.voidSignature(auth, xhr, task.token);
 
         const serverSignTask = await ILovePDFCoreApi.getSignature( auth, xhr, task.token );
-        const status = await serverSignTask.getStatus();
+        const { status } = await serverSignTask.getStatus();
 
         expect(status).toBe('void');
     });
 
+    it('increases a signature expiration days', async () => {
+        // Create sign task to create a signer in servers.
+        const taskFactory = new TaskFactory();
+
+        const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+
+        const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+
+        await task.start()
+        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        // Requester.
+        task.requester = {
+            name: 'Diego',
+            email: 'req@ester.com'
+        };
+
+        // Signer.
+        const file = task.getFiles()[0];
+        const signatureFile = new SignatureFile(file, [{
+            type: 'signature',
+            position: '300 -100',
+            pages: '1',
+            size: 28,
+            color: '#000000',
+            font: null as unknown as string,
+            content: null as unknown as string
+        }]);
+
+        const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            type: 'signer',
+            force_signature_type: 'all'
+        });
+        signer.addFile(signatureFile);
+        task.addSigner(signer);
+
+        await task.process({
+            mode: 'multiple',
+            custom_int: 0,
+            custom_string: '0'
+        });
+
+        // Increase expiration days.
+        const INCREASED_DAYS = 3;
+        await ILovePDFCoreApi.increaseSignatureExpirationDays(auth, xhr, task.token, INCREASED_DAYS);
+
+        const serverSignTask = await ILovePDFCoreApi.getSignature( auth, xhr, task.token );
+        const { created, expires } = await serverSignTask.getStatus();
+
+        const creationDate = new Date( created );
+        const expirationDate = new Date( expires );
+
+        const diffDays = dateDiffInDays(creationDate, expirationDate);
+
+        // Days by default.
+        const BASE_DAYS = 120;
+
+        expect(diffDays).toBe(BASE_DAYS + INCREASED_DAYS);
+    });
+
 });
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+function dateDiffInDays(a: Date, b: Date): number {
+  // Discard the time and time-zone information.
+  const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+  const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+  return Math.floor((utc2 - utc1) / MS_PER_DAY);
+}

@@ -1,7 +1,7 @@
 import SignatureFile, { SignatureFileI, SignatureFileJSON } from "./SignatureFile";
 import SignatureStatus from "../../types/responses/SignatureStatus";
 import GetSignerResponse from "../../types/responses/GetSignerResponse";
-import ElementAlreadyExistsError from "../../errors/ElementAlreadyExistsError copy";
+import ElementAlreadyExistsError from "../../errors/ElementAlreadyExistsError";
 import ElementNotExistsError from "../../errors/ElementNotExistError";
 
 export interface SignerI {

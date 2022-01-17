@@ -5,6 +5,7 @@ import JWT from '../auth/JWT';
 import XHRPromise from '../utils/XHRPromise';
 import ILovePDFFile from '../utils/ILovePDFFile';
 import { inRange } from '../utils/math';
+import TaskBaseProcess from './TaskBaseProcess';
 
 // Load env vars.
 dotenv.config();
@@ -32,22 +33,14 @@ describe('Task', () => {
         });
     });
 
-    it('gets a task status', () => {
-        const task = taskFactory.newTask('compress', auth, xhr);
+    it('gets a task status', async () => {
+        const task = taskFactory.newTask('compress', auth, xhr) as TaskBaseProcess;
+        await task.start()
+        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+        await task.process();
+        const { status } = await task.getStatus();
 
-        return task.start()
-        .then(task => {
-            return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-        })
-        .then(task => {
-            return task.process();
-        })
-        .then(task =>{
-            return task.getStatus();
-        })
-        .then(status => {
-            expect(status).toBe('TaskSuccess');
-        });
+        expect(status).toBe('TaskSuccess');
     });
 
 });

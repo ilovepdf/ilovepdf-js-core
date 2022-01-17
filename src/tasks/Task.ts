@@ -19,7 +19,7 @@ import ConnectResponse from '../types/responses/ConnectResponse';
 import TaskI, { ResponsesI } from './TaskI';
 import DeleteFileResponse from '../types/responses/DeleteFileResponse';
 import { thereIsUndefined } from '../utils/typecheck';
-import ElementAlreadyExistsError from '../errors/ElementAlreadyExistsError copy';
+import ElementAlreadyExistsError from '../errors/ElementAlreadyExistsError';
 import ElementNotExistsError from '../errors/ElementNotExistError';
 
 export type TaskParams = {
@@ -81,7 +81,7 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public abstract getStatus(): Promise<string>;
+    public abstract getStatus(): Promise<object>;
 
     /**
      * @inheritdoc

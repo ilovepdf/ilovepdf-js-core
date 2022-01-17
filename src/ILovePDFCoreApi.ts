@@ -130,13 +130,31 @@ const voidSignature = async (auth: Auth, xhr: XHRInterface,
                 [ 'Authorization', `Bearer ${ token }` ]
             ],
         }
-    ).catch( err => {
-        console.log( JSON.stringify( err.response.data ) );
-    } );
+    );
+};
+
+const increaseSignatureExpirationDays = async (auth: Auth, xhr: XHRInterface,
+                                               signatureToken: string, daysAmount: number): Promise< void > => {
+
+    const token = await auth.getToken();
+
+    xhr.put(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/increase-expiration-days/${ signatureToken }`,
+        {
+            days: daysAmount,
+        },
+        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                [ 'Authorization', `Bearer ${ token }` ]
+            ],
+        }
+    );
 };
 
 export default {
     getSignature,
     getSignatureList,
     voidSignature,
+    increaseSignatureExpirationDays,
 }

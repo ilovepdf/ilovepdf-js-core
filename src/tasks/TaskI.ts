@@ -19,7 +19,7 @@ export default interface TaskI {
     /**
      * Retrieve task status object.
      */
-    getStatus: () => Promise<string>;
+    getStatus: () => Promise<object>;
     /**
      * Starts task retrieving the assigned server and task id.
      * @returns Itself.

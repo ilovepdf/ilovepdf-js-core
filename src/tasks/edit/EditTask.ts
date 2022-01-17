@@ -7,7 +7,7 @@ import TaskBaseProcess, { ProcessParams } from "../TaskBaseProcess";
 import Element from "./Element";
 import Image from "./Image";
 import ElementNotExistsError from "../../errors/ElementNotExistError";
-import ElementAlreadyExistsError from "../../errors/ElementAlreadyExistsError copy";
+import ElementAlreadyExistsError from "../../errors/ElementAlreadyExistsError";
 import Text from "./Text";
 import Svg from "./Svg";
 
