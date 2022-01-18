@@ -8,6 +8,8 @@ import Requester from "./tasks/sign/Requester";
 import BaseFile from "./tasks/BaseFile";
 import GetSignatureResponse from "./types/responses/GetSignatureResponse";
 import GetSignatureListResponse from "./types/responses/GetSignatureListResponse";
+import DownloadResponse from "./types/responses/DownloadResponse";
+import DownloadError from "./errors/DownloadError";
 
 /**
  * Retrieves a signature task.
@@ -169,10 +171,48 @@ const sendReminders = async (auth: Auth, xhr: XHRInterface,
     );
 };
 
+const downloadOriginalFiles = async (auth: Auth, xhr: XHRInterface,
+                                     signatureToken: string): Promise<DownloadResponse> => {
+
+    const token = await auth.getToken();
+
+    const data = await xhr.get<DownloadResponse>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureToken }/download-original`, {
+        headers: [
+            [ 'Authorization', `Bearer ${ token }` ]
+        ],
+        binary: true
+    })
+
+    if (!data) throw new DownloadError('File cannot be downloaded');
+
+    return data;
+};
+
+const downloadSignedFiles = async (auth: Auth, xhr: XHRInterface,
+                                     signatureToken: string): Promise<DownloadResponse> => {
+
+    const token = await auth.getToken();
+
+    const data = await xhr.get<DownloadResponse>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureToken }/download-signed`, {
+        headers: [
+            [ 'Authorization', `Bearer ${ token }` ]
+        ],
+        binary: true
+    })
+
+    if (!data) throw new DownloadError('File cannot be downloaded');
+
+    return data;
+};
+
 export default {
     getSignature,
     getSignatureList,
     voidSignature,
     increaseSignatureExpirationDays,
     sendReminders,
+    downloadOriginalFiles,
+    downloadSignedFiles,
 }
