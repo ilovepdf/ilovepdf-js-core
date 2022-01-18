@@ -190,7 +190,7 @@ const downloadOriginalFiles = async (auth: Auth, xhr: XHRInterface,
 };
 
 const downloadSignedFiles = async (auth: Auth, xhr: XHRInterface,
-                                     signatureToken: string): Promise<DownloadResponse> => {
+                                   signatureToken: string): Promise<DownloadResponse> => {
 
     const token = await auth.getToken();
 
@@ -207,13 +207,31 @@ const downloadSignedFiles = async (auth: Auth, xhr: XHRInterface,
     return data;
 };
 
+const downloadAuditFiles = async (auth: Auth, xhr: XHRInterface,
+                                  signatureToken: string): Promise<DownloadResponse> => {
+
+    const token = await auth.getToken();
+
+    const data = await xhr.get<DownloadResponse>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureToken }/download-audit`, {
+        headers: [
+            [ 'Authorization', `Bearer ${ token }` ]
+        ],
+        binary: true
+    })
+
+    if (!data) throw new DownloadError('File cannot be downloaded');
+
+    return data;
+};
+
 const getReceiverInfo = async (auth: Auth, xhr: XHRInterface,
-                               signatureToken: string): Promise<GetReceiverInfoResponse> => {
+                               receiverTokenRequester: string): Promise<GetReceiverInfoResponse> => {
 
     const token = await auth.getToken();
 
     const data = await xhr.get<GetReceiverInfoResponse>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/receiver/info/${ signatureToken }`, {
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/receiver/info/${ receiverTokenRequester }`, {
         headers: [
             [ 'Authorization', `Bearer ${ token }` ]
         ],
@@ -233,6 +251,7 @@ export default {
     sendReminders,
     downloadOriginalFiles,
     downloadSignedFiles,
+    downloadAuditFiles,
     getReceiverInfo,
 }
 
