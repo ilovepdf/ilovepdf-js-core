@@ -582,14 +582,6 @@ describe('ILovePDFCoreApi', () => {
             custom_string: '0'
         });
 
-        // Wait to send emails due to this is made
-        // in background.
-        await new Promise<void>(resolve => {
-            setTimeout(() => {
-                resolve();
-            }, 2000);
-        });
-
         // Due to we can test that email was sent, a limit exception is forced.
         const { name } = await ILovePDFCoreApi.getReceiverInfo(auth, xhr, signer.token_requester);
 
