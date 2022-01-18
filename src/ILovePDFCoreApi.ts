@@ -243,6 +243,44 @@ const getReceiverInfo = async (auth: Auth, xhr: XHRInterface,
     return data;
 };
 
+const fixReceiverEmail = async (auth: Auth, xhr: XHRInterface,
+                                receiverTokenRequester: string, email: string): Promise< void > => {
+
+    const token = await auth.getToken();
+
+    await xhr.put(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/fix-email/${ receiverTokenRequester }`,
+        {
+            email,
+        },
+        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                [ 'Authorization', `Bearer ${ token }` ]
+            ],
+        }
+    );
+};
+
+const fixReceiverPhone = async (auth: Auth, xhr: XHRInterface,
+                                receiverTokenRequester: string, phone: string): Promise< void > => {
+
+    const token = await auth.getToken();
+
+    await xhr.put(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/fix-phone/${ receiverTokenRequester }`,
+        {
+            phone,
+        },
+        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                [ 'Authorization', `Bearer ${ token }` ]
+            ],
+        }
+    );
+};
+
 export default {
     getSignature,
     getSignatureList,
@@ -253,6 +291,8 @@ export default {
     downloadSignedFiles,
     downloadAuditFiles,
     getReceiverInfo,
+    fixReceiverEmail,
+    fixReceiverPhone,
 }
 
 type GetReceiverInfoResponse = {
