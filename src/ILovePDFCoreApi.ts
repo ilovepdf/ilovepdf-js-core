@@ -207,6 +207,24 @@ const downloadSignedFiles = async (auth: Auth, xhr: XHRInterface,
     return data;
 };
 
+const getReceiverInfo = async (auth: Auth, xhr: XHRInterface,
+                               signatureToken: string): Promise<GetReceiverInfoResponse> => {
+
+    const token = await auth.getToken();
+
+    const data = await xhr.get<GetReceiverInfoResponse>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/receiver/info/${ signatureToken }`, {
+        headers: [
+            [ 'Authorization', `Bearer ${ token }` ]
+        ],
+        transformResponse: res => { return JSON.parse(res) }
+    })
+
+    if (!data) throw new DownloadError('File cannot be downloaded');
+
+    return data;
+};
+
 export default {
     getSignature,
     getSignatureList,
@@ -215,4 +233,21 @@ export default {
     sendReminders,
     downloadOriginalFiles,
     downloadSignedFiles,
+    getReceiverInfo,
 }
+
+type GetReceiverInfoResponse = {
+    uuid: string,
+    name: string,
+    email: string,
+    type: 'signer' | 'witness' | 'validator',
+    token_requester: string,
+    status: 'waiting' | 'sent' | 'viewed' |
+            'signed' | 'validated' | 'nonvalidated' |
+            'declined' | 'error',
+    access_code: boolean,
+    force_signature_type: 'all' | 'text' | 'sign' | 'image',
+    notes: string | null,
+    fix_email_needed: boolean,
+    fix_phone_needed: boolean,
+};
