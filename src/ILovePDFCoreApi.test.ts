@@ -195,51 +195,96 @@ describe('ILovePDFCoreApi', () => {
         expect( signers[0].email ).toBe('invent@ado.com');
     });
 
-    it('gets a signature list', () => {
+    it('gets a signature list', async () => {
         // Create sign task to create a signer in servers.
         const taskFactory = new TaskFactory();
 
         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-        const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+        // First task.
 
-        return task.start()
-        .then(() => {
-            return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-        })
-        .then(() => {
-            // Requester.
-            task.requester = {
-                name: 'Diego',
-                email: 'req@ester.com'
-            };
+        let task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-            // Signer.
-            const file = task.getFiles()[0];
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-                color: 'red',
-                font: '',
-                content: ''
-            }]);
+        await task.start()
+        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com');
-            signer.addFile(signatureFile);
-            task.addSigner(signer);
+        // Requester.
+        task.requester = {
+            name: 'Diego',
+            email: 'req@ester.com'
+        };
 
-            return task.process({
-                mode: 'single',
-                custom_int: 0,
-                custom_string: '0'
-            });
-        })
-        .then(async () => {
-            const signatureList = await ILovePDFCoreApi.getSignatureList(auth, xhr, 1, 1);
-            expect( signatureList.length ).toBeGreaterThan(0);
+        // Signer.
+        let file = task.getFiles()[0];
+        let signatureFile = new SignatureFile(file, [{
+            type: 'signature',
+            position: '300 -100',
+            pages: '1',
+            size: 28,
+            color: '#000000',
+            font: null as unknown as string,
+            content: null as unknown as string
+        }]);
+
+        let signer = new Signer('Manolo', 'invent@ado.com', {
+            type: 'signer',
+            force_signature_type: 'all'
         });
+        signer.addFile(signatureFile);
+        task.addSigner(signer);
+
+        await task.process({
+            mode: 'multiple',
+            custom_int: 0,
+            custom_string: '0'
+        });
+
+        // Second task.
+
+        task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+
+        await task.start()
+        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        // Requester.
+        task.requester = {
+            name: 'Diego',
+            email: 'req@ester.com'
+        };
+
+        // Signer.
+        file = task.getFiles()[0];
+        signatureFile = new SignatureFile(file, [{
+            type: 'signature',
+            position: '300 -100',
+            pages: '1',
+            size: 28,
+            color: '#000000',
+            font: null as unknown as string,
+            content: null as unknown as string
+        }]);
+
+        signer = new Signer('Paquito', 'invent@ado.com', {
+            type: 'signer',
+            force_signature_type: 'all'
+        });
+        signer.addFile(signatureFile);
+        task.addSigner(signer);
+
+        await task.process({
+            mode: 'multiple',
+            custom_int: 0,
+            custom_string: '0'
+        });
+
+        const signatureList = await ILovePDFCoreApi.getSignatureList(auth, xhr, 0, 2);
+
+        const paquitoName = signatureList[0].signers[0].name;
+
+        const manoloName = signatureList[1].signers[0].name;
+
+        expect( paquitoName ).toBe('Paquito');
+        expect( manoloName ).toBe('Manolo');
     });
 
     it('voids a signature', async () => {

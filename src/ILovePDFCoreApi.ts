@@ -81,11 +81,11 @@ const getSignatureStatus = async (auth: Auth, xhr: XHRInterface, signatureToken:
 };
 
 const getSignatureList = async (auth: Auth, xhr: XHRInterface,
-                                page: number = 0, pageLimit: number = 20): Promise<Array<SignTask>> => {
+                                page: number = 0, pageLimit: number = 20): Promise<Array<GetSignatureStatus>> => {
 
     const token = await auth.getToken();
 
-    const response = await xhr.get<GetSignatureListResponse>(
+    const response = await xhr.get<Array<GetSignatureStatus>>(
         `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/list?page=${ page }&per-page=${ pageLimit }`,
         {
             headers: [
@@ -96,16 +96,7 @@ const getSignatureList = async (auth: Auth, xhr: XHRInterface,
         }
     );
 
-    const signatureList: Array<SignTask> = [];
-
-    for( let i = 0; i < response.length; i++ ) {
-        const signature = response[i];
-        const signTask = await createExistingSignTask(auth, xhr, signature);
-
-        signatureList.push(signTask);
-    }
-
-    return signatureList;
+    return response;
 };
 
 async function createExistingSignTask( auth: Auth, xhr: XHRInterface, response: GetSignatureResponse ): Promise<SignTask> {
