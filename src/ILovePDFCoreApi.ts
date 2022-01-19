@@ -13,6 +13,13 @@ import SignatureStatus from "./types/responses/SignatureStatus";
 import ServerFile from "./types/ServerFile";
 import SignatureElement from "./tasks/sign/SignatureElement";
 
+/**
+ * Returns the signature identified by `signatureToken`.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param signatureToken token_requester property from a created signature.
+ * @returns Signature.
+ */
 const getSignatureStatus = async (auth: Auth, xhr: XHRInterface, signatureToken: string): Promise<GetSignatureStatus> => {
     const token = await auth.getToken();
 
@@ -30,6 +37,15 @@ const getSignatureStatus = async (auth: Auth, xhr: XHRInterface, signatureToken:
     return response;
 };
 
+/**
+ * Returns a list of the created signatures.
+ * A pagination system is used to limit the response length.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param page
+ * @param pageLimit Limit of objects per page.
+ * @returns List of signatures.
+ */
 const getSignatureList = async (auth: Auth, xhr: XHRInterface,
                                 page: number = 0, pageLimit: number = 20): Promise<Array<GetSignatureStatus>> => {
 
@@ -49,35 +65,12 @@ const getSignatureList = async (auth: Auth, xhr: XHRInterface,
     return response;
 };
 
-async function createExistingSignTask( auth: Auth, xhr: XHRInterface, response: GetSignatureResponse ): Promise<SignTask> {
-    const { email, name, custom_int, custom_string, task } = response;
-
-    const requester: Requester = {
-        email,
-        name,
-        custom_int,
-        custom_string
-    }
-
-    const signers = response.signers.map(signerResponse => {
-        const signer = Signer.from(signerResponse);
-        return signer;
-    });
-
-    const files = response.files.map(file => {
-        return new BaseFile('', file.server_filename, file.filename);
-    });
-
-    const signTask = new SignTask(auth, xhr, {
-        files,
-        id: task,
-        requester,
-        signers
-    })
-
-    return signTask;
-}
-
+/**
+ * Voids a non-completed signature.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param signatureToken token_requester property from a created signature.
+ */
 const voidSignature = async (auth: Auth, xhr: XHRInterface,
                              signatureToken: string): Promise< void > => {
 
@@ -95,6 +88,13 @@ const voidSignature = async (auth: Auth, xhr: XHRInterface,
     );
 };
 
+/**
+ * Increases the expiration days limit from a signature.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param signatureToken token_requester property from a created signature.
+ * @param daysAmount Days to increase.
+ */
 const increaseSignatureExpirationDays = async (auth: Auth, xhr: XHRInterface,
                                                signatureToken: string, daysAmount: number): Promise< void > => {
 
@@ -114,6 +114,12 @@ const increaseSignatureExpirationDays = async (auth: Auth, xhr: XHRInterface,
     );
 };
 
+/**
+ * Sends reminders to all the receivers to sign, validate or witness a document.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param signatureToken token_requester property from a created signature.
+ */
 const sendReminders = async (auth: Auth, xhr: XHRInterface,
                              signatureToken: string): Promise< void > => {
 
@@ -131,6 +137,14 @@ const sendReminders = async (auth: Auth, xhr: XHRInterface,
     );
 };
 
+/**
+ * Returns a PDF or ZIP file with the original files, uploaded
+ * at the beginning of the signature creation.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param signatureToken token_requester property from a created signature.
+ * @returns PDF or ZIP file with the original files.
+ */
 const downloadOriginalFiles = async (auth: Auth, xhr: XHRInterface,
                                      signatureToken: string): Promise<DownloadResponse> => {
 
@@ -149,6 +163,13 @@ const downloadOriginalFiles = async (auth: Auth, xhr: XHRInterface,
     return data;
 };
 
+/**
+ * Returns a PDF or ZIP file with the signed files.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param signatureToken token_requester property from a created signature.
+ * @returns PDF or ZIP file with the signed files.
+ */
 const downloadSignedFiles = async (auth: Auth, xhr: XHRInterface,
                                    signatureToken: string): Promise<DownloadResponse> => {
 
@@ -167,6 +188,14 @@ const downloadSignedFiles = async (auth: Auth, xhr: XHRInterface,
     return data;
 };
 
+/**
+ * Returns a PDF or ZIP file with the audit files that inform about
+ * files legitimity.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param signatureToken token_requester property from a created signature.
+ * @returns PDF or ZIP file with the audit files.
+ */
 const downloadAuditFiles = async (auth: Auth, xhr: XHRInterface,
                                   signatureToken: string): Promise<DownloadResponse> => {
 
@@ -185,6 +214,13 @@ const downloadAuditFiles = async (auth: Auth, xhr: XHRInterface,
     return data;
 };
 
+/**
+ * Returns a receiver information related to a specific sign process.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param receiverTokenRequester token_requester from a receiver.
+ * @returns Receiver information.
+ */
 const getReceiverInfo = async (auth: Auth, xhr: XHRInterface,
                                receiverTokenRequester: string): Promise<GetReceiverInfoResponse> => {
 
@@ -203,6 +239,13 @@ const getReceiverInfo = async (auth: Auth, xhr: XHRInterface,
     return data;
 };
 
+/**
+ * Fixes a receiver's email.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param receiverTokenRequester token_requester from a receiver.
+ * @param email New email.
+ */
 const fixReceiverEmail = async (auth: Auth, xhr: XHRInterface,
                                 receiverTokenRequester: string, email: string): Promise< void > => {
 
@@ -222,6 +265,13 @@ const fixReceiverEmail = async (auth: Auth, xhr: XHRInterface,
     );
 };
 
+/**
+ * Fixes a receiver's phone.
+ * @param auth Auth system to generate the correct credentials.
+ * @param xhr XHR system to make requests.
+ * @param receiverTokenRequester token_requester from a receiver.
+ * @param phone New phone.
+ */
 const fixReceiverPhone = async (auth: Auth, xhr: XHRInterface,
                                 receiverTokenRequester: string, phone: string): Promise< void > => {
 
