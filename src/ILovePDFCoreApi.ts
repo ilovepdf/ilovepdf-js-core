@@ -2,7 +2,6 @@ import XHRInterface from "./utils/XHRInterface";
 import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
 import SignTask from "./tasks/sign/SignTask";
-import SignatureProcessResponse from "./types/responses/SignatureProcessResponse";
 import Signer from "./tasks/sign/Signer";
 import Requester from "./tasks/sign/Requester";
 import BaseFile from "./tasks/BaseFile";
@@ -10,6 +9,9 @@ import GetSignatureResponse from "./types/responses/GetSignatureResponse";
 import GetSignatureListResponse from "./types/responses/GetSignatureListResponse";
 import DownloadResponse from "./types/responses/DownloadResponse";
 import DownloadError from "./errors/DownloadError";
+import SignatureStatus from "./types/responses/SignatureStatus";
+import ServerFile from "./types/ServerFile";
+import SignatureElement from "./tasks/sign/SignatureElement";
 
 /**
  * Retrieves a signature task.
@@ -59,6 +61,23 @@ const getSignature = async (auth: Auth, xhr: XHRInterface, signatureToken: strin
     })
 
     return signTask;
+};
+
+const getSignatureStatus = async (auth: Auth, xhr: XHRInterface, signatureToken: string): Promise<GetSignatureStatus> => {
+    const token = await auth.getToken();
+
+    const response = await xhr.get<GetSignatureStatus>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/requesterview/${ signatureToken }`,
+        {
+            headers: [
+                [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                [ 'Authorization', `Bearer ${ token }` ]
+            ],
+            transformResponse: res => { return JSON.parse(res) }
+        }
+    );
+
+    return response;
 };
 
 const getSignatureList = async (auth: Auth, xhr: XHRInterface,
@@ -282,6 +301,7 @@ const fixReceiverPhone = async (auth: Auth, xhr: XHRInterface,
 };
 
 export default {
+    getSignatureStatus,
     getSignature,
     getSignatureList,
     voidSignature,
@@ -294,6 +314,68 @@ export default {
     fixReceiverEmail,
     fixReceiverPhone,
 }
+
+type GetSignatureStatus = {
+    brand_name: string | null,
+    completed_on: string | null,
+    created: string,
+    email: string,
+    expires: string,
+    language: 'en-US' |
+              'es' |
+              'fr' |
+              'it' |
+              'ca' |
+              'zh-cn' |
+              'zh-tw' |
+              'zh-Hant' |
+              'zh-Hans' |
+              'ar' |
+              'ru' |
+              'de' |
+              'ja' |
+              'pt' |
+              'bg' |
+              'ko' |
+              'nl' |
+              'el' |
+              'hi' |
+              'id' |
+              'ms' |
+              'pl' |
+              'sv' |
+              'th' |
+              'tr' |
+              'uk' |
+              'vi',
+    message_signer: string,
+    mode: 'multiple',
+    name: string,
+    notes: string | null,
+    signer_reminder_days_cycle: number,
+    subject_cc: string | null,
+    subject_signer: string | null,
+    token_requester: string,
+    uuid: string,
+    expired: boolean,
+    signers: Array<{
+        name: string,
+        email: string,
+        force_signature_type: 'all' | 'text' | 'sign' | 'image',
+        files: Array<{
+            serverFilename: string;
+            elements: Array< SignatureElement >;
+        }>
+    }>,
+    expiring: boolean,
+    verify_enabled: boolean,
+    files: Array< ServerFile >,
+    certified: boolean,
+    signer_reminders: boolean,
+    status: SignatureStatus,
+    uuid_visible: boolean,
+    lock_order: boolean,
+};
 
 type GetReceiverInfoResponse = {
     uuid: string,
