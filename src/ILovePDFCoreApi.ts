@@ -13,56 +13,6 @@ import SignatureStatus from "./types/responses/SignatureStatus";
 import ServerFile from "./types/ServerFile";
 import SignatureElement from "./tasks/sign/SignatureElement";
 
-/**
- * Retrieves a signature task.
- * @param auth - Auth system to generate the correct credentials.
- * @param xhr - XHR system to make requests.
- * @param signatureToken - Signature token.
- */
-const getSignature = async (auth: Auth, xhr: XHRInterface, signatureToken: string): Promise<SignTask> => {
-    const token = await auth.getToken();
-
-    const response = await xhr.get<GetSignatureResponse>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/requesterview/${ signatureToken }`,
-        {
-            headers: [
-                [ 'Content-Type', 'application/json;charset=UTF-8' ],
-                [ 'Authorization', `Bearer ${ token }` ]
-            ],
-            transformResponse: res => { return JSON.parse(res) }
-        }
-    );
-
-    const { email, name, custom_int, custom_string, task } = response;
-
-    const requester: Requester = {
-        email,
-        name,
-        custom_int,
-        custom_string
-    }
-
-    const signers = response.signers.map(signerResponse => {
-        const signer = Signer.from(signerResponse);
-        return signer;
-    });
-
-    const files = response.files.map(file => {
-        return new BaseFile('', file.server_filename, file.filename);
-    });
-
-
-    const signTask = new SignTask(auth, xhr, {
-        files,
-        id: task,
-        requester,
-        signers,
-        token: signatureToken,
-    })
-
-    return signTask;
-};
-
 const getSignatureStatus = async (auth: Auth, xhr: XHRInterface, signatureToken: string): Promise<GetSignatureStatus> => {
     const token = await auth.getToken();
 
@@ -293,7 +243,6 @@ const fixReceiverPhone = async (auth: Auth, xhr: XHRInterface,
 
 export default {
     getSignatureStatus,
-    getSignature,
     getSignatureList,
     voidSignature,
     increaseSignatureExpirationDays,
