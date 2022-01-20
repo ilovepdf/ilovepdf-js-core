@@ -2,38 +2,33 @@ import SignatureFile, { SignatureFileJSON } from "../elements/SignatureFile";
 import ElementAlreadyExistsError from "../../../errors/ElementAlreadyExistsError";
 
 export default class Signer {
-    public readonly name: string;
-    public readonly params: SignerParams;
-    public readonly files: Array<SignatureFile>;
-
-    private _email: string;
+    name: string;
+    params: SignerParams;
+    files: Array<SignatureFile>;
+    email: string;
 
     constructor(name: string, email: string, params: SignerParams = {}) {
         this.name = name;
-        this._email = email;
+        this.email = email;
         this.params = params;
         this.files = [];
     }
 
-    get email() {
-        return this._email;
-    }
-
-    public addFile(file: SignatureFile) {
+    addFile(file: SignatureFile) {
         const index = this.files.indexOf(file);
         if (index !== -1) throw new ElementAlreadyExistsError();
 
         this.files.push(file);
     }
 
-    public toJSON(): SignerJSON {
+    toJSON(): SignerJSON {
         const files = this.files.map(file => file.toJSON());
 
         return {
             name: this.name,
             email: this.email,
+            files,
             ...this.params,
-            files
         };
     }
 
