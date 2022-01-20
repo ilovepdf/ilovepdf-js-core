@@ -1,4 +1,4 @@
-import { SignatureFileJSON } from "../../tasks/sign/SignatureFile";
+import { SignatureFileJSON } from "../../tasks/sign/elements/SignatureFile";
 import ServerFile from "../ServerFile";
 import SignatureStatus from "./SignatureStatus";
 

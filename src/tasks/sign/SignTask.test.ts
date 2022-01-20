@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import TaskFactory from "../TaskFactory";
 import XHRPromise from "../../utils/XHRPromise";
 import JWT from "../../auth/JWT";
-import SignatureFile from "./SignatureFile";
+import SignatureFile from "./elements/SignatureFile";
 import Signer from "./receivers/Signer";
 import ILovePDFCoreApi from "../../ILovePDFCoreApi";
 

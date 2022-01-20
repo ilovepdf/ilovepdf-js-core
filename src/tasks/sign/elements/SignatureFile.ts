@@ -1,4 +1,4 @@
-import BaseFile from "../BaseFile";
+import BaseFile from "../../BaseFile";
 import SignatureElement from "./SignatureElement";
 
 export default class SignatureFile {

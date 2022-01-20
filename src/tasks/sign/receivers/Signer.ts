@@ -1,4 +1,4 @@
-import SignatureFile, { SignatureFileJSON } from "../SignatureFile";
+import SignatureFile, { SignatureFileJSON } from "../elements/SignatureFile";
 import ElementAlreadyExistsError from "../../../errors/ElementAlreadyExistsError";
 
 export default class Signer {

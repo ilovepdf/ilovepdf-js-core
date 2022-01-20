@@ -3,7 +3,7 @@ import XHRPromise from './utils/XHRPromise';
 import JWT from './auth/JWT';
 import TaskFactory from './tasks/TaskFactory';
 import SignTask from './tasks/sign/SignTask';
-import SignatureFile from './tasks/sign/SignatureFile';
+import SignatureFile from './tasks/sign/elements/SignatureFile';
 import Signer from './tasks/sign/receivers/Signer';
 import CompressTask from './tasks/CompressTask';
 import ILovePDFFile from './utils/ILovePDFFile';
