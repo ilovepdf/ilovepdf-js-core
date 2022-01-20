@@ -1,13 +1,10 @@
-import SignatureFile, { SignatureFileJSON } from "./SignatureFile";
-import ElementAlreadyExistsError from "../../errors/ElementAlreadyExistsError";
+import SignatureFile, { SignatureFileJSON } from "../SignatureFile";
+import ElementAlreadyExistsError from "../../../errors/ElementAlreadyExistsError";
 
 export default class Signer {
     public readonly name: string;
     public readonly params: SignerParams;
     public readonly files: Array<SignatureFile>;
-
-    public token_signer: string;
-    public token_requester: string;
 
     private _email: string;
 
@@ -16,8 +13,6 @@ export default class Signer {
         this._email = email;
         this.params = params;
         this.files = [];
-        this.token_signer = '';
-        this.token_requester = '';
     }
 
     get email() {

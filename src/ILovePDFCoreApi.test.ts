@@ -4,7 +4,7 @@ import JWT from './auth/JWT';
 import TaskFactory from './tasks/TaskFactory';
 import SignTask from './tasks/sign/SignTask';
 import SignatureFile from './tasks/sign/SignatureFile';
-import Signer from './tasks/sign/Signer';
+import Signer from './tasks/sign/receivers/Signer';
 import CompressTask from './tasks/CompressTask';
 import ILovePDFFile from './utils/ILovePDFFile';
 import { inRange } from './utils/math';
@@ -611,14 +611,17 @@ describe('ILovePDFCoreApi', () => {
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        await task.process({
+        const result = await task.process({
             mode: 'multiple',
             custom_int: 0,
             custom_string: '0'
         });
 
+        const processedSigner = result.signers[0];
+        const { token_requester } = processedSigner;
+
         // Due to we can test that email was sent, a limit exception is forced.
-        const { name } = await ILovePDFCoreApi.getReceiverInfo(auth, xhr, signer.token_requester);
+        const { name } = await ILovePDFCoreApi.getReceiverInfo(auth, xhr, token_requester);
 
         expect(name).toBe('Diego Signer');
     });
@@ -659,15 +662,18 @@ describe('ILovePDFCoreApi', () => {
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        await task.process({
+        const result = await task.process({
             mode: 'multiple',
             custom_int: 0,
             custom_string: '0'
         });
 
+        const processedSigner = result.signers[0];
+        const { token_requester } = processedSigner;
+
         // Test that connection was established.
         try {
-            await ILovePDFCoreApi.fixReceiverEmail(auth, xhr, signer.token_requester, 'newemail@email.com');
+            await ILovePDFCoreApi.fixReceiverEmail(auth, xhr, token_requester, 'newemail@email.com');
             fail( 'it has to fail.' );
         }
         catch(err) {
@@ -713,15 +719,18 @@ describe('ILovePDFCoreApi', () => {
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        await task.process({
+        const result = await task.process({
             mode: 'multiple',
             custom_int: 0,
             custom_string: '0'
         });
 
+        const processedSigner = result.signers[0];
+        const { token_requester } = processedSigner;
+
         // Test that connection was established.
         try {
-            await ILovePDFCoreApi.fixReceiverPhone(auth, xhr, signer.token_requester, '34654654654');
+            await ILovePDFCoreApi.fixReceiverPhone(auth, xhr, token_requester, '34654654654');
             fail( 'it has to fail.' );
         }
         catch(err) {

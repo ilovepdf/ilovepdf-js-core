@@ -4,7 +4,7 @@ import TaskFactory from "../TaskFactory";
 import XHRPromise from "../../utils/XHRPromise";
 import JWT from "../../auth/JWT";
 import SignatureFile from "./SignatureFile";
-import Signer from "./Signer";
+import Signer from "./receivers/Signer";
 import ILovePDFCoreApi from "../../ILovePDFCoreApi";
 
 // Load env vars.

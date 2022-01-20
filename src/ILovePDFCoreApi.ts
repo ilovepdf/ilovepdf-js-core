@@ -2,7 +2,7 @@ import XHRInterface from "./utils/XHRInterface";
 import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
 import SignTask from "./tasks/sign/SignTask";
-import Signer from "./tasks/sign/Signer";
+import Signer from "./tasks/sign/receivers/Signer";
 import Requester from "./tasks/sign/Requester";
 import BaseFile from "./tasks/BaseFile";
 import GetSignatureResponse from "./types/responses/GetSignatureResponse";
@@ -348,15 +348,7 @@ export type GetSignatureStatus = {
     token_requester: string,
     uuid: string,
     expired: boolean,
-    signers: Array<{
-        name: string,
-        email: string,
-        force_signature_type: 'all' | 'text' | 'sign' | 'image',
-        files: Array<{
-            serverFilename: string;
-            elements: Array< SignatureElement >;
-        }>
-    }>,
+    signers: Array<GetReceiverInfoResponse>,
     expiring: boolean,
     verify_enabled: boolean,
     files: Array< ServerFile >,
