@@ -8,8 +8,6 @@ import Requester from "./Requester";
 import { SignerI } from "./Signer";
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
 import { ResponsesI } from "../TaskI";
-import SignatureStatus from "../../types/responses/SignatureStatus";
-import GetSignerResponse from "../../types/responses/GetSignerResponse";
 import { GetSignatureStatus } from "../../ILovePDFCoreApi";
 
 export interface SignProcessParams {
