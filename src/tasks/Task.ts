@@ -109,7 +109,7 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public async addFile(file: BaseFile | string) {
+    public async addFile(file: BaseFile | string): Promise<BaseFile> {
         if (file instanceof BaseFile) {
             return this.uploadFromFile(file);
         }
@@ -117,10 +117,10 @@ export default abstract class Task implements TaskI {
         return this.uploadFromUrl(file as string);
     }
 
-    private async uploadFromUrl(fileUrl: string) {
+    private async uploadFromUrl(fileUrl: string): Promise<BaseFile> {
         const token = await this.auth.getToken();
 
-        return this.xhr.post<UploadResponse>(
+        const data = await this.xhr.post<UploadResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload`,
             JSON.stringify(
                 {
@@ -135,22 +135,18 @@ export default abstract class Task implements TaskI {
                 ],
                 transformResponse: res => { return JSON.parse(res) }
             }
-        )
-        .then((data) => {
-            const { server_filename } = data;
-            if (thereIsUndefined([ server_filename ])) throw new UpdateError('File cannot be uploaded');
+        );
 
-            const file = new BaseFile(this.id!, server_filename, this.getBasename(fileUrl));
-            this.files.push(file);
+        const { server_filename } = data;
+        if (thereIsUndefined([ server_filename ])) throw new UpdateError('File cannot be uploaded');
 
-            // Keep response.
-            this.responses.addFile = data;
+        const file = new BaseFile(this.id!, server_filename, this.getBasename(fileUrl));
+        this.files.push(file);
 
-            return this;
-        })
-        .catch(e => {
-            throw e;
-        });
+        // Keep response.
+        this.responses.addFile = data;
+
+        return file;
     }
 
     private getBasename(path: string): string {
@@ -163,7 +159,7 @@ export default abstract class Task implements TaskI {
         return basename;
     }
 
-    private async uploadFromFile(file: BaseFile) {
+    private async uploadFromFile(file: BaseFile): Promise<BaseFile> {
         if (this.files.indexOf(file) !== -1) {
             throw new ElementAlreadyExistsError();
         }
@@ -173,7 +169,7 @@ export default abstract class Task implements TaskI {
         // Populate file with control data.
         file.taskId = this.id!;
 
-        return this.xhr.post<UploadResponse>(
+        const data = await this.xhr.post<UploadResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload`,
             file,
             {
@@ -182,21 +178,17 @@ export default abstract class Task implements TaskI {
                 ],
                 transformResponse: res => { return JSON.parse(res) }
             }
-        )
-        .then((data) => {
-            const { server_filename } = data;
-            if (thereIsUndefined([ server_filename ])) throw new UpdateError('File cannot be uploaded');
+        );
 
-            // Populate file with control data.
-            file.serverFilename = server_filename;
-            // Insert inside the array of included files.
-            this.files.push(file);
+        const { server_filename } = data;
+        if (thereIsUndefined([ server_filename ])) throw new UpdateError('File cannot be uploaded');
 
-            return this;
-        })
-        .catch(e => {
-            throw e;
-        });
+        // Populate file with control data.
+        file.serverFilename = server_filename;
+        // Insert inside the array of included files.
+        this.files.push(file);
+
+        return file;
     }
 
     /**

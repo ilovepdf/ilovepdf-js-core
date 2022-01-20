@@ -26,7 +26,7 @@ export default interface TaskI {
      * @param file - File or public URL.
      * @returns Itself.
      */
-    addFile: (file: BaseFile | string) => Promise<TaskI>;
+    addFile: (file: BaseFile | string) => Promise<BaseFile>;
     /**
      * Deletes a file previously created.
      * @param file - File to remove.
