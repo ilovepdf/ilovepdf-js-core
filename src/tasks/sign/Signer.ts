@@ -1,5 +1,4 @@
 import SignatureFile, { SignatureFileI, SignatureFileJSON } from "./SignatureFile";
-import SignatureStatus from "../../types/responses/SignatureStatus";
 import GetSignerResponse from "../../types/responses/GetSignerResponse";
 import ElementAlreadyExistsError from "../../errors/ElementAlreadyExistsError";
 import ElementNotExistsError from "../../errors/ElementNotExistError";
@@ -56,7 +55,6 @@ export default class Signer implements SignerI {
     public token_requester: string;
 
     private _email: string;
-    private events: Events;
 
     constructor(name: string, email: string, params: SignerParams = {}) {
         this.name = name;
@@ -65,7 +63,6 @@ export default class Signer implements SignerI {
         this.files = [];
         this.token_signer = '';
         this.token_requester = '';
-        this.events = {};
     }
 
     get email() {
@@ -195,15 +192,3 @@ export interface SignerJSON {
      */
     files?: Array<SignatureFileJSON> | null;
 };
-
-type Events = { [eventType: string]: Array<Function> };
-
-interface ListenerEventMap {
-    'update.phone': UpdateStringEvent,
-    'update.email': UpdateStringEvent,
-    'update.status': UpdateStatusEvent
-}
-
-type UpdateStringEvent = (signer: SignerI, field: string) => Promise<any>;
-
-type UpdateStatusEvent = (signer: SignerI, status: SignatureStatus) => Promise<any>;
