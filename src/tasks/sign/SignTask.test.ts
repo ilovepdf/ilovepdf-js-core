@@ -24,12 +24,6 @@ describe('SignTask', () => {
             return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
         })
         .then((file) => {
-            // Requester.
-            task.requester = {
-                name: 'Diego',
-                email: 'req@ester.com'
-            };
-
             // Signer.
             const signatureFile = new SignatureFile(file, [{
                 type: 'signature',

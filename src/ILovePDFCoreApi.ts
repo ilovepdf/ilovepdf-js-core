@@ -1,17 +1,10 @@
 import XHRInterface from "./utils/XHRInterface";
 import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
-import SignTask from "./tasks/sign/SignTask";
-import Signer from "./tasks/sign/receivers/Signer";
-import Requester from "./tasks/sign/Requester";
-import BaseFile from "./tasks/BaseFile";
-import GetSignatureResponse from "./types/responses/GetSignatureResponse";
-import GetSignatureListResponse from "./types/responses/GetSignatureListResponse";
 import DownloadResponse from "./types/responses/DownloadResponse";
 import DownloadError from "./errors/DownloadError";
 import SignatureStatus from "./types/responses/SignatureStatus";
 import ServerFile from "./types/ServerFile";
-import SignatureElement from "./tasks/sign/SignatureElement";
 
 /**
  * Returns the signature identified by `signatureToken`.

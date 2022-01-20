@@ -62,12 +62,6 @@ describe('ILovePDFCoreApi', () => {
                 return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
             })
             .then((file) => {
-                // Requester.
-                task.requester = {
-                    name: 'Diego',
-                    email: 'invent@ado.com'
-                };
-
                 // Signer.
                 const signatureFile = new SignatureFile(file, [{
                     type: 'signature',
@@ -105,12 +99,6 @@ describe('ILovePDFCoreApi', () => {
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
-
         // Signer.
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
@@ -129,13 +117,13 @@ describe('ILovePDFCoreApi', () => {
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        await task.process({
+        const { token_requester } = await task.process({
             mode: 'multiple',
             custom_int: 0,
             custom_string: '0'
         });
 
-        const { signers } = await ILovePDFCoreApi.getSignatureStatus(auth, xhr, task.token);
+        const { signers } = await ILovePDFCoreApi.getSignatureStatus(auth, xhr, token_requester);
 
         expect( signers[0].email ).toBe('invent@ado.com');
     });
@@ -153,12 +141,6 @@ describe('ILovePDFCoreApi', () => {
         await task.start()
 
         let file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
 
         // Signer.
         let signatureFile = new SignatureFile(file, [{
@@ -191,12 +173,6 @@ describe('ILovePDFCoreApi', () => {
         await task.start()
 
         file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
 
         // Signer.
         signatureFile = new SignatureFile(file, [{
@@ -244,12 +220,6 @@ describe('ILovePDFCoreApi', () => {
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
-
         // Signer.
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
@@ -268,7 +238,7 @@ describe('ILovePDFCoreApi', () => {
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        await task.process({
+        const { token_requester } = await task.process({
             mode: 'multiple',
             custom_int: 0,
             custom_string: '0'
@@ -283,9 +253,9 @@ describe('ILovePDFCoreApi', () => {
         });
 
         // Void signature and look that it is correctly invalidated.
-        await ILovePDFCoreApi.voidSignature(auth, xhr, task.token);
+        await ILovePDFCoreApi.voidSignature(auth, xhr, token_requester);
 
-        const { status } = await ILovePDFCoreApi.getSignatureStatus( auth, xhr, task.token );
+        const { status } = await ILovePDFCoreApi.getSignatureStatus( auth, xhr, token_requester );
 
         expect(status).toBe('void');
     });
@@ -302,12 +272,6 @@ describe('ILovePDFCoreApi', () => {
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
-
         // Signer.
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
@@ -326,7 +290,7 @@ describe('ILovePDFCoreApi', () => {
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        await task.process({
+        const { token_requester } = await task.process({
             mode: 'multiple',
             custom_int: 0,
             custom_string: '0'
@@ -334,9 +298,9 @@ describe('ILovePDFCoreApi', () => {
 
         // Increase expiration days.
         const INCREASED_DAYS = 3;
-        await ILovePDFCoreApi.increaseSignatureExpirationDays(auth, xhr, task.token, INCREASED_DAYS);
+        await ILovePDFCoreApi.increaseSignatureExpirationDays(auth, xhr, token_requester, INCREASED_DAYS);
 
-        const { created, expires } = await ILovePDFCoreApi.getSignatureStatus( auth, xhr, task.token );
+        const { created, expires } = await ILovePDFCoreApi.getSignatureStatus( auth, xhr, token_requester );
 
         const creationDate = new Date( created );
         const expirationDate = new Date( expires );
@@ -361,12 +325,6 @@ describe('ILovePDFCoreApi', () => {
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
-
         // Signer.
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
@@ -385,7 +343,7 @@ describe('ILovePDFCoreApi', () => {
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        await task.process({
+        const { token_requester } = await task.process({
             mode: 'multiple',
             custom_int: 0,
             custom_string: '0'
@@ -400,11 +358,11 @@ describe('ILovePDFCoreApi', () => {
         });
 
         // Due to we can test that email was sent, a limit exception is forced.
-        await ILovePDFCoreApi.sendReminders(auth, xhr, task.token);
-        await ILovePDFCoreApi.sendReminders(auth, xhr, task.token);
+        await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
+        await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
 
         try {
-            await ILovePDFCoreApi.sendReminders(auth, xhr, task.token);
+            await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
             fail( 'it has to fail.' );
         }
         catch(err) {
@@ -425,12 +383,6 @@ describe('ILovePDFCoreApi', () => {
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
-
         // Signer.
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
@@ -449,13 +401,13 @@ describe('ILovePDFCoreApi', () => {
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        await task.process({
+        const { token_requester } = await task.process({
             mode: 'multiple',
             custom_int: 0,
             custom_string: '0'
         });
 
-        const rawData = await ILovePDFCoreApi.downloadOriginalFiles(auth, xhr, task.token);
+        const rawData = await ILovePDFCoreApi.downloadOriginalFiles(auth, xhr, token_requester);
 
         expect(rawData.length).toBeGreaterThan(0);
     });
@@ -472,12 +424,6 @@ describe('ILovePDFCoreApi', () => {
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
-
         // Signer.
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
@@ -496,7 +442,7 @@ describe('ILovePDFCoreApi', () => {
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        await task.process({
+        const { token_requester } = await task.process({
             mode: 'multiple',
             custom_int: 0,
             custom_string: '0'
@@ -506,7 +452,7 @@ describe('ILovePDFCoreApi', () => {
         // But we want to test that the connection was successful, so the
         // exception is the trigger to know that the connection was successful.
         try {
-            await ILovePDFCoreApi.downloadSignedFiles(auth, xhr, task.token);
+            await ILovePDFCoreApi.downloadSignedFiles(auth, xhr, token_requester);
             fail( 'it has to fail.' );
         }
         catch(err) {
@@ -529,12 +475,6 @@ describe('ILovePDFCoreApi', () => {
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
-
         // Signer.
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
@@ -553,7 +493,7 @@ describe('ILovePDFCoreApi', () => {
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        await task.process({
+        const { token_requester } = await task.process({
             mode: 'multiple',
             custom_int: 0,
             custom_string: '0',
@@ -564,7 +504,7 @@ describe('ILovePDFCoreApi', () => {
         // But we want to test that the connection was successful, so the
         // exception is the trigger to know that the connection was successful.
         try {
-            await ILovePDFCoreApi.downloadAuditFiles(auth, xhr, task.token);
+            await ILovePDFCoreApi.downloadAuditFiles(auth, xhr, token_requester);
             fail( 'it has to fail.' );
         }
         catch(err) {
@@ -586,12 +526,6 @@ describe('ILovePDFCoreApi', () => {
         await task.start()
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
 
         // Signer.
         const signatureFile = new SignatureFile(file, [{
@@ -637,12 +571,6 @@ describe('ILovePDFCoreApi', () => {
         await task.start()
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
 
         // Signer.
         const signatureFile = new SignatureFile(file, [{
@@ -694,12 +622,6 @@ describe('ILovePDFCoreApi', () => {
         await task.start()
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-
-        // Requester.
-        task.requester = {
-            name: 'Diego',
-            email: 'req@ester.com'
-        };
 
         // Signer.
         const signatureFile = new SignatureFile(file, [{

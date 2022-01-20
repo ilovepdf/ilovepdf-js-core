@@ -4,7 +4,6 @@ import { TaskParams } from '../Task';
 import Auth from "../../auth/Auth";
 import XHRInterface from "../../utils/XHRInterface";
 import globals from '../../constants/globals.json';
-import Requester from "./Requester";
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
 import { ResponsesI } from "../TaskI";
 import { GetSignatureStatus } from "../../ILovePDFCoreApi";
@@ -61,14 +60,11 @@ export interface SignProcessParams {
 
 interface SignTaskParams extends TaskParams {
     token?: string;
-    requester?: Requester;
     signers?: Array<Signer>;
 }
 
 export default class SignTask extends Task {
     public type: ILovePDFTool;
-    public requester: Requester | null;
-    public token: string | null;
     public readonly signers: Array<Signer>;
     public readonly responses: ResponsesI;
 
@@ -76,8 +72,6 @@ export default class SignTask extends Task {
         super(auth, xhr, params);
 
         this.type = 'sign';
-        this.token = !!params.token ? params.token : null;
-        this.requester = !!params.requester ? params.requester : null;
         this.signers = !!params.signers ? params.signers : [];
 
         this.responses = {
@@ -130,7 +124,6 @@ export default class SignTask extends Task {
             {
                 task: this.id,
                 files,
-                ...this.requester,
                 signers,
                 // Include optional params.
                 ...params
