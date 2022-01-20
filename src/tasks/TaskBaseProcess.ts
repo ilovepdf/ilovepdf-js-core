@@ -13,8 +13,6 @@ interface Responses extends ResponsesI {
     process: ProcessResponse | null;
 }
 
-interface GetStatus extends GetTaskResponse {}
-
 export default abstract class TaskBaseProcess extends Task {
     public readonly responses: Responses;
 
@@ -30,26 +28,6 @@ export default abstract class TaskBaseProcess extends Task {
             delete: null,
             connect: null
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public async getStatus(): Promise<GetStatus> {
-        const token = await this.auth.getToken();
-
-        const response = await this.xhr.get<GetTaskResponse>(
-            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/task/${ this.id }`,
-            {
-                headers: [
-                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
-                    [ 'Authorization', `Bearer ${ token }` ]
-                ],
-                transformResponse: res => { return JSON.parse(res) }
-            }
-        )
-
-        return response;
     }
 
     /**

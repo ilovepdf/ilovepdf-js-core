@@ -81,11 +81,6 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public abstract getStatus(): Promise<object>;
-
-    /**
-     * @inheritdoc
-     */
     public async start() {
         const token = await this.auth.getToken();
 

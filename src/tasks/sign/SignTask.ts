@@ -71,8 +71,6 @@ interface SignTaskParams extends TaskParams {
     signers?: Array<SignerI>;
 }
 
-interface GetStatus extends SignatureProcessResponse {}
-
 export default class SignTask extends Task {
     public type: ILovePDFTool;
     public requester: Requester | null;
@@ -103,26 +101,6 @@ export default class SignTask extends Task {
             delete: null,
             connect: null
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public async getStatus(): Promise<GetStatus> {
-        const token = await this.auth.getToken();
-
-        const response = await this.xhr.get<SignatureProcessResponse>(
-            `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ this.token }`,
-            {
-                headers: [
-                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
-                    [ 'Authorization', `Bearer ${ token }` ]
-                ],
-                transformResponse: res => { return JSON.parse(res) }
-            }
-        );
-
-        return response;
     }
 
     public async process(params: SignProcessParams = {}): Promise<TaskI> {
