@@ -5,10 +5,10 @@ import Auth from "../../auth/Auth";
 import XHRInterface from "../../utils/XHRInterface";
 import globals from '../../constants/globals.json';
 import Requester from "./Requester";
-import { SignerI } from "./Signer";
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
 import { ResponsesI } from "../TaskI";
 import { GetSignatureStatus } from "../../ILovePDFCoreApi";
+import Signer from "./Signer";
 
 export interface SignProcessParams {
     /**
@@ -62,14 +62,14 @@ export interface SignProcessParams {
 interface SignTaskParams extends TaskParams {
     token?: string;
     requester?: Requester;
-    signers?: Array<SignerI>;
+    signers?: Array<Signer>;
 }
 
 export default class SignTask extends Task {
     public type: ILovePDFTool;
     public requester: Requester | null;
     public token: string | null;
-    public readonly signers: Array<SignerI>;
+    public readonly signers: Array<Signer>;
     public readonly responses: ResponsesI;
 
     constructor(auth: Auth, xhr: XHRInterface , params: SignTaskParams = {}) {
@@ -138,7 +138,7 @@ export default class SignTask extends Task {
         );
     }
 
-    public addSigner(signer: SignerI) {
+    public addReceiver(signer: Signer) {
         const index = this.signers.indexOf(signer);
         if (index !== -1) throw new SignerAlreadyExistsError();
         // Add signers to manage instance changes.
