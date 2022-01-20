@@ -222,13 +222,6 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public getFiles(): Array<BaseFile> {
-        return this.files;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public abstract process(params?: Object): Promise<TaskI>;
 
     protected getFilesBodyFormat(): ProcessFilesBody {

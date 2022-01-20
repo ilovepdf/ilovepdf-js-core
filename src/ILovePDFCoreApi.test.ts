@@ -20,7 +20,7 @@ describe('ILovePDFCoreApi', () => {
 
     describe('file_encryption_key', () => {
 
-        it('sets file_encryption_key in a task with normal process', () => {
+        it('sets file_encryption_key in a task with normal process', async () => {
             const taskFactory = new TaskFactory();
 
             const auth = new JWT(xhr,
@@ -32,21 +32,17 @@ describe('ILovePDFCoreApi', () => {
 
             const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
 
-            return task.start()
-            .then(() => {
-                const file = new ILovePDFFile(path.resolve(__dirname, './tests/input/sample.pdf'));
-                return task.addFile(file);
-            })
-            .then(() => {
-                return task.process({ compression_level: 'low' });
-            })
-            .then(() => {
-                return task.download();
-            })
-            .then(data => {
-                console.log(`Length: ${ data.length }`);
-                expect( inRange(data.length, 1697, 5) ).toBeTruthy();
-            });
+            await task.start()
+
+            const file = new ILovePDFFile(path.resolve(__dirname, './tests/input/sample.pdf'));
+            await task.addFile(file);
+
+            await task.process({ compression_level: 'low' });
+
+            const data = await task.download();
+
+            console.log(`Length: ${ data.length }`);
+            expect( inRange(data.length, 1697, 5) ).toBeTruthy();
         });
 
         it('sets file_encryption_key in a task with signature process without getting errors', () => {
@@ -65,7 +61,7 @@ describe('ILovePDFCoreApi', () => {
             .then(() => {
                 return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
             })
-            .then(() => {
+            .then((file) => {
                 // Requester.
                 task.requester = {
                     name: 'Diego',
@@ -73,7 +69,6 @@ describe('ILovePDFCoreApi', () => {
                 };
 
                 // Signer.
-                const file = task.getFiles()[0];
                 const signatureFile = new SignatureFile(file, [{
                     type: 'signature',
                     position: '300 -100',
@@ -107,7 +102,8 @@ describe('ILovePDFCoreApi', () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -116,7 +112,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        const file = task.getFiles()[0];
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -156,7 +151,8 @@ describe('ILovePDFCoreApi', () => {
         let task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -165,7 +161,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        let file = task.getFiles()[0];
         let signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -203,7 +198,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        file = task.getFiles()[0];
         signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -246,7 +240,8 @@ describe('ILovePDFCoreApi', () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -255,7 +250,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        const file = task.getFiles()[0];
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -304,7 +298,8 @@ describe('ILovePDFCoreApi', () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -313,7 +308,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        const file = task.getFiles()[0];
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -363,7 +357,8 @@ describe('ILovePDFCoreApi', () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -372,7 +367,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        const file = task.getFiles()[0];
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -427,7 +421,8 @@ describe('ILovePDFCoreApi', () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -436,7 +431,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        const file = task.getFiles()[0];
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -474,7 +468,8 @@ describe('ILovePDFCoreApi', () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -483,7 +478,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        const file = task.getFiles()[0];
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -531,7 +525,8 @@ describe('ILovePDFCoreApi', () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -540,7 +535,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        const file = task.getFiles()[0];
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -589,7 +583,8 @@ describe('ILovePDFCoreApi', () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -598,7 +593,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        const file = task.getFiles()[0];
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -637,7 +631,8 @@ describe('ILovePDFCoreApi', () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -646,7 +641,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        const file = task.getFiles()[0];
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
@@ -691,7 +685,8 @@ describe('ILovePDFCoreApi', () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
         await task.start()
-        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -700,7 +695,6 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        const file = task.getFiles()[0];
         const signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',

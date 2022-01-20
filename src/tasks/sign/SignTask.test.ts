@@ -23,7 +23,7 @@ describe('SignTask', () => {
         .then(() => {
             return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
         })
-        .then(() => {
+        .then((file) => {
             // Requester.
             task.requester = {
                 name: 'Diego',
@@ -31,7 +31,6 @@ describe('SignTask', () => {
             };
 
             // Signer.
-            const file = task.getFiles()[0];
             const signatureFile = new SignatureFile(file, [{
                 type: 'signature',
                 position: '300 -100',
@@ -61,7 +60,7 @@ describe('SignTask', () => {
         .then(() => {
             return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
         })
-        .then(() => {
+        .then((file) => {
             // Requester.
             task.requester = {
                 name: 'Diego',
@@ -69,7 +68,6 @@ describe('SignTask', () => {
             };
 
             // Signer.
-            const file = task.getFiles()[0];
             const signatureFile = new SignatureFile(file, [{
                 type: 'signature',
                 position: '300 -100',
@@ -107,7 +105,7 @@ describe('SignTask', () => {
         .then(() => {
             return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
         })
-        .then(() => {
+        .then((file) => {
             // Requester.
             task.requester = {
                 name: 'Diego',
@@ -115,7 +113,6 @@ describe('SignTask', () => {
             };
 
             // Signer.
-            const file = task.getFiles()[0];
             const signatureFile = new SignatureFile(file, [{
                 type: 'signature',
                 position: '300 -100',
@@ -152,7 +149,7 @@ describe('SignTask', () => {
         .then(() => {
             return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
         })
-        .then(() => {
+        .then((file) => {
             // Requester.
             task.requester = {
                 name: 'Diego',
@@ -160,7 +157,6 @@ describe('SignTask', () => {
             };
 
             // Signer.
-            const file = task.getFiles()[0];
             const signatureFile = new SignatureFile(file, [{
                 type: 'signature',
                 position: '300 -100',

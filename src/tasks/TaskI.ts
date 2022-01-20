@@ -33,12 +33,6 @@ export default interface TaskI {
      */
     deleteFile: (file: BaseFile) => Promise<void>;
     /**
-     * Returns an array with the files added to the task
-     * sorted by older to newest.
-     * @returns An array with all the uploaded files.
-     */
-    getFiles: () => Array<BaseFile>;
-    /**
      * Process uploaded files.
      * @param params - Parameters for the process.
      * @returns Itself.
