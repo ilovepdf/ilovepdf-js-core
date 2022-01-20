@@ -77,11 +77,6 @@ export default class SignTask extends Task {
     constructor(auth: Auth, xhr: XHRInterface , params: SignTaskParams = {}) {
         super(auth, xhr, params);
 
-        // Bindings.
-        this.updateSignerPhone = this.updateSignerPhone.bind(this);
-        this.updateSignerEmail = this.updateSignerEmail.bind(this);
-        this.updateSignerStatus = this.updateSignerStatus.bind(this);
-
         this.type = 'sign';
         this.token = !!params.token ? params.token : null;
         this.requester = !!params.requester ? params.requester : null;
@@ -150,59 +145,6 @@ export default class SignTask extends Task {
         if (index !== -1) throw new SignerAlreadyExistsError();
         // Add signers to manage instance changes.
         this.signers.push(signer);
-    }
-
-    public deleteSigner(signer: SignerI) {
-        const index = this.signers.indexOf(signer);
-
-        if (index !== -1) {
-            // Remove listeners for garbage collector.
-            this.signers.splice(index, 1);
-        }
-
-    }
-
-    private async updateSignerPhone(signer: SignerI, phone: string): Promise<unknown> {
-        const data = JSON.stringify({ phone });
-
-        return this.updateSignerField(
-            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/signer/fix-phone/${ signer.token_requester }`,
-            data
-        );
-    }
-
-    private async updateSignerEmail(signer: SignerI, email: string): Promise<unknown> {
-        const data = JSON.stringify({ email });
-
-        return this.updateSignerField(
-            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/signer/fix-email/${ signer.token_requester }`,
-            data
-        );
-    }
-
-    private async updateSignerStatus(signer: SignerI, status: SignatureStatus): Promise<unknown> {
-        const data = JSON.stringify({ status });
-
-        return this.updateSignerField(
-            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature/signer/${ signer.token_signer }`,
-            data
-        );
-    }
-
-    private async updateSignerField(url: string, data: string): Promise<unknown> {
-        const token = await this.auth.getToken();
-
-        return this.xhr.put(
-            url,
-            data,
-            {
-                headers: [
-                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
-                    [ 'Authorization', `Bearer ${ token }` ]
-                ],
-                transformResponse: res => { return JSON.parse(res) }
-            }
-        );
     }
 
 }
