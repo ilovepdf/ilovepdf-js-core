@@ -152,7 +152,7 @@ describe('ILovePDFCoreApi', () => {
 
         await task.start()
 
-        const file1 = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+        let file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -161,7 +161,7 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        let signatureFile = new SignatureFile(file1, [{
+        let signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
             pages: '1',
@@ -190,7 +190,7 @@ describe('ILovePDFCoreApi', () => {
 
         await task.start()
 
-        const file2 = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+        file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
         // Requester.
         task.requester = {
@@ -199,7 +199,7 @@ describe('ILovePDFCoreApi', () => {
         };
 
         // Signer.
-        signatureFile = new SignatureFile(file2, [{
+        signatureFile = new SignatureFile(file, [{
             type: 'signature',
             position: '300 -100',
             pages: '1',
