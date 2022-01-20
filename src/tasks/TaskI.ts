@@ -53,7 +53,7 @@ export default interface TaskI {
      * Deletes this task.
      * @returns Itself.
      */
-    delete: () => Promise<TaskI>;
+    delete: () => Promise<void>;
     /**
      * Connects a new task to execute it on the files resulting
      * from the previous tool.

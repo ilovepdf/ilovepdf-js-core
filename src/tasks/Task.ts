@@ -275,10 +275,10 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public async delete() {
+    public async delete(): Promise<void> {
         const token = await this.auth.getToken();
 
-        return this.xhr.delete<DeleteResponse>(
+        const data = await this.xhr.delete<DeleteResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/task/${ this.id }`,
             {
                 headers: [
@@ -287,29 +287,23 @@ export default abstract class Task implements TaskI {
                 ],
                 transformResponse: res => { return JSON.parse(res) }
             }
-        )
-        .then((data) => {
-            const { download_filename, file_number, filesize,
-                    output_extensions, output_filesize,
-                    output_filenumber, process_start, server,
-                    status, status_message, task, timer, tool } = data;
+        );
 
-            if (thereIsUndefined([ download_filename, filesize,
-                output_extensions, output_filenumber, output_filesize,
-                status, timer, file_number, process_start,server,
-                status_message, task, tool ])) {
+        const { download_filename, file_number, filesize,
+                output_extensions, output_filesize,
+                output_filenumber, process_start, server,
+                status, status_message, task, timer, tool } = data;
 
-                throw new DeleteError('Task cannot be deleted');
-            }
+        if (thereIsUndefined([ download_filename, filesize,
+            output_extensions, output_filenumber, output_filesize,
+            status, timer, file_number, process_start,server,
+            status_message, task, tool ])) {
 
-            // Keep response.
-            this.responses.delete = data;
+            throw new DeleteError('Task cannot be deleted');
+        }
 
-            return this;
-        })
-        .catch(e => {
-            throw e;
-        });
+        // Keep response.
+        this.responses.delete = data;
     }
 
     /**
