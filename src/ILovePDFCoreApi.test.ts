@@ -81,7 +81,7 @@ describe('ILovePDFCoreApi', () => {
 
                 const signer = new Signer('Diego Signer', 'invent@ado.com');
                 signer.addFile(signatureFile);
-                task.addSigner(signer);
+                task.addReceiver(signer);
 
                 return task.process({
                     mode: 'single',
@@ -127,7 +127,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -176,7 +176,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -214,7 +214,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -266,7 +266,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -324,7 +324,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -383,7 +383,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -447,7 +447,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -494,7 +494,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -551,7 +551,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -609,7 +609,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -657,7 +657,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',
@@ -711,7 +711,7 @@ describe('ILovePDFCoreApi', () => {
             force_signature_type: 'all'
         });
         signer.addFile(signatureFile);
-        task.addSigner(signer);
+        task.addReceiver(signer);
 
         await task.process({
             mode: 'multiple',

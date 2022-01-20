@@ -46,7 +46,7 @@ describe('SignTask', () => {
                 force_signature_type: 'all'
             });
             signer.addFile(signatureFile);
-            task.addSigner(signer);
+            task.addReceiver(signer);
 
             return task.process({
                 mode: 'multiple',
