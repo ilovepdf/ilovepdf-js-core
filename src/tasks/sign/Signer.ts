@@ -1,55 +1,10 @@
-import SignatureFile, { SignatureFileI, SignatureFileJSON } from "./SignatureFile";
-import GetSignerResponse from "../../types/responses/GetSignerResponse";
+import SignatureFile, { SignatureFileJSON } from "./SignatureFile";
 import ElementAlreadyExistsError from "../../errors/ElementAlreadyExistsError";
-import ElementNotExistsError from "../../errors/ElementNotExistError";
 
-export interface SignerI {
-    /**
-     * Signer name.
-     */
-    readonly name: string;
-    /**
-     * Signer email.
-     */
-    readonly email: string;
-    /**
-     * Signer optional parameters.
-     */
-    readonly params: SignerParams;
-    /**
-     * Associated signature files.
-     */
-    readonly files: Array<SignatureFileI>;
-    /**
-     * Token of this signer. It is filled by the system on
-     * process a signature process.
-     */
-    token_signer: string;
-    /**
-     * Token of this signer. It is filled by the system on
-     * process a signature process.
-     */
-    token_requester: string;
-    /**
-     * Adds a file to the signer. If exists, throws an error.
-     * @param file - File to add.
-     */
-    addFile: (file: SignatureFileI) => void;
-    /**
-     * Deletes a file previously added. If not exist does not do anything.
-     * @param file - File to add.
-     */
-    deleteFile: (file: SignatureFileI) => void;
-    /**
-     * Creates a JSON response to append as a body in a HTTP request.
-     */
-    toJSON: () => SignerJSON;
-}
-
-export default class Signer implements SignerI {
+export default class Signer {
     public readonly name: string;
     public readonly params: SignerParams;
-    public readonly files: Array<SignatureFileI>;
+    public readonly files: Array<SignatureFile>;
 
     public token_signer: string;
     public token_requester: string;
@@ -69,21 +24,11 @@ export default class Signer implements SignerI {
         return this._email;
     }
 
-    public addFile(file: SignatureFileI) {
+    public addFile(file: SignatureFile) {
         const index = this.files.indexOf(file);
         if (index !== -1) throw new ElementAlreadyExistsError();
 
         this.files.push(file);
-    }
-
-    public deleteFile(file: SignatureFileI) {
-        const index = this.files.indexOf(file);
-
-        if (index === -1) {
-            throw new ElementNotExistsError();
-        }
-
-        this.files.splice(index, 1);
     }
 
     public toJSON(): SignerJSON {
@@ -95,34 +40,6 @@ export default class Signer implements SignerI {
             ...this.params,
             files
         };
-    }
-
-    public static from(signerJSON: GetSignerResponse): Signer {
-        const { name, email, access_code, custom_int, custom_string,
-                force_signature_type, phone, type, files = [],
-                token_requester, token_signer } = signerJSON;
-
-        // Define signer.
-        const signer = new Signer(name, email, {
-            access_code,
-            custom_int,
-            custom_string,
-            force_signature_type,
-            phone,
-            type
-        });
-
-        // Inject response data.
-        signer.token_requester = token_requester;
-        signer.token_signer = !!token_signer ? token_signer : '';
-
-        // Add its files.
-        files?.forEach(file => {
-            const signFile = SignatureFile.from(file);
-            signer.addFile(signFile);
-        });
-
-        return signer;
     }
 
 }
