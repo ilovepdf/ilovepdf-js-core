@@ -20,7 +20,7 @@ export default interface TaskI {
      * Starts task retrieving the assigned server and task id.
      * @returns Itself.
      */
-    start: () => Promise<TaskI>;
+    start: () => Promise<void>;
     /**
      * Adds a file to task.
      * @param file - File or public URL.

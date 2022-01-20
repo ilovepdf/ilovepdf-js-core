@@ -19,18 +19,15 @@ describe('Task', () => {
     it('processes', async () => {
         const task = taskFactory.newTask('merge', auth, xhr);
 
-        return task.start()
-        .then(() => {
-            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
-            return task.addFile(file);
-        })
-        .then(() => {
-            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
-            return task.addFile(file);
-        })
-        .then(() => {
-            return task.process();
-        });
+        await task.start()
+
+        const file1 = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+        await task.addFile(file1);
+
+        const file2 = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+        await task.addFile(file2);
+
+        await task.process();
     });
 
 });

@@ -81,10 +81,10 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public async start() {
+    public async start(): Promise<void> {
         const token = await this.auth.getToken();
 
-        return this.xhr.get<StartResponse>(
+        const data = await this.xhr.get<StartResponse>(
             `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/start/${ this.type }`, {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
@@ -92,24 +92,18 @@ export default abstract class Task implements TaskI {
             ],
             transformResponse: res => { return JSON.parse(res) }
         })
-        .then((data) => {
-            const { task, server } = data;
 
-            if (thereIsUndefined([ server, task ])) {
-                throw new StartError('Task cannot be started');
-            }
+        const { task, server } = data;
 
-            this.server = server!;
-            this._id = this._id ? this._id : task!;
+        if (thereIsUndefined([ server, task ])) {
+            throw new StartError('Task cannot be started');
+        }
 
-            // Keep response.
-            this.responses.start = data;
+        this.server = server!;
+        this._id = this._id ? this._id : task!;
 
-            return this;
-        })
-        .catch(e => {
-            throw e;
-        });
+        // Keep response.
+        this.responses.start = data;
     }
 
     /**
