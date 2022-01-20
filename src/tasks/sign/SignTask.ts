@@ -58,21 +58,16 @@ export interface SignProcessParams {
     signer_reminder_days_cycle?: number;
 }
 
-interface SignTaskParams extends TaskParams {
-    token?: string;
-    signers?: Array<Signer>;
-}
-
 export default class SignTask extends Task {
     public type: ILovePDFTool;
-    public readonly signers: Array<Signer>;
+    private signers: Array<Signer>;
     public readonly responses: ResponsesI;
 
-    constructor(auth: Auth, xhr: XHRInterface , params: SignTaskParams = {}) {
+    constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {
         super(auth, xhr, params);
 
         this.type = 'sign';
-        this.signers = !!params.signers ? params.signers : [];
+        this.signers = [];
 
         this.responses = {
             start: null,
