@@ -305,7 +305,7 @@ export default {
     fixReceiverPhone,
 }
 
-type GetSignatureStatus = {
+export type GetSignatureStatus = {
     brand_name: string | null,
     completed_on: string | null,
     created: string,

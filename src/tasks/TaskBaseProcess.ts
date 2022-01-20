@@ -34,7 +34,7 @@ export default abstract class TaskBaseProcess extends Task {
      * @inheritdoc
      * @param params - Params to run the process step.
      */
-    public async process(params: ProcessParams = {}): Promise<TaskI> {
+    public async process(params: ProcessParams = {}): Promise<object> {
         const token = await this.auth.getToken();
 
         // Convert to files request format.

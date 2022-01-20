@@ -37,7 +37,7 @@ export default interface TaskI {
      * @param params - Parameters for the process.
      * @returns Itself.
      */
-    process: (params?: Object) => Promise<TaskI>;
+    process: (params?: Object) => Promise<object>;
     /**
      * Downloads processed files.
      * @returns Result of the process.

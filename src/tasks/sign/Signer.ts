@@ -42,26 +42,6 @@ export interface SignerI {
      */
     deleteFile: (file: SignatureFileI) => void;
     /**
-     * Updates signer status and fires 'update.status' event.
-     */
-    updateStatus: (status: SignatureStatus) => Promise<void>;
-    /**
-     * Updates signer phone and fires 'update.phone' event.
-     */
-    updatePhone: (phone: string) => Promise<void>;
-    /**
-     * Updates signer email and fires 'update.email' event.
-     */
-    updateEmail: (email: string) => Promise<void>;
-    /**
-     * Adds an event that fires on specific event type.
-     */
-    addEventListener: <T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) => void;
-    /**
-     * Removes an event that fires on specific event type.
-     */
-    removeEventListener: <T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) => void;
-    /**
      * Creates a JSON response to append as a body in a HTTP request.
      */
     toJSON: () => SignerJSON;
@@ -107,42 +87,6 @@ export default class Signer implements SignerI {
         }
 
         this.files.splice(index, 1);
-    }
-
-    public async updateStatus(status: SignatureStatus) {
-        await this.fireEvent('update.status', this, status);
-    }
-
-    public async updatePhone(phone: string) {
-        await this.fireEvent('update.phone', this, phone);
-        this.params.phone = phone;
-    }
-
-    public async updateEmail(email: string) {
-        await this.fireEvent('update.email', this, email);
-        this._email = email;
-    }
-
-    public addEventListener<T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) {
-        if (!this.events[eventType]) this.events[eventType] = [];
-
-        this.events[eventType].push(listener);
-    }
-
-    public removeEventListener<T extends keyof ListenerEventMap>(eventType: T, listener: ListenerEventMap[T]) {
-        if (!this.events[eventType]) return;
-
-        const index = this.events[eventType].indexOf(listener);
-        if (index !== -1) this.events[eventType].splice(index, 1);
-    }
-
-    private async fireEvent<T extends keyof ListenerEventMap>(eventType: T, ...args: Parameters<ListenerEventMap[T]>) {
-        if (!this.events[eventType]) return;
-
-        for (const listener of this.events[eventType]) {
-            await listener(...args);
-        }
-
     }
 
     public toJSON(): SignerJSON {

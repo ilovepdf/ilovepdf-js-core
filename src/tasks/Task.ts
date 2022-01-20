@@ -222,7 +222,7 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public abstract process(params?: Object): Promise<TaskI>;
+    public abstract process(params?: Object): Promise<object>;
 
     protected getFilesBodyFormat(): ProcessFilesBody {
         const files: ProcessFilesBody = this.files.map((file: BaseFile) => {

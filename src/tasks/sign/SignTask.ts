@@ -7,10 +7,10 @@ import globals from '../../constants/globals.json';
 import Requester from "./Requester";
 import { SignerI } from "./Signer";
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
-import TaskI, { ResponsesI } from "../TaskI";
-import SignatureProcessResponse from "../../types/responses/SignatureProcessResponse";
+import { ResponsesI } from "../TaskI";
 import SignatureStatus from "../../types/responses/SignatureStatus";
 import GetSignerResponse from "../../types/responses/GetSignerResponse";
+import { GetSignatureStatus } from "../../ILovePDFCoreApi";
 
 export interface SignProcessParams {
     /**
@@ -61,10 +61,6 @@ export interface SignProcessParams {
     signer_reminder_days_cycle?: number;
 }
 
-interface Responses extends ResponsesI {
-    process: Array<SignatureProcessResponse> | null;
-}
-
 interface SignTaskParams extends TaskParams {
     token?: string;
     requester?: Requester;
@@ -76,7 +72,7 @@ export default class SignTask extends Task {
     public requester: Requester | null;
     public token: string | null;
     public readonly signers: Array<SignerI>;
-    public readonly responses: Responses;
+    public readonly responses: ResponsesI;
 
     constructor(auth: Auth, xhr: XHRInterface , params: SignTaskParams = {}) {
         super(auth, xhr, params);
@@ -90,7 +86,6 @@ export default class SignTask extends Task {
         this.token = !!params.token ? params.token : null;
         this.requester = !!params.requester ? params.requester : null;
         this.signers = !!params.signers ? params.signers : [];
-        this.addSignerListeners(this.signers);
 
         this.responses = {
             start: null,
@@ -103,18 +98,27 @@ export default class SignTask extends Task {
         }
     }
 
-    public async process(params: SignProcessParams = {}): Promise<TaskI> {
-        const data = this.createSignatureData(params);
+    public async process(params: SignProcessParams = {}): Promise<ProcessReturn> {
+        const token = await this.auth.getToken();
 
-        return this.processWithData(data)
-            .then( task => {
-                const responsesLength = this.responses.process!.length;
-                const lastResponse = this.responses.process![ responsesLength - 1 ];
-                // Keep the token invariant.
-                this.token = lastResponse.token_requester;
+        const body = this.createSignatureData(params);
 
-                return task;
-            } );
+        const data = await this.xhr.post<ProcessReturn>(
+            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature`,
+            body,
+            {
+                headers: [
+                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
+                    [ 'Authorization', `Bearer ${ token }` ]
+                ],
+                transformResponse: res => { return JSON.parse(res) }
+            }
+        );
+
+        // Keep response.
+        this.responses.process = [ data ];
+
+        return data;
     }
 
     /**
@@ -141,56 +145,10 @@ export default class SignTask extends Task {
         );
     }
 
-    private fillSignerTokens(responseSigners: Array<GetSignerResponse>) {
-
-        this.signers.forEach((signer, index) => {
-            const { token_signer, token_requester } = responseSigners[index];
-            signer.token_signer = token_signer || '';
-            signer.token_requester = token_requester;
-        })
-
-    }
-
-    private async processWithData(processData: any) {
-        const token = await this.auth.getToken();
-
-        return this.xhr.post<SignatureProcessResponse | SignatureProcessResponse[]>(
-            `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/signature`,
-            processData,
-            {
-                headers: [
-                    [ 'Content-Type', 'application/json;charset=UTF-8' ],
-                    [ 'Authorization', `Bearer ${ token }` ]
-                ],
-                transformResponse: res => { return JSON.parse(res) }
-            }
-        )
-        .then((data) => {
-            // Maintain a consistency returning always an array
-            // with signatures.
-            if (Array.isArray(data)) {
-                data.forEach(signature => {
-                    this.fillSignerTokens(signature.signers);
-                });
-
-                // Keep response.
-                this.responses.process = data;
-            }
-            else {
-                this.fillSignerTokens(data.signers);
-                // Keep response.
-                this.responses.process = [ data ];
-            }
-
-            return this;
-        });
-    }
-
     public addSigner(signer: SignerI) {
         const index = this.signers.indexOf(signer);
         if (index !== -1) throw new SignerAlreadyExistsError();
         // Add signers to manage instance changes.
-        this.addSignerListeners([ signer ]);
         this.signers.push(signer);
     }
 
@@ -199,26 +157,9 @@ export default class SignTask extends Task {
 
         if (index !== -1) {
             // Remove listeners for garbage collector.
-            this.removeSignerListeners([ signer ]);
             this.signers.splice(index, 1);
         }
 
-    }
-
-    private addSignerListeners(signers: Array<SignerI>) {
-        signers.forEach(signer => {
-            signer.addEventListener('update.phone', this.updateSignerPhone);
-            signer.addEventListener('update.email', this.updateSignerEmail);
-            signer.addEventListener('update.status', this.updateSignerStatus);
-        });
-    }
-
-    private removeSignerListeners(signers: Array<SignerI>) {
-        signers.forEach(signer => {
-            signer.removeEventListener('update.phone', this.updateSignerPhone);
-            signer.removeEventListener('update.email', this.updateSignerEmail);
-            signer.removeEventListener('update.status', this.updateSignerStatus);
-        });
     }
 
     private async updateSignerPhone(signer: SignerI, phone: string): Promise<unknown> {
@@ -265,3 +206,5 @@ export default class SignTask extends Task {
     }
 
 }
+
+type ProcessReturn = GetSignatureStatus;
