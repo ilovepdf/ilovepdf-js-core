@@ -202,14 +202,14 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public async deleteFile(file: BaseFile): Promise<TaskI> {
+    public async deleteFile(file: BaseFile): Promise<void> {
         const token = await this.auth.getToken();
 
         const index = this.files.indexOf(file);
         if (index === -1) throw new ElementNotExistsError();
 
         const fileToRemove = this.files[index];
-        return this.xhr.delete<DeleteFileResponse>(
+        const data = await this.xhr.delete<DeleteFileResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload/${ this.id }/${ fileToRemove.serverFilename }`,
             {
                 headers: [
@@ -219,18 +219,12 @@ export default abstract class Task implements TaskI {
                 transformResponse: res => { return JSON.parse(res) }
             }
         )
-        .then((data) => {
-            // Remove file locally.
-            // Be careful with parallelism problems, it is needed a
-            // new search to remove the file.
-            const index = this.files.indexOf(file);
-            this.files.splice(index, 1);
 
-            // Keep response.
-            this.responses.deleteFile = data;
+        // Remove file locally.
+        this.files.splice(index, 1);
 
-            return this;
-        });
+        // Keep response.
+        this.responses.deleteFile = data;
     }
 
     /**

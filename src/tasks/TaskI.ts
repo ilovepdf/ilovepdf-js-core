@@ -31,7 +31,7 @@ export default interface TaskI {
      * Deletes a file previously created.
      * @param file - File to remove.
      */
-    deleteFile: (file: BaseFile) => Promise<TaskI>;
+    deleteFile: (file: BaseFile) => Promise<void>;
     /**
      * Returns an array with the files added to the task
      * sorted by older to newest.
