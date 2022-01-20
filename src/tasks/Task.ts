@@ -10,13 +10,12 @@ import Auth from '../auth/Auth';
 import XHRInterface from '../utils/XHRInterface';
 import BaseFile from './BaseFile';
 import PathError from '../errors/PathError';
-import FileNotExistsError from '../errors/FileNotExistsError';
 import DownloadResponse from '../types/responses/DownloadResponse';
 import StartResponse from '../types/responses/StartResponse';
 import UploadResponse from '../types/responses/UploadResponse';
 import DeleteResponse from '../types/responses/DeleteResponse';
 import ConnectResponse from '../types/responses/ConnectResponse';
-import TaskI, { ResponsesI } from './TaskI';
+import TaskI from './TaskI';
 import DeleteFileResponse from '../types/responses/DeleteFileResponse';
 import { thereIsUndefined } from '../utils/typecheck';
 import ElementAlreadyExistsError from '../errors/ElementAlreadyExistsError';
@@ -30,7 +29,6 @@ export type TaskParams = {
 
 export default abstract class Task implements TaskI {
     public abstract type: ILovePDFTool;
-    public readonly responses: ResponsesI;
 
     protected server: string;
     protected files: Array<BaseFile>;
@@ -62,16 +60,6 @@ export default abstract class Task implements TaskI {
             this.files = [];
         }
 
-        this.responses = {
-            start: null,
-            addFile: null,
-            deleteFile: null,
-            process: null,
-            download: null,
-            delete: null,
-            connect: null
-        }
-
     }
 
     get id() {
@@ -91,7 +79,7 @@ export default abstract class Task implements TaskI {
                 [ 'Authorization', `Bearer ${ token }` ]
             ],
             transformResponse: res => { return JSON.parse(res) }
-        })
+        });
 
         const { task, server } = data;
 
@@ -101,9 +89,6 @@ export default abstract class Task implements TaskI {
 
         this.server = server!;
         this._id = this._id ? this._id : task!;
-
-        // Keep response.
-        this.responses.start = data;
     }
 
     /**
@@ -142,9 +127,6 @@ export default abstract class Task implements TaskI {
 
         const file = new BaseFile(this.id!, server_filename, this.getBasename(fileUrl));
         this.files.push(file);
-
-        // Keep response.
-        this.responses.addFile = data;
 
         return file;
     }
@@ -210,13 +192,10 @@ export default abstract class Task implements TaskI {
                 ],
                 transformResponse: res => { return JSON.parse(res) }
             }
-        )
+        );
 
         // Remove file locally.
         this.files.splice(index, 1);
-
-        // Keep response.
-        this.responses.deleteFile = data;
     }
 
     /**
@@ -243,26 +222,19 @@ export default abstract class Task implements TaskI {
     public async download() {
         const token = await this.auth.getToken();
 
-        return this.xhr.get<DownloadResponse>(
+        const data = await this.xhr.get<DownloadResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/download/${ this.id }`, {
             headers: [
                 [ 'Authorization', `Bearer ${ token }` ]
             ],
             binary: true
-        })
-        .then((data) => {
-            // Be careful with this negation. It depends on server response:
-            // Error if data === undefined || data === '' || data === null || data === false.
-            if (!data) throw new DownloadError('File cannot be downloaded');
-
-            // Keep response.
-            this.responses.download = data;
-
-            return data;
-        })
-        .catch(e => {
-            throw e;
         });
+
+        // Be careful with this negation. It depends on server response:
+        // Error if data === undefined || data === '' || data === null || data === false.
+        if (!data) throw new DownloadError('File cannot be downloaded');
+
+        return data;
     }
 
     /**
@@ -295,8 +267,6 @@ export default abstract class Task implements TaskI {
             throw new DeleteError('Task cannot be deleted');
         }
 
-        // Keep response.
-        this.responses.delete = data;
     }
 
     /**
@@ -305,7 +275,7 @@ export default abstract class Task implements TaskI {
     public async connect(nextTool: ILovePDFTool) {
         const token = await this.auth.getToken();
 
-        return this.xhr.post<ConnectResponse>(
+        const data = await this.xhr.post<ConnectResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/task/next`,
             JSON.stringify(
                 {
@@ -320,30 +290,23 @@ export default abstract class Task implements TaskI {
                 ],
                 transformResponse: res => { return JSON.parse(res) }
             }
-        )
-        .then((data) => {
-            const { task, files } = data;
+        );
 
-            if (thereIsUndefined([ task, files ])) {
-                throw new ConnectError('Task cannot be connected');
-            }
+        const { task, files } = data;
 
-            const newTaskFiles = Object.entries(files).map(([ server_filename, filename ]) => {
-                return new BaseFile(this.id!, server_filename, filename);
-            });
+        if (thereIsUndefined([ task, files ])) {
+            throw new ConnectError('Task cannot be connected');
+        }
 
-            // Keep response.
-            this.responses.connect = data;
-
-            const taskFactory = new TaskFactory();
-            // Create the next new task and populate its attrs with response data.
-            // The server is the same than parent task.
-            const newTask = taskFactory.newTask(nextTool, this.auth, this.xhr, { id: task, server: this.server, files: newTaskFiles });
-            return newTask;
-        })
-        .catch(e => {
-            throw e;
+        const newTaskFiles = Object.entries(files).map(([ server_filename, filename ]) => {
+            return new BaseFile(this.id!, server_filename, filename);
         });
+
+        const taskFactory = new TaskFactory();
+        // Create the next new task and populate its attrs with response data.
+        // The server is the same than parent task.
+        const newTask = taskFactory.newTask(nextTool, this.auth, this.xhr, { id: task, server: this.server, files: newTaskFiles });
+        return newTask;
     }
 
 }

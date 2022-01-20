@@ -15,42 +15,32 @@ const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
 describe('ValidatePdfaTask', () => {
 
-    it('process', () => {
+    it('process', async () => {
         const task = taskFactory.newTask('validatepdfa', auth, xhr) as ValidatePdfaTask;
 
-        return task.start()
-        .then(() => {
-            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
-            return task.addFile(file);
-        })
-        .then(() => {
-            return task.process();
-        })
-        .then(() => {
-            return task.responses.process?.validations![0].status;
-        })
-        .then(status => {
-            expect(status).toBe('NonConformant');
-        });
+        await task.start()
+
+        const osfile = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+        await task.addFile(osfile);
+
+        const { validations } = await task.process();
+
+        expect(validations![0].status).toBe('NonConformant');
     });
 
-    it('process with conformance setting', () => {
+    it('process with conformance setting', async () => {
         const task = taskFactory.newTask('validatepdfa', auth, xhr) as ValidatePdfaTask;
 
-        return task.start()
-        .then(() => {
-            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample_2b.pdf'));
-            return task.addFile(file);
-        })
-        .then(() => {
-            return task.process({ conformance: 'pdfa-2b' });
-        })
-        .then(() => {
-            return task.responses.process?.validations![0].status;
-        })
-        .then(status => {
-            expect(status).toBe('Conformant');
-        });
+        await task.start()
+
+        const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample_2b.pdf'));
+        await task.addFile(file);
+
+        await task.process({ conformance: 'pdfa-2b' });
+
+        const { validations } = await task.process();
+
+        expect(validations![0].status).toBe('Conformant');
     });
 
 });

@@ -5,7 +5,6 @@ import Auth from "../../auth/Auth";
 import XHRInterface from "../../utils/XHRInterface";
 import globals from '../../constants/globals.json';
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
-import { ResponsesI } from "../TaskI";
 import { GetSignatureStatus } from "../../ILovePDFCoreApi";
 import Signer from "./receivers/Signer";
 
@@ -61,23 +60,12 @@ export interface SignProcessParams {
 export default class SignTask extends Task {
     public type: ILovePDFTool;
     private signers: Array<Signer>;
-    public readonly responses: ResponsesI;
 
     constructor(auth: Auth, xhr: XHRInterface , params: TaskParams = {}) {
         super(auth, xhr, params);
 
         this.type = 'sign';
         this.signers = [];
-
-        this.responses = {
-            start: null,
-            addFile: null,
-            deleteFile: null,
-            process: null,
-            download: null,
-            delete: null,
-            connect: null
-        }
     }
 
     public async process(params: SignProcessParams = {}): Promise<ProcessReturn> {
@@ -96,9 +84,6 @@ export default class SignTask extends Task {
                 transformResponse: res => { return JSON.parse(res) }
             }
         );
-
-        // Keep response.
-        this.responses.process = [ data ];
 
         return data;
     }

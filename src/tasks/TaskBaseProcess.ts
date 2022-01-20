@@ -1,46 +1,22 @@
-import Task, { TaskParams } from "./Task";
-import ProcessResponse from "../types/responses/ProcessResponse";
-import TaskI, { ResponsesI } from "./TaskI";
+import Task from "./Task";
 import globals from '../constants/globals.json';
 import ProcessError from "../errors/ProcessError";
 import { thereIsUndefined } from "../utils/typecheck";
-import XHRInterface from "../utils/XHRInterface";
-import Auth from "../auth/Auth";
 import TaskStatus from "../types/responses/TaskStatus";
-import GetTaskResponse from "../types/responses/GetTaskResponse";
-
-interface Responses extends ResponsesI {
-    process: ProcessResponse | null;
-}
 
 export default abstract class TaskBaseProcess extends Task {
-    public readonly responses: Responses;
-
-    constructor(auth: Auth, xhr: XHRInterface, params: TaskParams = {}) {
-        super(auth, xhr, params);
-
-        this.responses = {
-            start: null,
-            addFile: null,
-            deleteFile: null,
-            process: null,
-            download: null,
-            delete: null,
-            connect: null
-        }
-    }
 
     /**
      * @inheritdoc
      * @param params - Params to run the process step.
      */
-    public async process(params: ProcessParams = {}): Promise<object> {
+    public async process(params: ProcessParams = {}): Promise<TaskBaseProcessProcess> {
         const token = await this.auth.getToken();
 
         // Convert to files request format.
         const files = this.getFilesBodyFormat();
 
-        return this.xhr.post<ProcessResponse>(
+        const data = await this.xhr.post<TaskBaseProcessProcess>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/process`,
             JSON.stringify(
                 {
@@ -58,26 +34,19 @@ export default abstract class TaskBaseProcess extends Task {
                 ],
                 transformResponse: res => { return JSON.parse(res) }
             }
-        )
-        .then((data) => {
-            const { download_filename, filesize, output_extensions,
-                    output_filenumber, output_filesize, status, timer } = data;
+        );
 
-            if (thereIsUndefined([ download_filename, filesize,
-                                   output_extensions, output_filenumber,
-                                   output_filesize, status, timer ])) {
+        const { download_filename, filesize, output_extensions,
+                output_filenumber, output_filesize, status, timer } = data;
 
-                throw new ProcessError('Task cannot be processed');
-            }
+        if (thereIsUndefined([ download_filename, filesize,
+                                output_extensions, output_filenumber,
+                                output_filesize, status, timer ])) {
 
-            // Keep response.
-            this.responses.process = data;
+            throw new ProcessError('Task cannot be processed');
+        }
 
-            return this;
-        })
-        .catch(e => {
-            throw e;
-        });
+        return data;
     }
 
 }
@@ -139,4 +108,14 @@ export interface ProcessParams {
     custom_string?: string;
     // Callback url.
     webhook?: string;
+};
+
+export type TaskBaseProcessProcess = {
+    download_filename: string,
+    filesize: number,
+    output_filesize: number,
+    output_filenumber: number,
+    output_extensions: Array<string>,
+    timer: string,
+    status: TaskStatus,
 };

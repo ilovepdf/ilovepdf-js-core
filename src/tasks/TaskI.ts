@@ -1,21 +1,12 @@
 import ILovePDFTool from "../types/ILovePDFTool";
 import DownloadResponse from "../types/responses/DownloadResponse";
 import BaseFile from "./BaseFile";
-import StartResponse from "../types/responses/StartResponse";
-import DeleteResponse from "../types/responses/DeleteResponse";
-import ConnectResponse from "../types/responses/ConnectResponse";
-import UploadResponse from "../types/responses/UploadResponse";
-import DeleteFileResponse from "../types/responses/DeleteFileResponse";
 
 export default interface TaskI {
     /**
      * Task id.
      */
     readonly id: string;
-    /**
-     * Server response from each function call.
-     */
-    readonly responses: ResponsesI;
     /**
      * Starts task retrieving the assigned server and task id.
      * @returns Itself.
@@ -55,16 +46,3 @@ export default interface TaskI {
      */
     connect: (nextTool: ILovePDFTool) => Promise<TaskI>;
 }
-
-/**
- * Object to save server responses.
- */
-export type ResponsesI = {
-    start: StartResponse | null;
-    addFile: UploadResponse | null;
-    deleteFile: DeleteFileResponse | null;
-    process: Object | null;
-    download: DownloadResponse | null;
-    delete: DeleteResponse | null;
-    connect: ConnectResponse | null;
-};

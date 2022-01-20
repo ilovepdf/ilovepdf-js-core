@@ -19,40 +19,33 @@ describe('SignTask', () => {
     it('requests signatures', async () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-        return task.start()
-        .then(() => {
-            return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-        })
-        .then((file) => {
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 28,
-                color: '#000000',
-                font: null as unknown as string,
-                content: null as unknown as string
-            }]);
+        await task.start()
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+        const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            return task.process({
-                mode: 'multiple',
-                custom_int: 0,
-                custom_string: '0'
-            });
-        })
-        .then(() => {
-            const response = task.responses.process!;
-            // Assert that files were uploaded.
-            expect(response[0].signers[0].files).not.toBeNull();
+        // Signer.
+        const signatureFile = new SignatureFile(file, [{
+            type: 'signature',
+            position: '300 -100',
+            pages: '1',
+            size: 28,
+            color: '#000000',
+            font: null as unknown as string,
+            content: null as unknown as string
+        }]);
+
+        const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            type: 'signer',
+            force_signature_type: 'all'
         });
+        signer.addFile(signatureFile);
+        task.addReceiver(signer);
+
+        const response = await task.process({
+            mode: 'multiple',
+        });
+
+        expect(response.signers[0].name).toBe('Diego Signer');
     });
 
 });

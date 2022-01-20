@@ -3,7 +3,8 @@ import ILovePDFTool from "../types/ILovePDFTool";
 import { TaskParams } from './Task';
 import Auth from "../auth/Auth";
 import XHRInterface from "../utils/XHRInterface";
-import TaskBaseProcess, { ProcessParams } from "./TaskBaseProcess";
+import TaskBaseProcess, { ProcessParams, TaskBaseProcessProcess } from "./TaskBaseProcess";
+import FileStatus from "../types/responses/FileStatus";
 
 interface ValidatePdfaProcessParams extends ProcessParams {
     // Sets the PDF/A conformance level.
@@ -24,8 +25,16 @@ export default class ValidatePdfaTask extends TaskBaseProcess {
      * @override
      * @param params - ProcessParams object with extra attrs for this service.
      */
-    process(params?: ValidatePdfaProcessParams) {
-        return super.process(params);
+    process(params?: ValidatePdfaProcessParams): Promise<ValidatePdfaTaskProcess> {
+        // Force casting to ValidatePdfaTaskProcess.
+        return super.process(params) as Promise<ValidatePdfaTaskProcess>;
     }
 
 }
+
+type ValidatePdfaTaskProcess = TaskBaseProcessProcess & {
+    validations: Array<{
+        server_filename: string,
+        status: FileStatus,
+    }>,
+};
