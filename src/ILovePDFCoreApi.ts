@@ -352,7 +352,7 @@ export type GetSignatureStatus = {
     lock_order: boolean,
 };
 
-type GetReceiverInfoResponse = {
+export type GetReceiverInfoResponse = {
     uuid: string,
     name: string,
     email: string,
