@@ -19,7 +19,7 @@ describe('SignTask', () => {
     it('requests signatures', async () => {
         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-        await task.start()
+        await task.start();
 
         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
@@ -34,10 +34,7 @@ describe('SignTask', () => {
             content: null as unknown as string
         }]);
 
-        const signer = new Signer('Diego Signer', 'invent@ado.com', {
-            type: 'signer',
-            force_signature_type: 'all'
-        });
+        const signer = new Signer('Diego Signer', 'invent@ado.com');
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 

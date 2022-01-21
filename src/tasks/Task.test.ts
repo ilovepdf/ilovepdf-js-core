@@ -17,12 +17,7 @@ describe('Task', () => {
 
     it('starts a task', async () => {
         const task = taskFactory.newTask('merge', auth, xhr);
-
-        return task.start()
-        .then((sameTask) => {
-
-            expect(sameTask === task).toBeTruthy();
-        });
+        await task.start();
     });
 
     it('adds a file from URL', async () => {
@@ -69,73 +64,62 @@ describe('Task', () => {
 
     it('connects a task', async () => {
         const task = taskFactory.newTask('split', auth, xhr);
-        const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
 
-        return task.start()
-        .then(task => {
-            return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-        })
-        .then(task => {
-            return task.addFile(file);
-        })
-        .then(task => {
-            return task.process();
-        })
-        .then(task =>{
-            return task.connect('merge');
-        })
-        .then((connectedTask) => {
-            return connectedTask.addFile(file);
-        })
-        .then((connectedTask) => {
-            return connectedTask.process()
-        })
-        .then((connectedTask) => {
-            return connectedTask.download();
-        })
-        .then(data => {
-            console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 17807, 200) ).toBeTruthy();
-        });
+        // Start task.
+        await task.start()
+
+        // Add file from cloud.
+        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        // Add local file.
+        const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+        await task.addFile(file);
+
+        // Process the split.
+        await task.process();
+
+        // Connect the split output to a merge.
+        const connectedTask = await task.connect('merge');
+
+        await connectedTask.addFile(file);
+
+        await connectedTask.process()
+
+        const data = await connectedTask.download();
+
+        console.log(`Length: ${ data.length }`);
+        expect( inRange(data.length, 17807, 200) ).toBeTruthy();
     });
 
     it('deletes a task', async () => {
         const task = taskFactory.newTask('split', auth, xhr);
-        const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
 
-        return task.start()
-        .then(task => {
-            return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-        })
-        .then(task => {
-            return task.addFile(file);
-        })
-        .then(task => {
-            return task.process();
-        })
-        .then(task =>{
-            return task.delete();
-        });
+        await task.start()
+
+        await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+        const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+        await task.addFile(file);
+
+        await task.process();
+
+        await task.delete();
     });
 
     it('deletes a file', async () => {
-        const task = taskFactory.newTask('merge', auth, xhr);
-        const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
 
-        expect(() => {
-            return task.start()
-            .then(task => {
-                return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-            })
-            .then(task => {
-                return task.addFile(file);
-            })
-            .then(task => {
-                return task.deleteFile(file);
-            })
-            .then(() => {
-                return task.process();
-            });
+        expect(async () => {
+            const task = taskFactory.newTask('merge', auth, xhr);
+            await task.start()
+
+            await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample.pdf'));
+            await task.addFile(file);
+
+            await task.deleteFile(file);
+
+            await task.process();
         })
         .rejects.toThrow();
     })
