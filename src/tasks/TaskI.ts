@@ -9,13 +9,13 @@ export default interface TaskI {
     readonly id: string;
     /**
      * Starts task retrieving the assigned server and task id.
-     * @returns Itself.
+     * @returns The task id.
      */
-    start: () => Promise<void>;
+    start: () => Promise<string>;
     /**
      * Adds a file to task.
      * @param file - File or public URL.
-     * @returns Itself.
+     * @returns The added file.
      */
     addFile: (file: BaseFile | string) => Promise<BaseFile>;
     /**
@@ -26,7 +26,7 @@ export default interface TaskI {
     /**
      * Process uploaded files.
      * @param params - Parameters for the process.
-     * @returns Itself.
+     * @returns Result metainformation.
      */
     process: (params?: Object) => Promise<object>;
     /**
@@ -36,7 +36,6 @@ export default interface TaskI {
     download: () => Promise<DownloadResponse>;
     /**
      * Deletes this task.
-     * @returns Itself.
      */
     delete: () => Promise<void>;
     /**

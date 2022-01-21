@@ -37,6 +37,10 @@ export default abstract class Task implements TaskI {
 
     private _id: string;
 
+    get id() {
+        return this._id;
+    }
+
     /**
      *
      * @param publicKey - API public key.
@@ -62,14 +66,10 @@ export default abstract class Task implements TaskI {
 
     }
 
-    get id() {
-        return this._id;
-    }
-
     /**
      * @inheritdoc
      */
-    public async start(): Promise<void> {
+    public async start(): Promise<string> {
         const token = await this.auth.getToken();
 
         const data = await this.xhr.get<StartResponse>(
@@ -89,6 +89,8 @@ export default abstract class Task implements TaskI {
 
         this.server = server!;
         this._id = this._id ? this._id : task!;
+
+        return task;
     }
 
     /**
