@@ -36,9 +36,7 @@ describe('ValidatePdfaTask', () => {
         const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/sample_2b.pdf'));
         await task.addFile(file);
 
-        await task.process({ conformance: 'pdfa-2b' });
-
-        const { validations } = await task.process();
+        const { validations } = await task.process({ conformance: 'pdfa-2b' });
 
         expect(validations![0].status).toBe('Conformant');
     });

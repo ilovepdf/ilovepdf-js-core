@@ -42,7 +42,7 @@ describe('ILovePDFCoreApi', () => {
             const data = await task.download();
 
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 1697, 5) ).toBeTruthy();
+            expect( inRange(data.length, 1697, 200) ).toBeTruthy();
         });
 
         it('sets file_encryption_key in a task with signature process without getting errors', () => {

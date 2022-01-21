@@ -33,7 +33,7 @@ describe('RepairTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 14364, 150) ).toBeTruthy();
+            expect( inRange(data.length, 22934, 150) ).toBeTruthy();
         });
     });
 

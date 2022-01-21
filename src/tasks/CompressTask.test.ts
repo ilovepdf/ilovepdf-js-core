@@ -32,7 +32,7 @@ describe('CompressTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 1697, 5) ).toBeTruthy();
+            expect( inRange(data.length, 1697, 200) ).toBeTruthy();
         });
     });
 
@@ -52,7 +52,7 @@ describe('CompressTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 1762, 5) ).toBeTruthy();
+            expect( inRange(data.length, 1762, 200) ).toBeTruthy();
         });
     });
 

@@ -33,7 +33,7 @@ describe('ExtractTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 2222, 5) ).toBeTruthy();
+            expect( inRange(data.length, 2222, 200) ).toBeTruthy();
         });
     });
 
@@ -54,7 +54,7 @@ describe('ExtractTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 3724, 5) ).toBeTruthy();
+            expect( inRange(data.length, 3724, 200) ).toBeTruthy();
         });
     });
 

@@ -32,7 +32,7 @@ describe('ImagePdfTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 3805, 5) ).toBeTruthy();
+            expect( inRange(data.length, 3805, 200) ).toBeTruthy();
         });
     });
 
@@ -52,7 +52,7 @@ describe('ImagePdfTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 3700, 5) ).toBeTruthy();
+            expect( inRange(data.length, 3700, 200) ).toBeTruthy();
         });
     });
 

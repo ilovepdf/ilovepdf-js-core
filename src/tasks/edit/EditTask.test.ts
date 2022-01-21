@@ -41,7 +41,7 @@ describe('EditTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect(data.length).toEqual(13762);
+            expect(data.length).toEqual(13761);
         });
     });
 
@@ -71,7 +71,7 @@ describe('EditTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect(data.length).toEqual(4240);
+            expect(data.length).toEqual(4236);
         });
     });
 
