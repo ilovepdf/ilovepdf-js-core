@@ -95,9 +95,10 @@ const increaseSignatureExpirationDays = async (auth: Auth, xhr: XHRInterface,
 
     await xhr.put(
         `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/increase-expiration-days/${ signatureToken }`,
-        {
+        JSON.stringify({
             days: daysAmount,
-        },
+        })
+        ,
         {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
@@ -246,9 +247,9 @@ const fixReceiverEmail = async (auth: Auth, xhr: XHRInterface,
 
     await xhr.put(
         `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/fix-email/${ receiverTokenRequester }`,
-        {
+        JSON.stringify({
             email,
-        },
+        }),
         {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
@@ -272,9 +273,9 @@ const fixReceiverPhone = async (auth: Auth, xhr: XHRInterface,
 
     await xhr.put(
         `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/fix-phone/${ receiverTokenRequester }`,
-        {
+        JSON.stringify({
             phone,
-        },
+        }),
         {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],

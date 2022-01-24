@@ -8,7 +8,7 @@ import Signer from './tasks/sign/receivers/Signer';
 import CompressTask from './tasks/CompressTask';
 import ILovePDFFile from './utils/ILovePDFFile';
 import { inRange } from './utils/math';
-import path, { resolve } from 'path';
+import path from 'path';
 import ILovePDFCoreApi from './ILovePDFCoreApi';
 
 // Load env vars.
