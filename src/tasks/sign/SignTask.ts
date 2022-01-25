@@ -49,6 +49,16 @@ export interface SignProcessParams {
      * 1 <= signer_reminder_days_cycle <= expiration_days.
      */
     signer_reminder_days_cycle?: number;
+    /**
+     * Brand name that will be displayed in emails.
+     * Required if `brand_logo` is set.
+     */
+    brand_name?: string;
+    /**
+     * Brand logo that will be displayed in emails.
+     * Required if `brand_name` is set.
+     */
+    brand_logo?: string;
 }
 
 export default class SignTask extends Task {
