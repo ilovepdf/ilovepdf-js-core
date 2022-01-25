@@ -36,12 +36,6 @@ export interface SignProcessParams {
      */
     custom_string?: string;
     /**
-     * single: The signer is only one and no requests will be sent.
-     * multiple: A signature request will be sent to the signers by a requester.
-     *           All signers sign the same document.
-     */
-    mode?: 'single' | 'multiple';
-    /**
      * If true, displays UUID at the bottom of the signature. Otherwise, it is hidden.
      * This has only aesthetic purposes.
      */

@@ -5,7 +5,6 @@ import XHRPromise from "../../utils/XHRPromise";
 import JWT from "../../auth/JWT";
 import SignatureFile from "./elements/SignatureFile";
 import Signer from "./receivers/Signer";
-import ILovePDFCoreApi from "../../ILovePDFCoreApi";
 
 // Load env vars.
 dotenv.config();
@@ -28,19 +27,14 @@ describe('SignTask', () => {
             type: 'signature',
             position: '300 -100',
             pages: '1',
-            size: 28,
-            color: '#000000',
-            font: null as unknown as string,
-            content: null as unknown as string
+            size: 40,
         }]);
 
         const signer = new Signer('Diego Signer', 'invent@ado.com');
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
-        const response = await task.process({
-            mode: 'multiple',
-        });
+        const response = await task.process();
 
         expect(response.signers[0].name).toBe('Diego Signer');
     });

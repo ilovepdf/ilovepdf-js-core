@@ -7,31 +7,35 @@ type SignatureElement = {
      * text: element with custom text.
      * input: input element to fill by the signer.
      */
-    type: 'signature' | 'initials' | 'name' | 'date' | 'text' | 'input';
+    type: 'signature' | 'initials' | 'name' | 'date' | 'text' | 'input',
     /**
      * Position of the element inside the pdf page.
      */
-    position: string;
+    position: string,
     /**
      * Pages where put the element.
      */
-    pages: string;
+    pages: string,
     /**
      * Element size.
      */
-    size: number;
+    size: number,
     /**
      * Element color.
      */
-    color: string;
+    color?: string,
     /**
      * Element font.
      */
-    font: string;
+    font?: 'Arial-Unicode-MS' | 'Courier-New' | 'Comic-Sans-MS',
     /**
      * Element content.
      */
-    content: string;
+    content?: string,
+    /**
+     * Element content.
+     */
+    info?: string,
 };
 
 export default SignatureElement;
