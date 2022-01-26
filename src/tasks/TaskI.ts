@@ -33,7 +33,7 @@ export default interface TaskI {
      * Downloads processed files.
      * @returns Result of the process.
      */
-    download: () => Promise<DownloadResponse>;
+    download: () => Promise<Uint8Array>;
     /**
      * Deletes this task.
      */

@@ -1,7 +1,6 @@
 import XHRInterface from "./utils/XHRInterface";
 import Auth from "./auth/Auth";
 import globals from './constants/globals.json';
-import DownloadResponse from "./types/responses/DownloadResponse";
 import DownloadError from "./errors/DownloadError";
 import SignatureStatus from "./types/responses/SignatureStatus";
 import ServerFile from "./types/ServerFile";
@@ -140,11 +139,11 @@ const sendReminders = async (auth: Auth, xhr: XHRInterface,
  * @returns PDF or ZIP file with the original files.
  */
 const downloadOriginalFiles = async (auth: Auth, xhr: XHRInterface,
-                                     signatureToken: string): Promise<DownloadResponse> => {
+                                     signatureToken: string): Promise<Uint8Array> => {
 
     const token = await auth.getToken();
 
-    const data = await xhr.get<DownloadResponse>(
+    const data = await xhr.get<Uint8Array>(
         `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureToken }/download-original`, {
         headers: [
             [ 'Authorization', `Bearer ${ token }` ]
@@ -165,11 +164,11 @@ const downloadOriginalFiles = async (auth: Auth, xhr: XHRInterface,
  * @returns PDF or ZIP file with the signed files.
  */
 const downloadSignedFiles = async (auth: Auth, xhr: XHRInterface,
-                                   signatureToken: string): Promise<DownloadResponse> => {
+                                   signatureToken: string): Promise<Uint8Array> => {
 
     const token = await auth.getToken();
 
-    const data = await xhr.get<DownloadResponse>(
+    const data = await xhr.get<Uint8Array>(
         `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureToken }/download-signed`, {
         headers: [
             [ 'Authorization', `Bearer ${ token }` ]
@@ -191,11 +190,11 @@ const downloadSignedFiles = async (auth: Auth, xhr: XHRInterface,
  * @returns PDF or ZIP file with the audit files.
  */
 const downloadAuditFiles = async (auth: Auth, xhr: XHRInterface,
-                                  signatureToken: string): Promise<DownloadResponse> => {
+                                  signatureToken: string): Promise<Uint8Array> => {
 
     const token = await auth.getToken();
 
-    const data = await xhr.get<DownloadResponse>(
+    const data = await xhr.get<Uint8Array>(
         `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureToken }/download-audit`, {
         headers: [
             [ 'Authorization', `Bearer ${ token }` ]

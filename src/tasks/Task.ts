@@ -185,7 +185,7 @@ export default abstract class Task implements TaskI {
         if (index === -1) throw new ElementNotExistsError();
 
         const fileToRemove = this.files[index];
-        const data = await this.xhr.delete<DeleteFileResponse>(
+        await this.xhr.delete<DeleteFileResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload/${ this.id }/${ fileToRemove.serverFilename }`,
             {
                 headers: [
@@ -224,7 +224,7 @@ export default abstract class Task implements TaskI {
     public async download() {
         const token = await this.auth.getToken();
 
-        const data = await this.xhr.get<DownloadResponse>(
+        const data = await this.xhr.get<Uint8Array>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/download/${ this.id }`, {
             headers: [
                 [ 'Authorization', `Bearer ${ token }` ]
