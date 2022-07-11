@@ -4,6 +4,7 @@ import globals from './constants/globals.json';
 import DownloadError from "./errors/DownloadError";
 import SignatureStatus from "./types/responses/SignatureStatus";
 import ServerFile from "./types/ServerFile";
+import StartResponse from "./types/responses/StartResponse";
 
 /**
  * Returns the signature identified by `signatureToken`.
@@ -43,8 +44,10 @@ const getSignatureList = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
+    const server = await getSignServer( xhr, token );
+
     const response = await xhr.get<Array<GetSignatureStatus>>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/list?page=${ page }&per-page=${ pageLimit }`,
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/list?page=${ page }&per-page=${ pageLimit }`,
         {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
@@ -68,8 +71,10 @@ const voidSignature = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
+    const server = await getSignServer( xhr, token );
+
     await xhr.put(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/void/${ signatureToken }`,
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/void/${ signatureToken }`,
         undefined,
         {
             headers: [
@@ -92,8 +97,10 @@ const increaseSignatureExpirationDays = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
+    const server = await getSignServer( xhr, token );
+
     await xhr.put(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/increase-expiration-days/${ signatureToken }`,
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/increase-expiration-days/${ signatureToken }`,
         JSON.stringify({
             days: daysAmount,
         })
@@ -118,8 +125,10 @@ const sendReminders = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
+    const server = await getSignServer( xhr, token );
+
     await xhr.post(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/sendReminder/${ signatureToken }`,
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/sendReminder/${ signatureToken }`,
         undefined,
         {
             headers: [
@@ -143,8 +152,10 @@ const downloadOriginalFiles = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
+    const server = await getSignServer( xhr, token );
+
     const data = await xhr.get<Uint8Array>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureToken }/download-original`, {
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/${ signatureToken }/download-original`, {
         headers: [
             [ 'Authorization', `Bearer ${ token }` ]
         ],
@@ -168,8 +179,10 @@ const downloadSignedFiles = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
+    const server = await getSignServer( xhr, token );
+
     const data = await xhr.get<Uint8Array>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureToken }/download-signed`, {
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/${ signatureToken }/download-signed`, {
         headers: [
             [ 'Authorization', `Bearer ${ token }` ]
         ],
@@ -194,8 +207,10 @@ const downloadAuditFiles = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
+    const server = await getSignServer( xhr, token );
+
     const data = await xhr.get<Uint8Array>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/${ signatureToken }/download-audit`, {
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/${ signatureToken }/download-audit`, {
         headers: [
             [ 'Authorization', `Bearer ${ token }` ]
         ],
@@ -206,6 +221,19 @@ const downloadAuditFiles = async (auth: Auth, xhr: XHRInterface,
 
     return data;
 };
+
+async function getSignServer( xhr: XHRInterface, token: string ): Promise< string > {
+    const { server } = await xhr.get<StartResponse>(
+        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/start/sign`, {
+        headers: [
+            [ 'Content-Type', 'application/json;charset=UTF-8' ],
+            [ 'Authorization', `Bearer ${ token }` ]
+        ],
+        transformResponse: res => { return JSON.parse(res) }
+    });
+
+    return server;
+}
 
 /**
  * Returns a receiver information related to a specific sign process.
@@ -219,8 +247,10 @@ const getReceiverInfo = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
+    const server = await getSignServer( xhr, token );
+
     const data = await xhr.get<GetReceiverInfoResponse>(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/receiver/info/${ receiverTokenRequester }`, {
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/receiver/info/${ receiverTokenRequester }`, {
         headers: [
             [ 'Authorization', `Bearer ${ token }` ]
         ],
@@ -244,8 +274,10 @@ const fixReceiverEmail = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
+    const server = await getSignServer( xhr, token );
+
     await xhr.put(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/fix-email/${ receiverTokenRequester }`,
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/signer/fix-email/${ receiverTokenRequester }`,
         JSON.stringify({
             email,
         }),
@@ -270,8 +302,10 @@ const fixReceiverPhone = async (auth: Auth, xhr: XHRInterface,
 
     const token = await auth.getToken();
 
+    const server = await getSignServer( xhr, token );
+
     await xhr.put(
-        `${ globals.API_URL_PROTOCOL }://${ globals.API_URL }/${ globals.API_VERSION }/signature/signer/fix-phone/${ receiverTokenRequester }`,
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/signer/fix-phone/${ receiverTokenRequester }`,
         JSON.stringify({
             phone,
         }),
