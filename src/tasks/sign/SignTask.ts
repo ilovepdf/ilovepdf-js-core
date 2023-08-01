@@ -7,6 +7,7 @@ import globals from '../../constants/globals.json';
 import SignerAlreadyExistsError from "../../errors/SignerAlreadyExistsError";
 import { GetSignatureStatus } from "../../ILovePDFCoreApi";
 import Signer from "./receivers/Signer";
+import BaseFile from "../BaseFile";
 
 export interface SignProcessParams {
     /**
@@ -122,6 +123,21 @@ export default class SignTask extends Task {
         this.signers.push(signer);
     }
 
+    public async addFile(file: string | BaseFile): Promise< BaseFile > {
+        const addedFile = await super.addFile( file );
+
+        // Files that are not PDFs don't need to be included inside the
+        // array of files.
+        // For example: images for the brand logo.
+        if ( !this.isPdf( addedFile ) ) this.files.pop();
+
+        return addedFile;
+    }
+
+    private isPdf( file: BaseFile ): boolean {
+        // If the extension is .pdf, is considered a PDF file.
+        return /(?:\.pdf)$/i.test( file.filename );
+    }
 }
 
 type ProcessReturn = GetSignatureStatus;
