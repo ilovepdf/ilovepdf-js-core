@@ -32,7 +32,7 @@ describe('SignTask', () => {
             size: 40,
         }]);
 
-        const signer = new Signer('Diego Signer', 'invent@ado.com');
+        const signer = new Signer('Diego Signer', 'test@ilovepdf.com');
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
@@ -56,7 +56,7 @@ describe('SignTask', () => {
             size: 40,
         }]);
 
-        const signer = new Signer('Diego Signer', 'invent@ado.com');
+        const signer = new Signer('Diego Signer', 'test@ilovepdf.com');
         signer.addFile(signatureFile);
         task.addReceiver(signer);
 
