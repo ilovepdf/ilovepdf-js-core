@@ -13,7 +13,34 @@ export interface SignProcessParams {
     /**
      * Emails language that will be received by signers.
      */
-    language?: 'EN' | 'ES' | 'FR' | 'IT' | 'JA' | 'ZH-CN' | 'ZH-TW' | 'BG';
+    language?: 'en-US' |
+        'es' |
+        'fr' |
+        'it' |
+        'ca' |
+        'zh-cn' |
+        'zh-tw' |
+        'zh-Hans' |
+        'zh-Hant' |
+        'ar' |
+        'ru' |
+        'de' |
+        'ja' |
+        'pt' |
+        'bg' |
+        'ko' |
+        'nl' |
+        'el' |
+        'hi' |
+        'id' |
+        'ms' |
+        'pl' |
+        'sv' |
+        'th' |
+        'tr' |
+        'uk' |
+        'vi' ;
+
     /**
      * If true, allow signers to sign in parallel. Otherwise, do it sequentially.
      */
