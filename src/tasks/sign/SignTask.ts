@@ -48,7 +48,7 @@ export interface SignProcessParams {
     /**
      * Days until the signature request will expire.
      */
-    expiration_date?: number;
+    expiration_days?: number;
     /**
      * If true, a signed certified hash and a qualified timestamp is embedded to
      * the signed documents, ensuring document and signatures integrity in the
@@ -87,6 +87,10 @@ export interface SignProcessParams {
      * Required if `brand_name` is set.
      */
     brand_logo?: string;
+    /**
+     * Callback url.
+     */
+    webhook?: string;
 }
 
 export default class SignTask extends Task {
