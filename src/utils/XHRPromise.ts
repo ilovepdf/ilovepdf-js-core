@@ -15,7 +15,7 @@ export default class XHRPromise implements XHRInterface {
         let injectedData = data;
         let injectedOptions = options;
         // If it is a file, it has special treatment with HTTP extracting its data.
-        if (data instanceof ILovePDFFile) {
+        if (typeof data !== 'string') {
             [ injectedData, injectedOptions ] = this.injectRequestInformation(data, options);
         }
 

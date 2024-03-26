@@ -97,11 +97,11 @@ export default abstract class Task implements TaskI {
      * @inheritdoc
      */
     public async addFile(file: BaseFile | string): Promise<BaseFile> {
-        if (file instanceof BaseFile) {
-            return this.uploadFromFile(file);
+        if (typeof file === 'string') {
+            return this.uploadFromUrl(file);
         }
 
-        return this.uploadFromUrl(file as string);
+        return this.uploadFromFile(file);
     }
 
     private async uploadFromUrl(fileUrl: string): Promise<BaseFile> {
