@@ -18,6 +18,22 @@ const xhr = new XHRPromise();
 
 describe('ILovePDFCoreApi', () => {
 
+    describe('task properties', () => {
+        it('gets the remaining files', async () => {
+            const taskFactory = new TaskFactory();
+
+            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+
+            const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
+
+            await task.start()
+
+            // Be careful with this test. In case of being an admin, `remainingFiles`
+            // is `undefined` due to they have no limits.
+            expect( typeof task.remainingFiles === 'number' ).toBeTruthy()
+        });
+    })
+
     describe('file_encryption_key', () => {
 
         it('sets file_encryption_key in a task with normal process', async () => {

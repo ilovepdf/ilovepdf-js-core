@@ -36,10 +36,11 @@ export default abstract class Task implements TaskI {
     protected xhr: XHRInterface;
 
     private _id: string;
+    private _remainingFiles: number | undefined;
 
-    get id() {
-        return this._id;
-    }
+    get id() { return this._id }
+
+    get remainingFiles() { return this._remainingFiles }
 
     /**
      *
@@ -63,7 +64,6 @@ export default abstract class Task implements TaskI {
         else {
             this.files = [];
         }
-
     }
 
     /**
@@ -81,7 +81,7 @@ export default abstract class Task implements TaskI {
             transformResponse: res => { return JSON.parse(res) }
         });
 
-        const { task, server } = data;
+        const { task, server, remaining_files } = data;
 
         if (thereIsUndefined([ server, task ])) {
             throw new StartError('Task cannot be started');
@@ -89,6 +89,7 @@ export default abstract class Task implements TaskI {
 
         this.server = server!;
         this._id = this._id ? this._id : task!;
+        this._remainingFiles = remaining_files
 
         return task;
     }

@@ -7,6 +7,11 @@ type StartResponse = {
      * Created task id.
      */
     task: string;
+    /**
+     * Remaining files counting the "free files",
+     * subscription files and package files.
+     */
+    remaining_files: number;
 };
 
 export default StartResponse;
