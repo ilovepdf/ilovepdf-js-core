@@ -10,12 +10,11 @@ import Auth from '../auth/Auth';
 import XHRInterface from '../utils/XHRInterface';
 import BaseFile from './BaseFile';
 import PathError from '../errors/PathError';
-import DownloadResponse from '../types/responses/DownloadResponse';
 import StartResponse from '../types/responses/StartResponse';
 import UploadResponse from '../types/responses/UploadResponse';
 import DeleteResponse from '../types/responses/DeleteResponse';
 import ConnectResponse from '../types/responses/ConnectResponse';
-import TaskI from './TaskI';
+import TaskI, { AddFileParams } from './TaskI';
 import DeleteFileResponse from '../types/responses/DeleteFileResponse';
 import { thereIsUndefined } from '../utils/typecheck';
 import ElementAlreadyExistsError from '../errors/ElementAlreadyExistsError';
@@ -97,15 +96,15 @@ export default abstract class Task implements TaskI {
     /**
      * @inheritdoc
      */
-    public async addFile(file: BaseFile | string): Promise<BaseFile> {
+    public async addFile(file: BaseFile | string, params: AddFileParams = { info: false } ): Promise<BaseFile> {
         if (typeof file === 'string') {
-            return this.uploadFromUrl(file);
+            return this.uploadFromUrl(file, params);
         }
 
-        return this.uploadFromFile(file);
+        return this.uploadFromFile(file, params);
     }
 
-    private async uploadFromUrl(fileUrl: string): Promise<BaseFile> {
+    private async uploadFromUrl(fileUrl: string, params: AddFileParams): Promise<BaseFile> {
         const token = await this.auth.getToken();
 
         const data = await this.xhr.post<UploadResponse>(
@@ -113,7 +112,8 @@ export default abstract class Task implements TaskI {
             JSON.stringify(
                 {
                     task: this.id,
-                    cloud_file: fileUrl
+                    cloud_file: fileUrl,
+                    ...( params.info ? { pdfinfo: params.info } : {} )
                 }
             ),
             {
@@ -125,10 +125,21 @@ export default abstract class Task implements TaskI {
             }
         );
 
-        const { server_filename } = data;
+        const { server_filename, pdf_pages, pdf_page_number } = data;
         if (thereIsUndefined([ server_filename ])) throw new UpdateError('File cannot be uploaded');
 
         const file = new BaseFile(this.id!, server_filename, this.getBasename(fileUrl));
+        if ( params.info ) {
+            file.info = {
+                pageSizes: pdf_pages!.map(
+                    size => size
+                        .split( 'x' )
+                        .flatMap( coord => parseInt(coord) ) as [number, number]
+                ),
+                pageNumber: pdf_page_number!,
+            }
+        }
+
         this.files.push(file);
 
         return file;
@@ -144,7 +155,7 @@ export default abstract class Task implements TaskI {
         return basename;
     }
 
-    private async uploadFromFile(file: BaseFile): Promise<BaseFile> {
+    private async uploadFromFile(file: BaseFile, params: AddFileParams): Promise<BaseFile> {
         if (this.files.indexOf(file) !== -1) {
             throw new ElementAlreadyExistsError();
         }
@@ -153,6 +164,10 @@ export default abstract class Task implements TaskI {
 
         // Populate file with control data.
         file.taskId = this.id!;
+
+        if ( params.info ) {
+            file.info = { pageNumber: 0, pageSizes: [] }
+        }
 
         const data = await this.xhr.post<UploadResponse>(
             `${ globals.API_URL_PROTOCOL }://${ this.server }/${ globals.API_VERSION }/upload`,
@@ -165,11 +180,22 @@ export default abstract class Task implements TaskI {
             }
         );
 
-        const { server_filename } = data;
+        const { server_filename, pdf_pages, pdf_page_number } = data;
         if (thereIsUndefined([ server_filename ])) throw new UpdateError('File cannot be uploaded');
 
         // Populate file with control data.
         file.serverFilename = server_filename;
+        // Populate info if required.
+        if ( params.info ) {
+            file.info = {
+                pageSizes: pdf_pages!.map(
+                    size => size
+                        .split( 'x' )
+                        .flatMap( coord => parseInt(coord) ) as [number, number]
+                ),
+                pageNumber: pdf_page_number!,
+            }
+        }
         // Insert inside the array of included files.
         this.files.push(file);
 

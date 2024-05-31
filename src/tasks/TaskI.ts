@@ -8,6 +8,10 @@ export default interface TaskI {
      */
     readonly id: string;
     /**
+     * Account remaining files.
+     */
+    readonly remainingFiles: number | undefined;
+    /**
      * Starts task retrieving the assigned server and task id.
      * @returns The task id.
      */
@@ -17,7 +21,7 @@ export default interface TaskI {
      * @param file - File or public URL.
      * @returns The added file.
      */
-    addFile: (file: BaseFile | string) => Promise<BaseFile>;
+    addFile: (file: BaseFile | string, params?: AddFileParams) => Promise<BaseFile>;
     /**
      * Deletes a file previously created.
      * @param file - File to remove.
@@ -45,3 +49,7 @@ export default interface TaskI {
      */
     connect: (nextTool: ILovePDFTool) => Promise<TaskI>;
 }
+
+export type AddFileParams = {
+    info: boolean;
+};

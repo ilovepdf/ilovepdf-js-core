@@ -7,6 +7,7 @@ export default class BaseFile {
     public taskId: string;
     public serverFilename: string;
     public filename: string;
+    public info: Info | undefined;
     public params: BaseFileParams;
 
     constructor(taskId: string = '', serverFilename: string = '',
@@ -19,3 +20,8 @@ export default class BaseFile {
     }
 
 };
+
+type Info = {
+    pageNumber: number,
+    pageSizes: Array<[ number, number ]>,
+}

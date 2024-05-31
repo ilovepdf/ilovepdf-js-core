@@ -19,6 +19,9 @@ export default class ILovePDFFile extends BaseFile {
         const formData = new FormData();
         formData.append('task', this.taskId);
         formData.append('file', this.file, { filename: this.filename });
+        if (this.info) { // Get information if required.
+            formData.append('pdfinfo', 1);
+        }
         return formData;
     }
 
