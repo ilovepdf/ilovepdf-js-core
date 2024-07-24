@@ -4,7 +4,6 @@ import JWT from "../auth/JWT";
 import dotenv from 'dotenv';
 import ILovePDFFile from "../utils/ILovePDFFile";
 import path from 'path';
-import { inRange } from "../utils/math";
 import PdfaTask from "./PdfaTask";
 
 // Load env vars.
@@ -32,7 +31,10 @@ describe('PdfaTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 22510, 200) ).toBeTruthy();
+            const expected = 22510
+            const errorMargin = 200
+            expect(data.length).toBeGreaterThan(expected - errorMargin)
+            expect(data.length).toBeLessThan(expected + errorMargin)
         });
     });
 
@@ -52,7 +54,10 @@ describe('PdfaTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 22420, 200) ).toBeTruthy();
+            const expected = 22420
+            const errorMargin = 200
+            expect(data.length).toBeGreaterThan(expected - errorMargin)
+            expect(data.length).toBeLessThan(expected + errorMargin)
         });
     });
 

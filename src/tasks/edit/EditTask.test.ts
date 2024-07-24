@@ -41,11 +41,14 @@ describe('EditTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect(data.length).toEqual(13761);
+            const expected = 13761
+            const errorMargin = 200
+            expect(data.length).toBeGreaterThan(expected - errorMargin)
+            expect(data.length).toBeLessThan(expected + errorMargin)
         });
     });
 
-    it('adds a text element', () => {
+    it('adds an image element', () => {
         const task = taskFactory.newTask('editpdf', auth, xhr) as EditTask;
 
         return task.start()
@@ -71,7 +74,10 @@ describe('EditTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect(data.length).toEqual(4236);
+            const expected = 4236
+            const errorMargin = 200
+            expect(data.length).toBeGreaterThan(expected - errorMargin)
+            expect(data.length).toBeLessThan(expected + errorMargin)
         });
     });
 

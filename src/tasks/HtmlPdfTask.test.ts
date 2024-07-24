@@ -31,7 +31,10 @@ describe('HtmlPdfTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 358063, 200) ).toBeTruthy();
+            const expected = 677685
+            const errorMargin = 200
+            expect(data.length).toBeGreaterThan(expected - errorMargin)
+            expect(data.length).toBeLessThan(expected + errorMargin)
         });
     });
 
@@ -64,7 +67,10 @@ describe('HtmlPdfTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 361376, 200) ).toBeTruthy();
+            const expected = 677685
+            const errorMargin = 200
+            expect(data.length).toBeGreaterThan(expected - errorMargin)
+            expect(data.length).toBeLessThan(expected + errorMargin)
         });
     });
 

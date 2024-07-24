@@ -7,7 +7,6 @@ import SignatureFile from './tasks/sign/elements/SignatureFile';
 import Signer from './tasks/sign/receivers/Signer';
 import CompressTask from './tasks/CompressTask';
 import ILovePDFFile from './utils/ILovePDFFile';
-import { inRange } from './utils/math';
 import path from 'path';
 import ILovePDFCoreApi from './ILovePDFCoreApi';
 
@@ -140,7 +139,10 @@ describe('ILovePDFCoreApi', () => {
             const data = await task.download();
 
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 1697, 200) ).toBeTruthy();
+            const expected = 1697
+            const errorMargin = 200
+            expect(data.length).toBeGreaterThan(expected - errorMargin)
+            expect(data.length).toBeLessThan(expected + errorMargin)
         });
 
         // Note: This test is skipped due to it was not in consideration that
