@@ -28,6 +28,29 @@ describe('PdfOcrTask', () => {
     it('processes', async () => {
         try {
             // Turn the PDF from image to PDf with text
+            const task = taskFactory.newTask('pdfocr', auth, xhr) as PdfOcrTask;
+            await task.start()
+            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/ocr_test.pdf'));
+            await task.addFile(file);
+            await task.process();
+            const data = await task.download();
+            console.log(`Length: ${ data.length }`);
+            const expected = 171774
+            const errorMargin = 200
+            expect(data.length).toBeGreaterThan(expected - errorMargin)
+            expect(data.length).toBeLessThan(expected + errorMargin)
+        } catch (error) {
+            // log axios errors
+            if (error?.response?.data?.error) {
+                console.log(error.response.data.error)
+            }
+            throw error;
+        }
+    })
+
+    it('recognizes the text', async () => {
+        try {
+            // Turn the PDF from image to PDf with text
             const pdfOcrTask = taskFactory.newTask('pdfocr', auth, xhr) as PdfOcrTask;
             await pdfOcrTask.start()
             const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/ocr_test.pdf'));
