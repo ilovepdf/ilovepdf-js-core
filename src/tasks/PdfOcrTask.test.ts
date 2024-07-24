@@ -40,7 +40,33 @@ describe('PdfOcrTask', () => {
             const data = await extractTextTask.download();
             const text = byteArrayToSanitizedText(data)
 
-            const expectedFileText = 'Dummy PDF file OCR test, page 1 Dummy PDF file OCR test, page 2';
+            const expectedFileText: string = 'Dummy PDF file OCR test, page 1 Dummy PDF file OCR test, page 2';
+            expect(text).toEqual(expectedFileText)
+        } catch (error) {
+            // log axios errors
+            if (error?.response?.data?.error) {
+                console.log(error.response.data.error)
+            }
+            throw error;
+        }
+    })
+
+    it('supports language parameter', async () => {
+        try {
+            // Turn the PDF from image to PDf with text
+            const pdfOcrTask = taskFactory.newTask('pdfocr', auth, xhr) as PdfOcrTask;
+            await pdfOcrTask.start()
+            const file = new ILovePDFFile(path.resolve(__dirname, '../tests/input/ocr_test_cat.pdf'));
+            await pdfOcrTask.addFile(file);
+            await pdfOcrTask.process({ocr_languages: ['cat']});
+
+            // Extract the text
+            const extractTextTask = await pdfOcrTask.connect('extract')
+            await extractTextTask.process();
+            const data = await extractTextTask.download();
+            const text = byteArrayToSanitizedText(data)
+
+            const expectedFileText: string = 'Això és una prova de PDF OCR.';
             expect(text).toEqual(expectedFileText)
         } catch (error) {
             // log axios errors

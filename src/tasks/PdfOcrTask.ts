@@ -130,7 +130,7 @@ export type OcrLanguage =
 
 
 export interface PdfOcrParams extends ProcessParams {
-    ocr_languages: [OcrLanguage, ...OcrLanguage[]]; // non-empty array
+    ocr_languages?: [OcrLanguage, ...OcrLanguage[]]; // non-empty array
 }
 
 export default class PdfOcrTask extends TaskBaseProcess {
@@ -142,7 +142,7 @@ export default class PdfOcrTask extends TaskBaseProcess {
         this.type = 'pdfocr';
     }
 
-    async process(params: ProcessParams = {}): Promise<TaskBaseProcessProcess> {
+    async process(params: PdfOcrParams = {}): Promise<TaskBaseProcessProcess> {
         const paramsWithDefaultLang: PdfOcrParams = {ocr_languages: ['eng'], ...params}
         return super.process(paramsWithDefaultLang);
     }
