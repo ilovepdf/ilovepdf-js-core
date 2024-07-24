@@ -22,6 +22,7 @@ import XHRInterface from "../utils/XHRInterface";
 import TaskI from "./TaskI";
 import SignTask from "./sign/SignTask";
 import EditTask from "./edit/EditTask";
+import PdfOcrTask from "./PdfOcrTask";
 
 export interface TaskFactoryI {
     newTask: (taskType: ILovePDFTool, auth: Auth, xhr: XHRInterface, params?: TaskParams) => TaskI;
@@ -46,6 +47,7 @@ const tasks: {[key in ILovePDFTool]: typeof Task} = {
     watermark: WatermarkTask,
     sign: SignTask,
     editpdf: EditTask,
+    pdfocr: PdfOcrTask,
 };
 
 export default class TaskFactory implements TaskFactoryI {
