@@ -614,8 +614,9 @@ describe('ILovePDFCoreApi', () => {
                 fail( 'it has to fail.' );
             }
             catch(err) {
+                const data = JSON.parse(err.response.data.toString());
                 // Due to it was treated as binary data.
-                expect( err.response.data.error.param.email[0] ).toBe('Email does not need to be fixed');
+                expect( data.error.param.email[0] ).toBe('Email does not need to be fixed');
             }
 
         });
@@ -658,8 +659,9 @@ describe('ILovePDFCoreApi', () => {
                 fail( 'it has to fail.' );
             }
             catch(err) {
+                const data = JSON.parse(err.response.data.toString());
                 // Due to it was treated as binary data.
-                expect( err.response.data.error.param.phone[0] ).toBe('Phone does not need to be fixed');
+                expect( data.error.param.phone[0] ).toBe('Phone does not need to be fixed');
             }
 
         });

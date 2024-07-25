@@ -41,8 +41,9 @@ describe('PdfOcrTask', () => {
             expect(data.length).toBeLessThan(expected + errorMargin)
         } catch (error) {
             // log axios errors
-            if (error?.response?.data?.error) {
-                console.log(error.response.data.error)
+            if (error?.response?.data) {
+                const data = JSON.parse(error.response.data.toString());
+                console.log(data.error)
             }
             throw error;
         }
@@ -67,8 +68,9 @@ describe('PdfOcrTask', () => {
             expect(text).toEqual(expectedFileText)
         } catch (error) {
             // log axios errors
-            if (error?.response?.data?.error) {
-                console.log(error.response.data.error)
+            if (error?.response?.data) {
+                const data = JSON.parse(error.response.data.toString());
+                console.log(data.error)
             }
             throw error;
         }
@@ -93,8 +95,9 @@ describe('PdfOcrTask', () => {
             expect(text).toEqual(expectedFileText)
         } catch (error) {
             // log axios errors
-            if (error?.response?.data?.error) {
-                console.log(error.response.data.error)
+            if (error?.response?.data) {
+                const data = JSON.parse(error.response.data.toString());
+                console.log(data.error)
             }
             throw error;
         }
