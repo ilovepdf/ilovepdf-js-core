@@ -11,15 +11,14 @@ export default class XHRPromise implements XHRInterface {
         return XHRPromise.makeRequest<T>('GET', url, undefined, options);
     }
 
-    public post<T>(url: string, data?: any, options: XHROptions = {}) {
-        let injectedData = data;
-        let injectedOptions = options;
+    public post<T>(url: string, data?: string | ILovePDFFile, options: XHROptions = {}) {
         // If it is a file, it has special treatment with HTTP extracting its data.
-        if (typeof data !== 'string') {
-            [ injectedData, injectedOptions ] = this.injectRequestInformation(data, options);
+        if (typeof data !== 'string' && typeof data !== 'undefined') {
+            const [ injectedData, injectedOptions ] = this.injectRequestInformation(data, options);
+            return XHRPromise.makeRequest<T>('POST', url, injectedData, injectedOptions);
         }
 
-        return XHRPromise.makeRequest<T>('POST', url, injectedData, injectedOptions);
+        return XHRPromise.makeRequest<T>('POST', url, data, options);
     }
 
     // ILovePDFFiles has to be sent with a specific HTTP configuration.
