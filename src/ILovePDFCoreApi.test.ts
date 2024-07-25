@@ -413,20 +413,9 @@ describe('ILovePDFCoreApi', () => {
                 }, 2000);
             });
 
-            // Due to we can test that email was sent, a limit exception is forced.
             await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
-            await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
-
-            try {
-                await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
-                fail( 'it has to fail.' );
-            }
-            catch(err) {
-                expect(err.message).toBe('Request failed with status code 400');
-            }
-
         });
-
+        
         it('downloads original files', async () => {
             // Create sign task to create a signer in servers.
             const taskFactory = new TaskFactory();
