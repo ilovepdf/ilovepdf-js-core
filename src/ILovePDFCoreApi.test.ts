@@ -173,7 +173,7 @@ describe('ILovePDFCoreApi', () => {
                     size: 40,
                 }]);
 
-                const signer = new Signer('Diego Signer', 'invent@ado.com');
+                const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com');
                 signer.addFile(signatureFile);
                 task.addReceiver(signer);
 
@@ -205,7 +205,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -216,7 +216,7 @@ describe('ILovePDFCoreApi', () => {
 
             const { signers } = await ILovePDFCoreApi.getSignatureStatus(auth, xhr, token_requester);
 
-            expect( signers[0].email ).toBe('invent@ado.com');
+            expect( signers[0].email ).toBe('testfake@ilovepdf.com');
         });
 
         it('gets a signature list', async () => {
@@ -241,7 +241,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            let signer = new Signer('Manolo', 'invent@ado.com', {
+            let signer = new Signer('Manolo', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -266,7 +266,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            signer = new Signer('Paquito', 'invent@ado.com', {
+            signer = new Signer('Paquito', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -305,7 +305,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -350,7 +350,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -396,7 +396,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -447,7 +447,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -481,7 +481,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -525,7 +525,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -569,7 +569,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -607,7 +607,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -651,7 +651,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
