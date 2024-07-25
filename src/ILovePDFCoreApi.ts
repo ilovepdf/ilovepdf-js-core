@@ -30,6 +30,24 @@ const getSignatureStatus = async (auth: Auth, xhr: XHRInterface, signatureToken:
     return response;
 };
 
+interface SignatureListFilters {
+    text?: string;
+    status?: SignatureStatus;
+    sort_field?: 'created' | 'filename';
+    sort_direction?: 'asc' | 'desc';
+    created_more_than?: string;
+    created_less_than?: string;
+}
+
+/**
+ * Only adds the query param if value is not undefined.
+ */
+const addOptionalQueryParam = (searchParams: URLSearchParams, name: string, value: string | undefined) => {
+    if (typeof value !== 'undefined') {
+        searchParams.set(name, value);
+    }
+}
+
 /**
  * Returns a list of the created signatures.
  * A pagination system is used to limit the response length.
@@ -37,17 +55,36 @@ const getSignatureStatus = async (auth: Auth, xhr: XHRInterface, signatureToken:
  * @param xhr XHR system to make requests.
  * @param page
  * @param pageLimit Limit of objects per page.
+ * @param filters.text If specified, searches only signatures that contain this text in the filename, signer's name, or signer's email.
+ * @param filters.status If specified, searches only signatures that have this status.
+ * @param filters.sort_field What field to sort elements by. "created" sorts by creation date, "filename" sorts by filename alphabetically. Default = "created"
+ * @param filters.sort_direction Whether to sort elements in ascending or descending order. Default = "asc"
+ * @param filters.created_more_than If specified, searches only signatures created after this date. Format: yyyy-mm-dd
+ * @param filters.created_less_than If specified, searches only signatures created before this date. Format: yyyy-mm-dd
  * @returns List of signatures.
  */
 const getSignatureList = async (auth: Auth, xhr: XHRInterface,
-                                page: number = 0, pageLimit: number = 20): Promise<Array<GetSignatureStatus>> => {
+                                page: number = 0, pageLimit: number = 20, filters: SignatureListFilters = {}): Promise<Array<GetSignatureStatus>> => {
 
     const token = await auth.getToken();
 
     const server = await getSignServer( xhr, token );
 
+    const searchParams = new URLSearchParams()
+
+    searchParams.set('page', page)
+    searchParams.set('per-page', pageLimit)
+    addOptionalQueryParam(searchParams, 'text', filters.text)
+    addOptionalQueryParam(searchParams, 'status', filters.status)
+    addOptionalQueryParam(searchParams, 'sort_field', filters.sort_field)
+    addOptionalQueryParam(searchParams, 'sort_direction', filters.sort_direction)
+    addOptionalQueryParam(searchParams, 'created_more_than', filters.created_more_than)
+    addOptionalQueryParam(searchParams, 'created_less_than', filters.created_less_than)
+
+    const queryString = searchParams.toString();
+
     const response = await xhr.get<Array<GetSignatureStatus>>(
-        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/list?page=${ page }&per-page=${ pageLimit }`,
+        `${ globals.API_URL_PROTOCOL }://${ server }/${ globals.API_VERSION }/signature/list?${queryString}`,
         {
             headers: [
                 [ 'Content-Type', 'application/json;charset=UTF-8' ],
