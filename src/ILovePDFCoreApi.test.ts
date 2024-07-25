@@ -357,7 +357,8 @@ describe('ILovePDFCoreApi', () => {
             signer.addFile(signatureFile);
             task.addReceiver(signer);
 
-            const { token_requester } = await task.process();
+            const BASE_DAYS = 120;
+            const { token_requester } = await task.process({expiration_days: BASE_DAYS});
 
             // Increase expiration days.
             const INCREASED_DAYS = 3;
@@ -371,7 +372,6 @@ describe('ILovePDFCoreApi', () => {
             const diffDays = dateDiffInDays(creationDate, expirationDate);
 
             // Days by default.
-            const BASE_DAYS = 120;
 
             expect(diffDays).toBe(BASE_DAYS + INCREASED_DAYS);
         });
