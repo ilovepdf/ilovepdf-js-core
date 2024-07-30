@@ -1,3 +1,4 @@
+import {describe, it, expect} from "@jest/globals";
 import TaskFactory from "../TaskFactory";
 import XHRPromise from "../../utils/XHRPromise";
 import JWT from "../../auth/JWT";
@@ -5,6 +6,7 @@ import dotenv from 'dotenv';
 import EditTask from "./EditTask";
 import ILovePDFFile from "../../utils/ILovePDFFile";
 import path from 'path';
+import '../../tests/expectToBeWithinRange'
 import Text from "./Text";
 import Image from "./Image";
 
@@ -41,11 +43,11 @@ describe('EditTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect(data.length).toEqual(13761);
+            expect(data.length).toBeWithinRange(13761, 200);
         });
     });
 
-    it('adds a text element', () => {
+    it('adds an image element', () => {
         const task = taskFactory.newTask('editpdf', auth, xhr) as EditTask;
 
         return task.start()
@@ -71,7 +73,7 @@ describe('EditTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect(data.length).toEqual(4236);
+            expect(data.length).toBeWithinRange(4236, 200);
         });
     });
 

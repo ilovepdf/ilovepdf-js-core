@@ -22,6 +22,7 @@ import ExtractTask from './ExtractTask';
 import TaskTypeNotExistsError from '../errors/TaskTypeNotExistsError';
 import ILovePDFTool from '../types/ILovePDFTool';
 import EditTask from './edit/EditTask';
+import PdfOcrTask from "./PdfOcrTask";
 
 // Load env vars.
 dotenv.config();
@@ -120,6 +121,11 @@ describe('TaskFactory', () => {
     it('creates an edit task', () => {
         const task = taskFactory.newTask('editpdf', auth, xhr);
         expect(task).toBeInstanceOf(EditTask);
+    })
+
+    it('creates a pdfocr task', () => {
+        const task = taskFactory.newTask('pdfocr', auth, xhr);
+        expect(task).toBeInstanceOf(PdfOcrTask);
     })
 
     it('returns an error on invalid tool', () => {

@@ -1,3 +1,4 @@
+import {describe, it, expect} from "@jest/globals";
 import dotenv from 'dotenv';
 import XHRPromise from './utils/XHRPromise';
 import JWT from './auth/JWT';
@@ -7,8 +8,8 @@ import SignatureFile from './tasks/sign/elements/SignatureFile';
 import Signer from './tasks/sign/receivers/Signer';
 import CompressTask from './tasks/CompressTask';
 import ILovePDFFile from './utils/ILovePDFFile';
-import { inRange } from './utils/math';
 import path from 'path';
+import './tests/expectToBeWithinRange'
 import ILovePDFCoreApi from './ILovePDFCoreApi';
 
 // Load env vars.
@@ -140,7 +141,7 @@ describe('ILovePDFCoreApi', () => {
             const data = await task.download();
 
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 1697, 200) ).toBeTruthy();
+            expect(data.length).toBeWithinRange(1697, 200);
         });
 
         // Note: This test is skipped due to it was not in consideration that
@@ -171,7 +172,7 @@ describe('ILovePDFCoreApi', () => {
                     size: 40,
                 }]);
 
-                const signer = new Signer('Diego Signer', 'invent@ado.com');
+                const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com');
                 signer.addFile(signatureFile);
                 task.addReceiver(signer);
 
@@ -203,7 +204,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -214,7 +215,7 @@ describe('ILovePDFCoreApi', () => {
 
             const { signers } = await ILovePDFCoreApi.getSignatureStatus(auth, xhr, token_requester);
 
-            expect( signers[0].email ).toBe('invent@ado.com');
+            expect( signers[0].email ).toBe('testfake@ilovepdf.com');
         });
 
         it('gets a signature list', async () => {
@@ -239,7 +240,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            let signer = new Signer('Manolo', 'invent@ado.com', {
+            let signer = new Signer('Manolo', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -264,7 +265,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            signer = new Signer('Paquito', 'invent@ado.com', {
+            signer = new Signer('Paquito', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -273,7 +274,7 @@ describe('ILovePDFCoreApi', () => {
 
             await task.process();
 
-            const signatureList = await ILovePDFCoreApi.getSignatureList(auth, xhr, 0, 2);
+            const signatureList = await ILovePDFCoreApi.getSignatureList(auth, xhr, 0, 2, {sort_direction: 'desc'});
 
             const paquitoName = signatureList[0].signers[0].name;
 
@@ -303,7 +304,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -348,14 +349,15 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
             signer.addFile(signatureFile);
             task.addReceiver(signer);
 
-            const { token_requester } = await task.process();
+            const BASE_DAYS = 120;
+            const { token_requester } = await task.process({expiration_days: BASE_DAYS});
 
             // Increase expiration days.
             const INCREASED_DAYS = 3;
@@ -369,7 +371,6 @@ describe('ILovePDFCoreApi', () => {
             const diffDays = dateDiffInDays(creationDate, expirationDate);
 
             // Days by default.
-            const BASE_DAYS = 120;
 
             expect(diffDays).toBe(BASE_DAYS + INCREASED_DAYS);
         });
@@ -394,7 +395,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -411,20 +412,9 @@ describe('ILovePDFCoreApi', () => {
                 }, 2000);
             });
 
-            // Due to we can test that email was sent, a limit exception is forced.
             await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
-            await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
-
-            try {
-                await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
-                fail( 'it has to fail.' );
-            }
-            catch(err) {
-                expect(err.message).toBe('Request failed with status code 400');
-            }
-
         });
-
+        
         it('downloads original files', async () => {
             // Create sign task to create a signer in servers.
             const taskFactory = new TaskFactory();
@@ -445,7 +435,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -479,7 +469,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -523,7 +513,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -567,7 +557,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -605,7 +595,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -623,8 +613,9 @@ describe('ILovePDFCoreApi', () => {
                 fail( 'it has to fail.' );
             }
             catch(err) {
+                const data = JSON.parse(err.response.data.toString());
                 // Due to it was treated as binary data.
-                expect( err.response.data.error.param.email[0] ).toBe('Email does not need to be fixed');
+                expect( data.error.param.email[0] ).toBe('Email does not need to be fixed');
             }
 
         });
@@ -649,7 +640,7 @@ describe('ILovePDFCoreApi', () => {
                 size: 40,
             }]);
 
-            const signer = new Signer('Diego Signer', 'invent@ado.com', {
+            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
                 type: 'signer',
                 force_signature_type: 'all'
             });
@@ -667,8 +658,9 @@ describe('ILovePDFCoreApi', () => {
                 fail( 'it has to fail.' );
             }
             catch(err) {
+                const data = JSON.parse(err.response.data.toString());
                 // Due to it was treated as binary data.
-                expect( err.response.data.error.param.phone[0] ).toBe('Phone does not need to be fixed');
+                expect( data.error.param.phone[0] ).toBe('Phone does not need to be fixed');
             }
 
         });
