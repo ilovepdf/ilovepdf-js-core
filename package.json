@@ -23,6 +23,7 @@
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
     "@babel/preset-typescript": "^7.10.4",
+    "@jest/globals": "^29.7.0",
     "@types/form-data": "^2.5.0",
     "@types/jest": "^26.0.9",
     "@types/jsonwebtoken": "^8.5.0",
