@@ -1,10 +1,11 @@
+import {describe, it, expect} from "@jest/globals";
 import TaskFactory from "./TaskFactory";
 import XHRPromise from "../utils/XHRPromise";
 import JWT from "../auth/JWT";
 import dotenv from 'dotenv';
 import ILovePDFFile from "../utils/ILovePDFFile";
 import path from 'path';
-import { inRange } from "../utils/math";
+import '../tests/expectToBeWithinRange'
 import RepairTask from "./RepairTask";
 
 // Load env vars.
@@ -33,7 +34,7 @@ describe('RepairTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 22934, 150) ).toBeTruthy();
+            expect(data.length).toBeWithinRange(22934, 150);
         });
     });
 

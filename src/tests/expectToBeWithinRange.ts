@@ -1,10 +1,5 @@
 import {expect} from "@jest/globals";
 
-export const expectInRange = (actual: number, expected: number, errorMargin: number) => {
-    expect(actual).toBeGreaterThan(expected - errorMargin)
-    expect(actual).toBeLessThan(expected + errorMargin)
-}
-
 expect.extend({
     toBeWithinRange(actual: number, expected: number, errorMargin: number) {
         const { isNot } = this

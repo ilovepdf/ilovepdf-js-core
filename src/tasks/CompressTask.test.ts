@@ -1,3 +1,4 @@
+import {describe, it, expect} from "@jest/globals";
 import TaskFactory from "./TaskFactory";
 import XHRPromise from "../utils/XHRPromise";
 import JWT from "../auth/JWT";
@@ -5,7 +6,7 @@ import dotenv from 'dotenv';
 import CompressTask from "./CompressTask";
 import ILovePDFFile from "../utils/ILovePDFFile";
 import path from 'path';
-import { inRange } from "../utils/math";
+import '../tests/expectToBeWithinRange'
 
 // Load env vars.
 dotenv.config();
@@ -32,7 +33,7 @@ describe('CompressTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 1697, 200) ).toBeTruthy();
+            expect( data.length).toBeWithinRange( 1697, 200);
         });
     });
 
@@ -52,7 +53,7 @@ describe('CompressTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 1762, 200) ).toBeTruthy();
+            expect( data.length).toBeWithinRange( 1762, 200);
         });
     });
 

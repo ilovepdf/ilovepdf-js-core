@@ -1,10 +1,11 @@
+import {describe, it, expect} from "@jest/globals";
 import dotenv from 'dotenv';
 import path from 'path';
 import TaskFactory from './TaskFactory';
 import JWT from '../auth/JWT';
 import XHRPromise from '../utils/XHRPromise';
 import ILovePDFFile from '../utils/ILovePDFFile';
-import { inRange } from '../utils/math';
+import '../tests/expectToBeWithinRange'
 
 // Load env vars.
 dotenv.config();
@@ -58,7 +59,7 @@ describe('Task', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 15383, 200) ).toBeTruthy();
+            expect(data.length).toBeWithinRange(15383, 200);
         });
     });
 
@@ -88,7 +89,7 @@ describe('Task', () => {
         const data = await connectedTask.download();
 
         console.log(`Length: ${ data.length }`);
-        expect( inRange(data.length, 17807, 200) ).toBeTruthy();
+        expect(data.length).toBeWithinRange(17807, 200);
     });
 
     it('deletes a task', async () => {
@@ -108,7 +109,7 @@ describe('Task', () => {
 
     it('deletes a file', async () => {
 
-        expect(async () => {
+        await expect(async () => {
             const task = taskFactory.newTask('merge', auth, xhr);
             await task.start()
 

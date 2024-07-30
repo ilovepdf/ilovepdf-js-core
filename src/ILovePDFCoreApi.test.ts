@@ -1,3 +1,4 @@
+import {describe, it, expect} from "@jest/globals";
 import dotenv from 'dotenv';
 import XHRPromise from './utils/XHRPromise';
 import JWT from './auth/JWT';
@@ -8,6 +9,7 @@ import Signer from './tasks/sign/receivers/Signer';
 import CompressTask from './tasks/CompressTask';
 import ILovePDFFile from './utils/ILovePDFFile';
 import path from 'path';
+import './tests/expectToBeWithinRange'
 import ILovePDFCoreApi from './ILovePDFCoreApi';
 
 // Load env vars.
@@ -139,10 +141,7 @@ describe('ILovePDFCoreApi', () => {
             const data = await task.download();
 
             console.log(`Length: ${ data.length }`);
-            const expected = 1697
-            const errorMargin = 200
-            expect(data.length).toBeGreaterThan(expected - errorMargin)
-            expect(data.length).toBeLessThan(expected + errorMargin)
+            expect(data.length).toBeWithinRange(1697, 200);
         });
 
         // Note: This test is skipped due to it was not in consideration that

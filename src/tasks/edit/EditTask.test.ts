@@ -1,3 +1,4 @@
+import {describe, it, expect} from "@jest/globals";
 import TaskFactory from "../TaskFactory";
 import XHRPromise from "../../utils/XHRPromise";
 import JWT from "../../auth/JWT";
@@ -5,6 +6,7 @@ import dotenv from 'dotenv';
 import EditTask from "./EditTask";
 import ILovePDFFile from "../../utils/ILovePDFFile";
 import path from 'path';
+import '../../tests/expectToBeWithinRange'
 import Text from "./Text";
 import Image from "./Image";
 
@@ -41,10 +43,7 @@ describe('EditTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            const expected = 13761
-            const errorMargin = 200
-            expect(data.length).toBeGreaterThan(expected - errorMargin)
-            expect(data.length).toBeLessThan(expected + errorMargin)
+            expect(data.length).toBeWithinRange(13761, 200);
         });
     });
 
@@ -74,10 +73,7 @@ describe('EditTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            const expected = 4236
-            const errorMargin = 200
-            expect(data.length).toBeGreaterThan(expected - errorMargin)
-            expect(data.length).toBeLessThan(expected + errorMargin)
+            expect(data.length).toBeWithinRange(4236, 200);
         });
     });
 

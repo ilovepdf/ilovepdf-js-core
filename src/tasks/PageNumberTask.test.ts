@@ -1,10 +1,11 @@
+import {describe, it, expect} from "@jest/globals";
 import TaskFactory from "./TaskFactory";
 import XHRPromise from "../utils/XHRPromise";
 import JWT from "../auth/JWT";
 import dotenv from 'dotenv';
 import ILovePDFFile from "../utils/ILovePDFFile";
 import path from 'path';
-import { inRange } from "../utils/math";
+import '../tests/expectToBeWithinRange'
 import PageNumberTask from "./PageNumberTask";
 
 // Load env vars.
@@ -32,7 +33,7 @@ describe('PageNumberTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 13494, 150) ).toBeTruthy();
+            expect(data.length).toBeWithinRange(13494, 150);
         });
     });
 
@@ -52,7 +53,7 @@ describe('PageNumberTask', () => {
         })
         .then(data => {
             console.log(`Length: ${ data.length }`);
-            expect( inRange(data.length, 15446, 150) ).toBeTruthy();
+            expect(data.length).toBeWithinRange(15446, 150);
         });
     });
 

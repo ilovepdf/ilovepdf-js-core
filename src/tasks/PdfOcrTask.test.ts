@@ -1,9 +1,11 @@
+import {describe, it, expect} from "@jest/globals";
 import TaskFactory from "./TaskFactory";
 import XHRPromise from "../utils/XHRPromise";
 import JWT from "../auth/JWT";
 import dotenv from 'dotenv';
 import ILovePDFFile from "../utils/ILovePDFFile";
 import path from 'path';
+import '../tests/expectToBeWithinRange'
 import PdfOcrTask from "./PdfOcrTask";
 
 // Load env vars.
@@ -35,10 +37,7 @@ describe('PdfOcrTask', () => {
             await task.process();
             const data = await task.download();
             console.log(`Length: ${ data.length }`);
-            const expected = 171774
-            const errorMargin = 200
-            expect(data.length).toBeGreaterThan(expected - errorMargin)
-            expect(data.length).toBeLessThan(expected + errorMargin)
+            expect(data.length).toBeWithinRange(171774, 200);
         } catch (error) {
             // log axios errors
             if (error?.response?.data) {
