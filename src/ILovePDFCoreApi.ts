@@ -30,7 +30,7 @@ const getSignatureStatus = async (auth: Auth, xhr: XHRInterface, signatureToken:
     return response;
 };
 
-interface SignatureListFilters {
+export interface SignatureListFilters {
     text?: string;
     status?: SignatureStatus;
     sort_field?: 'created' | 'filename';
