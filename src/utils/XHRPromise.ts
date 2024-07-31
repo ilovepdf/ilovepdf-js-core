@@ -5,22 +5,15 @@ import HTTPVerbNotSupportedError from '../errors/HTTPVerbNotSupportedError';
 
 type HTTP_VERB = 'GET' | 'POST' | 'PUT' | 'DELETE' ;
 
-const isFile = (data? : any): data is ILovePDFFile => {
-    if (typeof data !== 'object') {
-        return false;
-    }
-    return (typeof data.isILovePDFFile === 'function') ? data.isILovePDFFile() : false;
-}
-
 export default class XHRPromise implements XHRInterface {
 
     public get<T>(url: string, options: XHROptions = {}) {
         return XHRPromise.makeRequest<T>('GET', url, undefined, options);
     }
 
-    public post<T>(url: string, data?: any, options: XHROptions = {}) {
+    public post<T>(url: string, data?: string | ILovePDFFile, options: XHROptions = {}) {
         // If it is a file, it has special treatment with HTTP extracting its data.
-        if (isFile(data)) {
+        if (typeof data !== 'string' && typeof data !== 'undefined') {
             const [ injectedData, injectedOptions ] = this.injectRequestInformation(data, options);
             return XHRPromise.makeRequest<T>('POST', url, injectedData, injectedOptions);
         }
