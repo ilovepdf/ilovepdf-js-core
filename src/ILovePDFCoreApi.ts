@@ -5,6 +5,7 @@ import DownloadError from "./errors/DownloadError";
 import SignatureStatus from "./types/responses/SignatureStatus";
 import ServerFile from "./types/ServerFile";
 import StartResponse from "./types/responses/StartResponse";
+import { URLSearchParams } from "url";
 
 /**
  * Returns the signature identified by `signatureToken`.
@@ -72,8 +73,8 @@ const getSignatureList = async (auth: Auth, xhr: XHRInterface,
 
     const searchParams = new URLSearchParams()
 
-    searchParams.set('page', page)
-    searchParams.set('per-page', pageLimit)
+    searchParams.set('page', page.toString())
+    searchParams.set('per-page', pageLimit.toString())
     addOptionalQueryParam(searchParams, 'text', filters.text)
     addOptionalQueryParam(searchParams, 'status', filters.status)
     addOptionalQueryParam(searchParams, 'sort_field', filters.sort_field)
