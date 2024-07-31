@@ -25,6 +25,10 @@ export default class ILovePDFFile extends BaseFile {
         return formData;
     }
 
+    isILovePDFFile(): this is ILovePDFFile {
+        return true;
+    }
+
 }
 
 function getBasename(path: string): string {
