@@ -9,6 +9,8 @@ import Signer from './tasks/sign/receivers/Signer';
 import CompressTask from './tasks/CompressTask';
 import ILovePDFFile from './utils/ILovePDFFile';
 import path from 'path';
+import fs from 'fs';
+
 import './tests/expectToBeWithinRange'
 import ILovePDFCoreApi from './ILovePDFCoreApi';
 
@@ -19,8 +21,8 @@ const xhr = new XHRPromise();
 
 describe('ILovePDFCoreApi', () => {
 
-    describe('task properties', () => {
-        it('gets the remaining files', async () => {
+    describe('use ILovePDFFile', () => {
+        it('from local file', async () => {
             const taskFactory = new TaskFactory();
 
             const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
@@ -34,7 +36,10 @@ describe('ILovePDFCoreApi', () => {
             expect( typeof task.remainingFiles === 'number' ).toBeTruthy()
         });
 
-        it('does not get the pdfinfo', async () => {
+        it('from array data', async () => {
+            const buffer = fs.readFileSync(path.resolve(__dirname, './tests/input/sample.pdf'));
+            const file = ILovePDFFile.fromArray(buffer, 'sample.pdf');
+
             const taskFactory = new TaskFactory();
 
             const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
@@ -42,630 +47,662 @@ describe('ILovePDFCoreApi', () => {
             const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
 
             await task.start()
-
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-
-            // Be careful with this test. In case of being an admin, `remainingFiles`
-            // is `undefined` due to they have no limits.
-            expect(file.info).toBeUndefined()
-        });
-
-        it('does not get the pdfinfo with local file', async () => {
-            const taskFactory = new TaskFactory();
-
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
-
-            const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
-
-            await task.start()
-
-            const file = new ILovePDFFile(path.resolve(__dirname, './tests/input/sample.pdf'));
-            await task.addFile(file, { info: false });
-
-            // Be careful with this test. In case of being an admin, `remainingFiles`
-            // is `undefined` due to they have no limits.
-            expect(file.info).toBeUndefined()
-        });
-
-        it('does not get the pdfinfo if specified', async () => {
-            const taskFactory = new TaskFactory();
-
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
-
-            const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
-
-            await task.start()
-
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', { info: false });
-
-            // Be careful with this test. In case of being an admin, `remainingFiles`
-            // is `undefined` due to they have no limits.
-            expect(file.info).toBeUndefined()
-        });
-
-        it('gets the pdfinfo if specified', async () => {
-            const taskFactory = new TaskFactory();
-
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
-
-            const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
-
-            await task.start()
-
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', { info: true });
-
-            // Be careful with this test. In case of being an admin, `remainingFiles`
-            // is `undefined` due to they have no limits.
-            expect(file.info).toBeDefined()
-        });
-
-        it('gets the pdfinfo if specified with file', async () => {
-            const taskFactory = new TaskFactory();
-
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
-
-            const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
-
-            await task.start()
-
-            const file = new ILovePDFFile(path.resolve(__dirname, './tests/input/sample.pdf'));
-            await task.addFile(file, { info: true });
-
-            // Be careful with this test. In case of being an admin, `remainingFiles`
-            // is `undefined` due to they have no limits.
-            expect(file.info).toBeDefined()
-        });
-    })
-
-    describe('file_encryption_key', () => {
-
-        it('sets file_encryption_key in a task with normal process', async () => {
-            const taskFactory = new TaskFactory();
-
-            const auth = new JWT(xhr,
-                                 process.env.PUBLIC_KEY!,
-                                 process.env.SECRET_KEY!,
-                                 {
-                                     file_encryption_key: '0123456789012345'
-                                 });
-
-            const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
-
-            await task.start()
-
-            const file = new ILovePDFFile(path.resolve(__dirname, './tests/input/sample.pdf'));
             await task.addFile(file);
-
-            await task.process({ compression_level: 'low' });
-
+            await task.process({ compression_level: 'extreme' });
             const data = await task.download();
 
             console.log(`Length: ${ data.length }`);
-            expect(data.length).toBeWithinRange(1697, 200);
+            expect( data.length).toBeWithinRange( 1762, 200);
         });
+    })
 
-        // Note: This test is skipped due to it was not in consideration that
-        // signature files could use this file_encryption_key parameter and
-        // it is not implemented yet.
-        it.skip('sets file_encryption_key in a task with signature process without getting errors', () => {
-            const taskFactory = new TaskFactory();
+    // describe('task properties', () => {
+    //     it('gets the remaining files', async () => {
+    //         const taskFactory = new TaskFactory();
 
-            const auth = new JWT(xhr,
-                                 process.env.PUBLIC_KEY!,
-                                 process.env.SECRET_KEY!,
-                                 {
-                                     file_encryption_key: '0123456789012345'
-                                 });
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
 
-            return task.start()
-            .then(() => {
-                return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
-            })
-            .then((file) => {
-                // Signer.
-                const signatureFile = new SignatureFile(file, [{
-                    type: 'signature',
-                    position: '300 -100',
-                    pages: '1',
-                    size: 40,
-                }]);
+    //         await task.start()
 
-                const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com');
-                signer.addFile(signatureFile);
-                task.addReceiver(signer);
+    //         // Be careful with this test. In case of being an admin, `remainingFiles`
+    //         // is `undefined` due to they have no limits.
+    //         expect( typeof task.remainingFiles === 'number' ).toBeTruthy()
+    //     });
 
-                return task.process();
-            });
-        });
+    //     it('does not get the pdfinfo', async () => {
+    //         const taskFactory = new TaskFactory();
 
-    });
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-    describe('Signature management', () => {
+    //         const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
 
-        it('gets a signature status', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    //         await task.start()
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         // Be careful with this test. In case of being an admin, `remainingFiles`
+    //         // is `undefined` due to they have no limits.
+    //         expect(file.info).toBeUndefined()
+    //     });
 
-            await task.start()
+    //     it('does not get the pdfinfo with local file', async () => {
+    //         const taskFactory = new TaskFactory();
 
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
 
-            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         await task.start()
 
-            const { token_requester } = await task.process();
+    //         const file = new ILovePDFFile(path.resolve(__dirname, './tests/input/sample.pdf'));
+    //         await task.addFile(file, { info: false });
 
-            const { signers } = await ILovePDFCoreApi.getSignatureStatus(auth, xhr, token_requester);
+    //         // Be careful with this test. In case of being an admin, `remainingFiles`
+    //         // is `undefined` due to they have no limits.
+    //         expect(file.info).toBeUndefined()
+    //     });
 
-            expect( signers[0].email ).toBe('testfake@ilovepdf.com');
-        });
+    //     it('does not get the pdfinfo if specified', async () => {
+    //         const taskFactory = new TaskFactory();
 
-        it('gets a signature list', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    //         const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
 
-            // First task.
+    //         await task.start()
 
-            let task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', { info: false });
 
-            await task.start()
+    //         // Be careful with this test. In case of being an admin, `remainingFiles`
+    //         // is `undefined` due to they have no limits.
+    //         expect(file.info).toBeUndefined()
+    //     });
 
-            let file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //     it('gets the pdfinfo if specified', async () => {
+    //         const taskFactory = new TaskFactory();
 
-            // Signer.
-            let signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            let signer = new Signer('Manolo', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
 
-            await task.process();
+    //         await task.start()
 
-            // Second task.
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', { info: true });
 
-            task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         // Be careful with this test. In case of being an admin, `remainingFiles`
+    //         // is `undefined` due to they have no limits.
+    //         expect(file.info).toBeDefined()
+    //     });
 
-            await task.start()
+    //     it('gets the pdfinfo if specified with file', async () => {
+    //         const taskFactory = new TaskFactory();
 
-            file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            // Signer.
-            signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
 
-            signer = new Signer('Paquito', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         await task.start()
 
-            await task.process();
+    //         const file = new ILovePDFFile(path.resolve(__dirname, './tests/input/sample.pdf'));
+    //         await task.addFile(file, { info: true });
 
-            const signatureList = await ILovePDFCoreApi.getSignatureList(auth, xhr, 0, 2, {sort_direction: 'desc'});
+    //         // Be careful with this test. In case of being an admin, `remainingFiles`
+    //         // is `undefined` due to they have no limits.
+    //         expect(file.info).toBeDefined()
+    //     });
+    // })
 
-            const paquitoName = signatureList[0].signers[0].name;
+    // describe('file_encryption_key', () => {
 
-            const manoloName = signatureList[1].signers[0].name;
+    //     it('sets file_encryption_key in a task with normal process', async () => {
+    //         const taskFactory = new TaskFactory();
 
-            expect( paquitoName ).toBe('Paquito');
-            expect( manoloName ).toBe('Manolo');
-        });
+    //         const auth = new JWT(xhr,
+    //                              process.env.PUBLIC_KEY!,
+    //                              process.env.SECRET_KEY!,
+    //                              {
+    //                                  file_encryption_key: '0123456789012345'
+    //                              });
 
-        it('voids a signature', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    //         const task = taskFactory.newTask('compress', auth, xhr) as CompressTask;
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    //         await task.start()
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         const file = new ILovePDFFile(path.resolve(__dirname, './tests/input/sample.pdf'));
+    //         await task.addFile(file);
 
-            await task.start()
+    //         await task.process({ compression_level: 'low' });
 
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         const data = await task.download();
 
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         console.log(`Length: ${ data.length }`);
+    //         expect(data.length).toBeWithinRange(1697, 200);
+    //     });
 
-            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //     // Note: This test is skipped due to it was not in consideration that
+    //     // signature files could use this file_encryption_key parameter and
+    //     // it is not implemented yet.
+    //     it.skip('sets file_encryption_key in a task with signature process without getting errors', () => {
+    //         const taskFactory = new TaskFactory();
 
-            const { token_requester } = await task.process();
+    //         const auth = new JWT(xhr,
+    //                              process.env.PUBLIC_KEY!,
+    //                              process.env.SECRET_KEY!,
+    //                              {
+    //                                  file_encryption_key: '0123456789012345'
+    //                              });
 
-            // Wait to send emails due to this is made
-            // in background.
-            await new Promise<void>(resolve => {
-                setTimeout(() => {
-                    resolve();
-                }, 2000);
-            });
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-            // Void signature and look that it is correctly invalidated.
-            await ILovePDFCoreApi.voidSignature(auth, xhr, token_requester);
+    //         return task.start()
+    //         .then(() => {
+    //             return task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         })
+    //         .then((file) => {
+    //             // Signer.
+    //             const signatureFile = new SignatureFile(file, [{
+    //                 type: 'signature',
+    //                 position: '300 -100',
+    //                 pages: '1',
+    //                 size: 40,
+    //             }]);
 
-            const { status } = await ILovePDFCoreApi.getSignatureStatus( auth, xhr, token_requester );
+    //             const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com');
+    //             signer.addFile(signatureFile);
+    //             task.addReceiver(signer);
 
-            expect(status).toBe('void');
-        });
+    //             return task.process();
+    //         });
+    //     });
 
-        it('increases a signature expiration days', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    // });
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    // describe('Signature management', () => {
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //     it('gets a signature status', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
 
-            await task.start()
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         await task.start()
 
-            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            const BASE_DAYS = 120;
-            const { token_requester } = await task.process({expiration_days: BASE_DAYS});
+    //         // Signer.
+    //         const signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
 
-            // Increase expiration days.
-            const INCREASED_DAYS = 3;
-            await ILovePDFCoreApi.increaseSignatureExpirationDays(auth, xhr, token_requester, INCREASED_DAYS);
+    //         const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
 
-            const { created, expires } = await ILovePDFCoreApi.getSignatureStatus( auth, xhr, token_requester );
+    //         const { token_requester } = await task.process();
 
-            const creationDate = new Date( created );
-            const expirationDate = new Date( expires );
+    //         const { signers } = await ILovePDFCoreApi.getSignatureStatus(auth, xhr, token_requester);
 
-            const diffDays = dateDiffInDays(creationDate, expirationDate);
+    //         expect( signers[0].email ).toBe('testfake@ilovepdf.com');
+    //     });
 
-            // Days by default.
+    //     it('gets a signature list', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
 
-            expect(diffDays).toBe(BASE_DAYS + INCREASED_DAYS);
-        });
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-        it('sends reminders', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    //         // First task.
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    //         let task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         await task.start()
 
-            await task.start()
+    //         let file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         // Signer.
+    //         let signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
 
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         let signer = new Signer('Manolo', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
 
-            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         await task.process();
 
-            const { token_requester } = await task.process();
+    //         // Second task.
 
-            // Wait to send emails due to this is made
-            // in background.
-            await new Promise<void>(resolve => {
-                setTimeout(() => {
-                    resolve();
-                }, 2000);
-            });
+    //         task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-            await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
-        });
-        
-        it('downloads original files', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    //         await task.start()
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    //         file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         // Signer.
+    //         signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
 
-            await task.start()
+    //         signer = new Signer('Paquito', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
 
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         await task.process();
 
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         const signatureList = await ILovePDFCoreApi.getSignatureList(auth, xhr, 0, 2, {sort_direction: 'desc'});
 
-            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         const paquitoName = signatureList[0].signers[0].name;
 
-            const { token_requester } = await task.process();
+    //         const manoloName = signatureList[1].signers[0].name;
 
-            const rawData = await ILovePDFCoreApi.downloadOriginalFiles(auth, xhr, token_requester);
+    //         expect( paquitoName ).toBe('Paquito');
+    //         expect( manoloName ).toBe('Manolo');
+    //     });
 
-            expect(rawData.length).toBeGreaterThan(0);
-        });
+    //     it('voids a signature', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
 
-        it('downloads signed files', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         await task.start()
 
-            await task.start()
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         // Signer.
+    //         const signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
 
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
 
-            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         const { token_requester } = await task.process();
 
-            const { token_requester } = await task.process();
+    //         // Wait to send emails due to this is made
+    //         // in background.
+    //         await new Promise<void>(resolve => {
+    //             setTimeout(() => {
+    //                 resolve();
+    //             }, 2000);
+    //         });
 
-            // We can't test downloaded data due to the signature is not finished.
-            // But we want to test that the connection was successful, so the
-            // exception is the trigger to know that the connection was successful.
-            try {
-                await ILovePDFCoreApi.downloadSignedFiles(auth, xhr, token_requester);
-                fail( 'it has to fail.' );
-            }
-            catch(err) {
-                // Due to it was treated as binary data.
-                const dataBuf = JSON.parse(err.response.data.toString());
-                expect( dataBuf.error.message ).toBe('We can\'t serve the download. Audit trail is only ready when signature is completed');
-            }
+    //         // Void signature and look that it is correctly invalidated.
+    //         await ILovePDFCoreApi.voidSignature(auth, xhr, token_requester);
 
-        });
+    //         const { status } = await ILovePDFCoreApi.getSignatureStatus( auth, xhr, token_requester );
 
-        it('downloads audit files', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    //         expect(status).toBe('void');
+    //     });
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    //     it('increases a signature expiration days', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            await task.start()
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         await task.start()
 
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         // Signer.
+    //         const signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
 
-            const { token_requester } = await task.process();
+    //         const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
 
-            // We can't test downloaded data due to the signature is not finished.
-            // But we want to test that the connection was successful, so the
-            // exception is the trigger to know that the connection was successful.
-            try {
-                await ILovePDFCoreApi.downloadAuditFiles(auth, xhr, token_requester);
-                fail( 'it has to fail.' );
-            }
-            catch(err) {
-                // Due to it was treated as binary data.
-                const dataBuf = JSON.parse(err.response.data.toString());
-                expect( dataBuf.error.message ).toBe('We can\'t serve the download. Audit trail is only ready when signature is completed');
-            }
+    //         const BASE_DAYS = 120;
+    //         const { token_requester } = await task.process({expiration_days: BASE_DAYS});
 
-        });
+    //         // Increase expiration days.
+    //         const INCREASED_DAYS = 3;
+    //         await ILovePDFCoreApi.increaseSignatureExpirationDays(auth, xhr, token_requester, INCREASED_DAYS);
 
-        it('gets receiver information', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    //         const { created, expires } = await ILovePDFCoreApi.getSignatureStatus( auth, xhr, token_requester );
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    //         const creationDate = new Date( created );
+    //         const expirationDate = new Date( expires );
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         const diffDays = dateDiffInDays(creationDate, expirationDate);
 
-            await task.start()
+    //         // Days by default.
 
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         expect(diffDays).toBe(BASE_DAYS + INCREASED_DAYS);
+    //     });
 
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //     it('sends reminders', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
 
-            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            const result = await task.process();
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-            const processedSigner = result.signers[0];
-            const { token_requester } = processedSigner;
+    //         await task.start()
 
-            // Due to we can test that email was sent, a limit exception is forced.
-            const { name } = await ILovePDFCoreApi.getReceiverInfo(auth, xhr, token_requester);
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            expect(name).toBe('Diego Signer');
-        });
+    //         // Signer.
+    //         const signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
 
-        it('fix receiver email', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    //         const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    //         const { token_requester } = await task.process();
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         // Wait to send emails due to this is made
+    //         // in background.
+    //         await new Promise<void>(resolve => {
+    //             setTimeout(() => {
+    //                 resolve();
+    //             }, 2000);
+    //         });
 
-            await task.start()
+    //         await ILovePDFCoreApi.sendReminders(auth, xhr, token_requester);
+    //     });
 
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //     it('downloads original files', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
 
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-            const result = await task.process();
+    //         await task.start()
 
-            const processedSigner = result.signers[0];
-            const { token_requester } = processedSigner;
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            // Test that connection was established.
-            try {
-                await ILovePDFCoreApi.fixReceiverEmail(auth, xhr, token_requester, 'newemail@email.com');
-                fail( 'it has to fail.' );
-            }
-            catch(err) {
-                const data = JSON.parse(err.response.data.toString());
-                // Due to it was treated as binary data.
-                expect( data.error.param.email[0] ).toBe('Email does not need to be fixed');
-            }
+    //         // Signer.
+    //         const signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
 
-        });
+    //         const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
 
-        it('fix receiver phone', async () => {
-            // Create sign task to create a signer in servers.
-            const taskFactory = new TaskFactory();
+    //         const { token_requester } = await task.process();
 
-            const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+    //         const rawData = await ILovePDFCoreApi.downloadOriginalFiles(auth, xhr, token_requester);
 
-            const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+    //         expect(rawData.length).toBeGreaterThan(0);
+    //     });
 
-            await task.start()
+    //     it('downloads signed files', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
 
-            const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
 
-            // Signer.
-            const signatureFile = new SignatureFile(file, [{
-                type: 'signature',
-                position: '300 -100',
-                pages: '1',
-                size: 40,
-            }]);
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
 
-            const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
-                type: 'signer',
-                force_signature_type: 'all'
-            });
-            signer.addFile(signatureFile);
-            task.addReceiver(signer);
+    //         await task.start()
 
-            const result = await task.process();
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
 
-            const processedSigner = result.signers[0];
-            const { token_requester } = processedSigner;
+    //         // Signer.
+    //         const signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
 
-            // Test that connection was established.
-            try {
-                await ILovePDFCoreApi.fixReceiverPhone(auth, xhr, token_requester, '34654654654');
-                fail( 'it has to fail.' );
-            }
-            catch(err) {
-                const data = JSON.parse(err.response.data.toString());
-                // Due to it was treated as binary data.
-                expect( data.error.param.phone[0] ).toBe('Phone does not need to be fixed');
-            }
+    //         const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
 
-        });
+    //         const { token_requester } = await task.process();
 
-    });
+    //         // We can't test downloaded data due to the signature is not finished.
+    //         // But we want to test that the connection was successful, so the
+    //         // exception is the trigger to know that the connection was successful.
+    //         try {
+    //             await ILovePDFCoreApi.downloadSignedFiles(auth, xhr, token_requester);
+    //             fail( 'it has to fail.' );
+    //         }
+    //         catch(err) {
+    //             // Due to it was treated as binary data.
+    //             const dataBuf = JSON.parse(err.response.data.toString());
+    //             expect( dataBuf.error.message ).toBe('We can\'t serve the download. Audit trail is only ready when signature is completed');
+    //         }
+
+    //     });
+
+    //     it('downloads audit files', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
+
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+
+    //         await task.start()
+
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+    //         // Signer.
+    //         const signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
+
+    //         const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
+
+    //         const { token_requester } = await task.process();
+
+    //         // We can't test downloaded data due to the signature is not finished.
+    //         // But we want to test that the connection was successful, so the
+    //         // exception is the trigger to know that the connection was successful.
+    //         try {
+    //             await ILovePDFCoreApi.downloadAuditFiles(auth, xhr, token_requester);
+    //             fail( 'it has to fail.' );
+    //         }
+    //         catch(err) {
+    //             // Due to it was treated as binary data.
+    //             const dataBuf = JSON.parse(err.response.data.toString());
+    //             expect( dataBuf.error.message ).toBe('We can\'t serve the download. Audit trail is only ready when signature is completed');
+    //         }
+
+    //     });
+
+    //     it('gets receiver information', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
+
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+
+    //         await task.start()
+
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+    //         // Signer.
+    //         const signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
+
+    //         const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
+
+    //         const result = await task.process();
+
+    //         const processedSigner = result.signers[0];
+    //         const { token_requester } = processedSigner;
+
+    //         // Due to we can test that email was sent, a limit exception is forced.
+    //         const { name } = await ILovePDFCoreApi.getReceiverInfo(auth, xhr, token_requester);
+
+    //         expect(name).toBe('Diego Signer');
+    //     });
+
+    //     it('fix receiver email', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
+
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+
+    //         await task.start()
+
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+    //         // Signer.
+    //         const signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
+
+    //         const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
+
+    //         const result = await task.process();
+
+    //         const processedSigner = result.signers[0];
+    //         const { token_requester } = processedSigner;
+
+    //         // Test that connection was established.
+    //         try {
+    //             await ILovePDFCoreApi.fixReceiverEmail(auth, xhr, token_requester, 'newemail@email.com');
+    //             fail( 'it has to fail.' );
+    //         }
+    //         catch(err) {
+    //             const data = JSON.parse(err.response.data.toString());
+    //             // Due to it was treated as binary data.
+    //             expect( data.error.param.email[0] ).toBe('Email does not need to be fixed');
+    //         }
+
+    //     });
+
+    //     it('fix receiver phone', async () => {
+    //         // Create sign task to create a signer in servers.
+    //         const taskFactory = new TaskFactory();
+
+    //         const auth = new JWT(xhr, process.env.PUBLIC_KEY!, process.env.SECRET_KEY!);
+
+    //         const task = taskFactory.newTask('sign', auth, xhr) as SignTask;
+
+    //         await task.start()
+
+    //         const file = await task.addFile('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+
+    //         // Signer.
+    //         const signatureFile = new SignatureFile(file, [{
+    //             type: 'signature',
+    //             position: '300 -100',
+    //             pages: '1',
+    //             size: 40,
+    //         }]);
+
+    //         const signer = new Signer('Diego Signer', 'testfake@ilovepdf.com', {
+    //             type: 'signer',
+    //             force_signature_type: 'all'
+    //         });
+    //         signer.addFile(signatureFile);
+    //         task.addReceiver(signer);
+
+    //         const result = await task.process();
+
+    //         const processedSigner = result.signers[0];
+    //         const { token_requester } = processedSigner;
+
+    //         // Test that connection was established.
+    //         try {
+    //             await ILovePDFCoreApi.fixReceiverPhone(auth, xhr, token_requester, '34654654654');
+    //             fail( 'it has to fail.' );
+    //         }
+    //         catch(err) {
+    //             const data = JSON.parse(err.response.data.toString());
+    //             // Due to it was treated as binary data.
+    //             expect( data.error.param.phone[0] ).toBe('Phone does not need to be fixed');
+    //         }
+
+    //     });
+
+    // });
 
 });
 

@@ -3,14 +3,20 @@ import fs from 'fs';
 import BaseFile, { BaseFileParams } from '../tasks/BaseFile';
 
 export default class ILovePDFFile extends BaseFile {
-    private file: Buffer;
+    private file: Uint8Array;
 
     constructor(fileAbsolutePath: string, params?: BaseFileParams) {
         const basename = getBasename(fileAbsolutePath);
         super('', '', basename, params);
 
-        const file = fs.readFileSync(fileAbsolutePath);
-        this.file = file;
+        this.file = fileAbsolutePath ? fs.readFileSync(fileAbsolutePath) : new Uint8Array();
+    }
+
+    static fromArray(arr: Uint8Array, filename: string, params?: BaseFileParams): ILovePDFFile {
+        const ilovepdfFile =  new ILovePDFFile('', params);
+        ilovepdfFile.filename = filename;
+        ilovepdfFile.file = arr;
+        return ilovepdfFile;
     }
 
     get data(): FormData {
